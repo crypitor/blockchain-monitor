@@ -45,7 +45,7 @@ stop:
 
 .PHONY: shell
 shell:
-	@docker exec -ti {PROJECT_NAME}-client /bin/sh
+	@docker exec -ti webhook-client /bin/sh
 
 # https://stackoverflow.com/a/6273809/1826109
 %:
