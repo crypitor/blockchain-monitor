@@ -11,7 +11,7 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { Model } from 'mongoose';
 import { CreateUserValidationPipe } from './users.pipe';
 
-@Controller()
+@Controller('user')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -22,8 +22,9 @@ export class UsersController {
       const result: InstanceType<typeof User> = await this.usersService.create(
         user,
       );
-
-      if (result instanceof Model<typeof UserSchema>) {
+      const UserModel = Model<typeof UserSchema>;
+      // ...
+      if (result instanceof UserModel) {
         return result;
       }
     } catch (error) {
