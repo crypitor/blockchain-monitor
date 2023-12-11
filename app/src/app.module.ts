@@ -9,11 +9,10 @@ import { GlobalModule } from './global/global.module';
 import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { ERC721Module } from './modules/erc721/erc721.module';
-import { jwtConstants } from './modules/auth/constants';
-// import { SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule } from '@nestjs/swagger';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, ERC721Module],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, ERC721Module, SwaggerModule],
   controllers: [AppController],
   providers: [AppService, GlobalService],
 })
