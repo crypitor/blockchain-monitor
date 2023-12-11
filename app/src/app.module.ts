@@ -6,10 +6,15 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GlobalModule } from './global/global.module';
+import { ConfigModule } from '@nestjs/config';
+import { WalletModule } from './modules/wallet/wallet.module';
+import { ERC721Module } from './modules/erc721/erc721.module';
+import { jwtConstants } from './modules/auth/constants';
+// import { SwaggerModule } from '@nestjs/swagger';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, AuthModule, GlobalModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, ERC721Module],
   controllers: [AppController],
   providers: [AppService, GlobalService],
 })
-export class AppModule {}
+export class AppModule { }

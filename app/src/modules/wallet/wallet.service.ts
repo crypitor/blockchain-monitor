@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Wallet } from 'src/modules/Wallet/schemas/wallet.schema';
 import { CreateWalletWebhookDto } from './dto/create-wallet.dto';
+import { Wallet } from './schemas/wallet.schema';
 
 @Injectable()
 export class WalletService {

@@ -6,6 +6,6 @@ export const WalletProviders = [
     provide: 'WALLET_MODEL',
     useFactory: (connection: Connection) =>
       connection.model('Wallet', WalletSchema),
-    inject: ['DATABASE_WALLET_CONNECTION'],
+    inject: ['DATABASE_CONNECTION'],
   },
 ];

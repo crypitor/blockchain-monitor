@@ -11,7 +11,6 @@ export class CreateWalletWebhookDto {
   @IsNotEmpty()
   @MaxLength(42)
   @IsLowercase()
-  @IsAlpha()
   address: string;
 
   @IsString()
