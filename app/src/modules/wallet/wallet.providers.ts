@@ -1,5 +1,5 @@
 import { Connection } from 'mongoose';
-import { WalletSchema } from 'src/modules/wallet/schemas/wallet.schema';
+import { WalletSchema } from './schemas/wallet.schema';
 
 export const WalletProviders = [
   {
