@@ -10,10 +10,13 @@ import { ConfigModule } from '@nestjs/config';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { ERC721Module } from './modules/erc721/erc721.module';
 import { SwaggerModule } from '@nestjs/swagger';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EvmWorker } from './workers/evm.worker';
+import { BlockSyncModule } from './modules/blocksync/blocksync.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, ERC721Module, SwaggerModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, BlockSyncModule, ERC721Module, SwaggerModule, ScheduleModule.forRoot()],
   controllers: [AppController],
-  providers: [AppService, GlobalService],
+  providers: [AppService, GlobalService, EvmWorker],
 })
 export class AppModule { }
