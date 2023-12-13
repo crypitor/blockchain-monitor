@@ -19,6 +19,7 @@ export class CreateERC721ValidationPipe implements PipeTransform {
       const err = this.buildError(errors);
       throw new BadRequestException(err, 'Validation failed');
     }
+    value.token_address = value.token_address.toLowerCase();
     return value;
   }
 

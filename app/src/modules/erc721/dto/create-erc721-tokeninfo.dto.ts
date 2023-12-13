@@ -12,7 +12,6 @@ export class CreateERC721TokenInfoDto {
   @IsNotEmpty()
   @MinLength(2)
   @MaxLength(42)
-  @IsAlpha()
   token_address: string;
 
   @IsString()

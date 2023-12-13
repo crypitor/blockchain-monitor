@@ -19,6 +19,7 @@ export class CreateWalletValidationPipe implements PipeTransform {
       const err = this.buildError(errors);
       throw new BadRequestException(err, 'Validation failed');
     }
+    value.address = value.address.toLowerCase();
     return value;
   }
 
