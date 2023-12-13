@@ -4,7 +4,7 @@ import { DatabaseModule } from 'src/database/database.module';
 import { BlockSyncProviders } from './blocksync.providers';
 import { BlockSyncController } from './blocksync.controller';
 @Module({
-  controllers: [BlockSyncController],
+  controllers: [],
   providers: [BlockSyncService, ...BlockSyncProviders],
   exports: [BlockSyncService],
   imports: [DatabaseModule],
