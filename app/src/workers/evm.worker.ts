@@ -32,6 +32,7 @@ export class EvmWorker {
     private readonly confirmBlock = 15;
     private detectInfo: ScanInfo = { flag: false, blockNumber: 0 };
     private confirmInfo: ScanInfo = { flag: false, blockNumber: 0 };
+    private disabled = false;
     rpcUrl: string;
     provider: ethers.Provider;
     blockSyncService: BlockSyncService;
@@ -40,6 +41,10 @@ export class EvmWorker {
 
 
     constructor(blockSyncService: BlockSyncService, walletService: WalletService, erc721Service: ERC721Service) {
+        if (process.env.EVM_DISABLE === 'true') {
+            this.disabled = true;
+            return;
+        }
         this.rpcUrl = process.env.WEB3_PROVIDER_URL;
         this.provider = new ethers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
         this.blockSyncService = blockSyncService;
@@ -77,8 +82,7 @@ export class EvmWorker {
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async detect() {
-        if (this.detectInfo.flag) {
-            console.log('detect worker is running, skip this time');
+        if (this.detectInfo.flag || this.disabled) {
             return;
         }
         this.detectInfo.flag = true;
@@ -96,7 +100,7 @@ export class EvmWorker {
                 // const block = await this.provider.getBlock(blockNumber);
 
                 // Retrieve transfer event the block's logs
-                const logs = await this.provider.getLogs({ fromBlock: blockNumber, toBlock: blockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null, null, null] });
+                const logs = await this.provider.getLogs({ fromBlock: blockNumber, toBlock: blockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null] });
 
                 // Handle the extracted NFT transfer events
                 logs.forEach(event => {
@@ -113,15 +117,14 @@ export class EvmWorker {
                 break;
             }
         }
-        
+
         this.detectInfo.flag = false;
         return;
     }
 
     @Cron(CronExpression.EVERY_10_SECONDS)
     async confirm() {
-        if (this.confirmInfo.flag) {
-            console.log('confirm worker is running, skip this time');
+        if (this.confirmInfo.flag || this.disabled) {
             return;
         }
         this.confirmInfo.flag = true;
@@ -153,7 +156,7 @@ export class EvmWorker {
                 break;
             }
         }
-        
+
         this.confirmInfo.flag = false;
         return;
     }
@@ -228,12 +231,16 @@ export class EvmWorker {
     }
 
     async sendMessage(url: string, message: WebhookDto): Promise<void> {
-        await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(message)
-        });
+        try {
+            await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(message)
+            });
+        } catch (error) {
+            this.logger.error("error while sending webhook request", error);
+        }
     }
 }
