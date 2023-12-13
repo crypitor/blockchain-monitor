@@ -21,10 +21,17 @@ interface WebhookDto extends ReadableStream {
     action: 'detected' | 'confirmed';
 }
 
+interface ScanInfo {
+    flag: boolean;
+    blockNumber: number;
+}
+
 @Injectable()
 export class EvmWorker {
     private readonly logger = new Logger(EvmWorker.name);
-    private flag = false;
+    private readonly confirmBlock = 15;
+    private detectInfo: ScanInfo = { flag: false, blockNumber: 0 };
+    private confirmInfo: ScanInfo = { flag: false, blockNumber: 0 };
     rpcUrl: string;
     provider: ethers.Provider;
     blockSyncService: BlockSyncService;
@@ -42,7 +49,7 @@ export class EvmWorker {
     }
 
     async initWorker() {
-        this.flag = true;
+        this.detectInfo.flag = true; this.confirmInfo.flag = true;
         let blockSync = await this.blockSyncService.findOne(this.rpcUrl);
         if (!blockSync) {
             blockSync = await this.blockSyncService.create({ rpcUrl: this.rpcUrl, lastSync: parseInt(process.env.EVM_START_BLOCK) });
@@ -51,36 +58,40 @@ export class EvmWorker {
         const startBlockConfig = process.env.EVM_START_BLOCK_CONFIG;
         if (startBlockConfig === 'latest') {
             const latestBlockNumber = await this.provider.getBlockNumber();
-            this.logger.debug("force running latest block " + latestBlockNumber);
+            this.logger.warn("force running latest block from network " + latestBlockNumber);
             this.blockSyncService.updateLastSync(this.rpcUrl, latestBlockNumber);
+            this.detectInfo.blockNumber = latestBlockNumber;
+            this.confirmInfo.blockNumber = latestBlockNumber;
         } else if (startBlockConfig === 'config') {
-            this.logger.debug("force running from config " + process.env.EVM_START_BLOCK);
+            this.logger.warn("force running start block from config " + process.env.EVM_START_BLOCK);
             this.updateLastSyncBlock(parseInt(process.env.EVM_START_BLOCK));
+            this.detectInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK);
+            this.confirmInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK);
         } else {
-            this.logger.debug('running from db ' + blockSync.lastSync);
+            this.logger.warn('running start block from db ' + blockSync.lastSync);
+            this.detectInfo.blockNumber = blockSync.lastSync;
+            this.confirmInfo.blockNumber = blockSync.lastSync;
         }
-        this.flag = false;
+        this.detectInfo.flag = false; this.confirmInfo.flag = false;
     }
 
-    @Cron(CronExpression.EVERY_5_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS)
     async detect() {
-        if (this.flag) {
-            console.log('worker is running');
+        if (this.detectInfo.flag) {
+            console.log('detect worker is running, skip this time');
             return;
         }
-        this.flag = true;
+        this.detectInfo.flag = true;
 
-        const lastSyncBlock = await this.getLastSyncBlock();
-        // this.logger.debug("last sync block from db: " + lastSyncBlock);
+        const lastDetectedBlock = this.detectInfo.blockNumber;
 
         // Get the latest block number
-        const latestBlockNumber = await this.provider.getBlockNumber();
-        // this.logger.debug("latest block number: " + latestBlockNumber);
+        const latestDetectedBlockNumber = await this.provider.getBlockNumber();
 
         // Scan each block
-        for (let blockNumber = lastSyncBlock + 1; blockNumber <= latestBlockNumber; blockNumber++) {
+        for (let blockNumber = lastDetectedBlock + 1; blockNumber <= latestDetectedBlockNumber; blockNumber++) {
             try {
-                this.logger.debug(`Scanning block ${blockNumber}`);
+                this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
                 // Retrieve the block
                 // const block = await this.provider.getBlock(blockNumber);
 
@@ -94,16 +105,61 @@ export class EvmWorker {
                         this.handleNftTransfer(event, 'detected');
                     }
                 });
-                await this.updateLastSyncBlock(blockNumber);
+                this.detectInfo.blockNumber = blockNumber;
+                //only update last sync for confirm
+                // await this.updateLastSyncBlock(blockNumber);
             } catch (error) {
-                console.error(`Error scanning block ${blockNumber}:`, error);
+                this.logger.error(['DETECT', `Error scanning block ${blockNumber}:`, error]);
+                break;
             }
         }
-        this.flag = false;
+        
+        this.detectInfo.flag = false;
         return;
     }
 
-    async handleNftTransfer(event: Log, action: string) {
+    @Cron(CronExpression.EVERY_10_SECONDS)
+    async confirm() {
+        if (this.confirmInfo.flag) {
+            console.log('confirm worker is running, skip this time');
+            return;
+        }
+        this.confirmInfo.flag = true;
+
+        const lastConfirmedBlock = this.confirmInfo.blockNumber;
+
+        // Get the latest block number
+        const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
+
+        // Scan each block
+        for (let blockNumber = lastConfirmedBlock + 1; blockNumber <= latestConfirmedBlockNumber; blockNumber++) {
+            try {
+                this.logger.debug(['CONFIRM', `Scanning block ${blockNumber}`]);
+
+                // Retrieve transfer event the block's logs
+                const logs = await this.provider.getLogs({ fromBlock: blockNumber, toBlock: blockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null, null, null] });
+
+                // Handle the extracted NFT transfer events
+                logs.forEach(event => {
+                    // Check if the event is an NFT transfer
+                    if (event.topics.length === 4) {
+                        this.handleNftTransfer(event, 'confirmed');
+                    }
+                });
+                this.confirmInfo.blockNumber = blockNumber;
+                await this.updateLastSyncBlock(blockNumber);
+            } catch (error) {
+                this.logger.error(['CONFIRM', `Error scanning block ${blockNumber}:`, error]);
+                break;
+            }
+        }
+        
+        this.confirmInfo.flag = false;
+        return;
+    }
+
+
+    async handleNftTransfer(event: Log, action: 'detected' | 'confirmed') {
         // Extract relevant information from the event
         const contractAddress = ethers.getAddress(event.address).toLowerCase();
         const fromAddress = ethers.getAddress(event.topics[1].substring(26)).toLowerCase();
@@ -112,7 +168,6 @@ export class EvmWorker {
         // check contract address is supported in erc721
         const erc721 = await this.erc721Service.findOne(contractAddress);
         if (!erc721) {
-            console.log("unsupported contract address");
             return;
         }
 
@@ -135,7 +190,7 @@ export class EvmWorker {
             // send tranction detail to fromWallet.webhookUrl with WebhookDto
             await this.sendMessage(fromWallet.webhookUrl, body);
 
-            this.logger.debug(action + ' nft transfer OUT with database: ' + JSON.stringify(body));
+            this.logger.log(action + ' nft transfer OUT with database: ' + JSON.stringify(body));
         }
 
         // handle to wallet
