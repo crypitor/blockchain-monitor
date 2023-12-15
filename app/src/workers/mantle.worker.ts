@@ -4,7 +4,6 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Log, ethers } from 'ethers';
 import { BlockSyncService } from 'src/modules/blocksync/blocksync.service';
 import { ERC721Service } from 'src/modules/erc721/erc721.service';
-import { ERC721 } from 'src/modules/erc721/schemas/erc721.schema';
 import { WalletService } from 'src/modules/wallet/wallet.service';
 
 interface WebhookDto extends ReadableStream {
@@ -29,7 +28,7 @@ interface ScanInfo {
 @Injectable()
 export class MantleWorker {
     private readonly logger = new Logger(MantleWorker.name);
-    private readonly confirmBlock = 15;
+    private readonly confirmBlock = 50;
     private detectInfo: ScanInfo = { flag: false, blockNumber: 0 };
     private confirmInfo: ScanInfo = { flag: false, blockNumber: 0 };
     private disabled = false;
@@ -42,7 +41,7 @@ export class MantleWorker {
 
     constructor(blockSyncService: BlockSyncService, walletService: WalletService, erc721Service: ERC721Service) {
         if (process.env.MANTLE_DISABLE === 'true') {
-            console.log('disable')
+            this.disabled = true;
             return;
         }
         this.rpcUrl = process.env.MANTLE_WEB3_PROVIDER_URL;
@@ -109,7 +108,7 @@ export class MantleWorker {
                 } else {
                     this.logger.debug("DETECT scanning block from " + lastDetectedBlock + " to " + latestDetectedBlockNumber);
                     // Retrieve transfer event the 1000 block's logs
-                    const logs = await this.provider.getLogs({ fromBlock: lastDetectedBlock + 1, toBlock: latestDetectedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null] });
+                    const logs = await this.provider.getLogs({ fromBlock: lastDetectedBlock + 1, toBlock: latestDetectedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
                     // Handle the extracted NFT transfer events
                     logs.forEach(event => {
                         // Check if the event is an NFT transfer
@@ -120,7 +119,7 @@ export class MantleWorker {
                     lastDetectedBlock = latestDetectedBlockNumber;
                 }
                 this.detectInfo.blockNumber = lastDetectedBlock;
-                this.updateLastSyncBlock(lastDetectedBlock);
+                // this.updateLastSyncBlock(lastDetectedBlock);
             } catch (error) {
                 this.logger.error(error);
             }
@@ -130,55 +129,55 @@ export class MantleWorker {
         return;
     }
 
-    // @Cron(CronExpression.EVERY_10_SECONDS)
-    // async confirm() {
-    //     if (this.confirmInfo.flag || this.disabled) {
-    //         return;
-    //     }
-    //     this.confirmInfo.flag = true;
+    @Cron(CronExpression.EVERY_10_SECONDS)
+    async confirm() {
+        if (this.confirmInfo.flag || this.disabled) {
+            return;
+        }
+        this.confirmInfo.flag = true;
 
-    //     let lastConfirmedBlock = this.confirmInfo.blockNumber;
+        let lastConfirmedBlock = this.confirmInfo.blockNumber;
 
-    //     // Get the latest block number
-    //     const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
+        // Get the latest block number
+        const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
 
-    //     while (lastConfirmedBlock < latestConfirmedBlockNumber) {
-    //         try {
-    //             if (lastConfirmedBlock <= latestConfirmedBlockNumber - 1000) {
-    //                 this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + (lastConfirmedBlock + 1000));
-    //                 // Retrieve transfer event the 1000 block's logs
-    //                 const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: lastConfirmedBlock + 1000, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null, null, null] });
-    //                 // Handle the extracted NFT transfer events
-    //                 logs.forEach(event => {
-    //                     // Check if the event is an NFT transfer
-    //                     if (event.topics.length === 4) {
-    //                         this.handleNftTransfer(event, 'confirmed');
-    //                     }
-    //                 });
-    //                 lastConfirmedBlock = lastConfirmedBlock + 1000;
-    //             } else {
-    //                 this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + latestConfirmedBlockNumber);
-    //                 // Retrieve transfer event the 1000 block's logs
-    //                 const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: latestConfirmedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', null, null, null, null, null] });
-    //                 // Handle the extracted NFT transfer events
-    //                 logs.forEach(event => {
-    //                     // Check if the event is an NFT transfer
-    //                     if (event.topics.length === 4) {
-    //                         this.handleNftTransfer(event, 'confirmed');
-    //                     }
-    //                 });
-    //                 lastConfirmedBlock = latestConfirmedBlockNumber;
-    //             }
-    //             this.confirmInfo.blockNumber = lastConfirmedBlock;
-    //             this.updateLastSyncBlock(this.confirmInfo.blockNumber);
-    //         } catch (error) {
-    //             this.logger.error(error);
-    //         }
-    //     }
+        while (lastConfirmedBlock < latestConfirmedBlockNumber) {
+            try {
+                if (lastConfirmedBlock <= latestConfirmedBlockNumber - 1000) {
+                    this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + (lastConfirmedBlock + 1000));
+                    // Retrieve transfer event the 1000 block's logs
+                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: lastConfirmedBlock + 1000, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
+                    // Handle the extracted NFT transfer events
+                    logs.forEach(event => {
+                        // Check if the event is an NFT transfer
+                        if (event.topics.length === 4) {
+                            this.handleNftTransfer(event, 'confirmed');
+                        }
+                    });
+                    lastConfirmedBlock = lastConfirmedBlock + 1000;
+                } else {
+                    this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + latestConfirmedBlockNumber);
+                    // Retrieve transfer event the 1000 block's logs
+                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: latestConfirmedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
+                    // Handle the extracted NFT transfer events
+                    logs.forEach(event => {
+                        // Check if the event is an NFT transfer
+                        if (event.topics.length === 4) {
+                            this.handleNftTransfer(event, 'confirmed');
+                        }
+                    });
+                    lastConfirmedBlock = latestConfirmedBlockNumber;
+                }
+                this.confirmInfo.blockNumber = lastConfirmedBlock;
+                this.updateLastSyncBlock(this.confirmInfo.blockNumber);
+            } catch (error) {
+                this.logger.error(error);
+            }
+        }
 
-    //     this.confirmInfo.flag = false;
-    //     return;
-    // }
+        this.confirmInfo.flag = false;
+        return;
+    }
 
 
     async handleNftTransfer(event: Log, action: 'detected' | 'confirmed') {
