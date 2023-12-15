@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsAlpha,
@@ -8,6 +9,7 @@ import {
 } from 'class-validator';
 
 export class DeleteERC721TokenInfoDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @MinLength(2)

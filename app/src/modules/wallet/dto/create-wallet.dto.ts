@@ -1,3 +1,4 @@
+import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsAlpha,
@@ -7,11 +8,13 @@ import {
 } from 'class-validator';
 
 export class CreateWalletWebhookDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @MaxLength(42)
   address: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   webhookUrl: string;
