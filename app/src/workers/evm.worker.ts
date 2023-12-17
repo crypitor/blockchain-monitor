@@ -32,7 +32,6 @@ export class EvmWorker {
     private readonly confirmBlock = 15;
     private detectInfo: ScanInfo = { flag: false, blockNumber: 0 };
     private confirmInfo: ScanInfo = { flag: false, blockNumber: 0 };
-    private disabled = false;
     rpcUrl: string;
     provider: ethers.Provider;
     blockSyncService: BlockSyncService;
@@ -42,7 +41,6 @@ export class EvmWorker {
 
     constructor(blockSyncService: BlockSyncService, walletService: WalletService, erc721Service: ERC721Service) {
         if (process.env.EVM_DISABLE === 'true') {
-            this.disabled = true;
             return;
         }
         this.rpcUrl = process.env.WEB3_PROVIDER_URL;
@@ -80,9 +78,9 @@ export class EvmWorker {
         this.detectInfo.flag = false; this.confirmInfo.flag = false;
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS, {disabled: process.env.EVM_DISABLE === 'true'})
     async detect() {
-        if (this.detectInfo.flag || this.disabled) {
+        if (this.detectInfo.flag) {
             return;
         }
         this.detectInfo.flag = true;
@@ -122,9 +120,9 @@ export class EvmWorker {
         return;
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS, {disabled: process.env.EVM_DISABLE === 'true'})
     async confirm() {
-        if (this.confirmInfo.flag || this.disabled) {
+        if (this.confirmInfo.flag) {
             return;
         }
         this.confirmInfo.flag = true;

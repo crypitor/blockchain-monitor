@@ -31,7 +31,6 @@ export class MantleWorker {
     private readonly confirmBlock = 50;
     private detectInfo: ScanInfo = { flag: false, blockNumber: 0 };
     private confirmInfo: ScanInfo = { flag: false, blockNumber: 0 };
-    private disabled = false;
     rpcUrl: string;
     provider: ethers.Provider;
     blockSyncService: BlockSyncService;
@@ -41,7 +40,6 @@ export class MantleWorker {
 
     constructor(blockSyncService: BlockSyncService, walletService: WalletService, erc721Service: ERC721Service) {
         if (process.env.MANTLE_DISABLE === 'true') {
-            this.disabled = true;
             return;
         }
         this.rpcUrl = process.env.MANTLE_WEB3_PROVIDER_URL;
@@ -79,9 +77,9 @@ export class MantleWorker {
         this.detectInfo.flag = false; this.confirmInfo.flag = false;
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS, { disabled: process.env.MANTLE_DISABLE === 'true' })
     async detect() {
-        if (this.detectInfo.flag || this.disabled) {
+        if (this.detectInfo.flag) {
             return;
         }
         this.detectInfo.flag = true;
@@ -129,14 +127,14 @@ export class MantleWorker {
         return;
     }
 
-    @Cron(CronExpression.EVERY_10_SECONDS)
+    @Cron(CronExpression.EVERY_10_SECONDS, { disabled: process.env.MANTLE_DISABLE === 'true' })
     async confirm() {
-        if (this.confirmInfo.flag || this.disabled) {
+        if (this.confirmInfo.flag) {
             return;
         }
         this.confirmInfo.flag = true;
 
-        let lastConfirmedBlock = this.confirmInfo.blockNumber;
+        let lastConfirmedBlock = this.confirmInfo.blockNumber + 1;
 
         // Get the latest block number
         const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
@@ -146,7 +144,7 @@ export class MantleWorker {
                 if (lastConfirmedBlock <= latestConfirmedBlockNumber - 1000) {
                     this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + (lastConfirmedBlock + 1000));
                     // Retrieve transfer event the 1000 block's logs
-                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: lastConfirmedBlock + 1000, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
+                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock, toBlock: lastConfirmedBlock + 1000, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
                     // Handle the extracted NFT transfer events
                     logs.forEach(event => {
                         // Check if the event is an NFT transfer
@@ -158,7 +156,7 @@ export class MantleWorker {
                 } else {
                     this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + latestConfirmedBlockNumber);
                     // Retrieve transfer event the 1000 block's logs
-                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock + 1, toBlock: latestConfirmedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
+                    const logs = await this.provider.getLogs({ fromBlock: lastConfirmedBlock, toBlock: latestConfirmedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
                     // Handle the extracted NFT transfer events
                     logs.forEach(event => {
                         // Check if the event is an NFT transfer
