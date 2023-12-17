@@ -102,9 +102,9 @@ export class MantleWorker {
                             this.handleNftTransfer(event, 'detected');
                         }
                     });
-                    lastDetectedBlock = lastDetectedBlock + 1000;
+                    lastDetectedBlock = lastDetectedBlock + 1001;
                 } else {
-                    this.logger.debug("DETECT scanning block from " + lastDetectedBlock + " to " + latestDetectedBlockNumber);
+                    this.logger.debug("DETECT  scanning block from " + lastDetectedBlock + " to " + latestDetectedBlockNumber);
                     // Retrieve transfer event the 1000 block's logs
                     const logs = await this.provider.getLogs({ fromBlock: lastDetectedBlock + 1, toBlock: latestDetectedBlockNumber, topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'] });
                     // Handle the extracted NFT transfer events
@@ -114,15 +114,13 @@ export class MantleWorker {
                             this.handleNftTransfer(event, 'detected');
                         }
                     });
-                    lastDetectedBlock = latestDetectedBlockNumber;
+                    lastDetectedBlock = latestDetectedBlockNumber + 1;
                 }
-                this.detectInfo.blockNumber = lastDetectedBlock;
-                // this.updateLastSyncBlock(lastDetectedBlock);
             } catch (error) {
                 this.logger.error(error);
             }
         }
-
+        this.detectInfo.blockNumber = latestDetectedBlockNumber;
         this.detectInfo.flag = false;
         return;
     }
@@ -152,7 +150,7 @@ export class MantleWorker {
                             this.handleNftTransfer(event, 'confirmed');
                         }
                     });
-                    lastConfirmedBlock = lastConfirmedBlock + 1000;
+                    lastConfirmedBlock = lastConfirmedBlock + 1001;
                 } else {
                     this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + latestConfirmedBlockNumber);
                     // Retrieve transfer event the 1000 block's logs
@@ -164,14 +162,15 @@ export class MantleWorker {
                             this.handleNftTransfer(event, 'confirmed');
                         }
                     });
-                    lastConfirmedBlock = latestConfirmedBlockNumber;
+                    lastConfirmedBlock = latestConfirmedBlockNumber + 1;
                 }
-                this.confirmInfo.blockNumber = lastConfirmedBlock;
-                this.updateLastSyncBlock(this.confirmInfo.blockNumber);
             } catch (error) {
                 this.logger.error(error);
             }
         }
+
+        this.confirmInfo.blockNumber = latestConfirmedBlockNumber;
+        this.updateLastSyncBlock(this.confirmInfo.blockNumber);
 
         this.confirmInfo.flag = false;
         return;

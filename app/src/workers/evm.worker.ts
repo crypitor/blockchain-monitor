@@ -85,13 +85,13 @@ export class EvmWorker {
         }
         this.detectInfo.flag = true;
 
-        const lastDetectedBlock = this.detectInfo.blockNumber;
+        const lastDetectedBlock = this.detectInfo.blockNumber + 1;
 
         // Get the latest block number
         const latestDetectedBlockNumber = await this.getBlockNumber();
 
         // Scan each block
-        for (let blockNumber = lastDetectedBlock + 1; blockNumber <= latestDetectedBlockNumber; blockNumber++) {
+        for (let blockNumber = lastDetectedBlock; blockNumber <= latestDetectedBlockNumber; blockNumber++) {
             try {
                 this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
                 // Retrieve the block
@@ -127,13 +127,13 @@ export class EvmWorker {
         }
         this.confirmInfo.flag = true;
 
-        const lastConfirmedBlock = this.confirmInfo.blockNumber;
+        const lastConfirmedBlock = this.confirmInfo.blockNumber + 1;
 
         // Get the latest block number
         const latestConfirmedBlockNumber = (await this.getBlockNumber()) - this.confirmBlock;
 
         // Scan each block
-        for (let blockNumber = lastConfirmedBlock + 1; blockNumber <= latestConfirmedBlockNumber; blockNumber++) {
+        for (let blockNumber = lastConfirmedBlock; blockNumber <= latestConfirmedBlockNumber; blockNumber++) {
             try {
                 this.logger.debug(['CONFIRM', `Scanning block ${blockNumber}`]);
 
