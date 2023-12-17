@@ -87,9 +87,9 @@ export class MantleWorker {
         let lastDetectedBlock = this.detectInfo.blockNumber + 1;
 
         // Get the latest block number
-        const latestDetectedBlockNumber = await this.provider.getBlockNumber();
+        const latestDetectedBlockNumber = await this.getBlockNumber();
 
-        while (lastDetectedBlock < latestDetectedBlockNumber) {
+        while (lastDetectedBlock <= latestDetectedBlockNumber) {
             try {
                 if (lastDetectedBlock <= latestDetectedBlockNumber - 1000) {
                     this.logger.debug("DETECT scanning block from " + lastDetectedBlock + " to " + (lastDetectedBlock + 1000));
@@ -137,9 +137,9 @@ export class MantleWorker {
         let lastConfirmedBlock = this.confirmInfo.blockNumber + 1;
 
         // Get the latest block number
-        const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
+        const latestConfirmedBlockNumber = (await this.getBlockNumber()) - this.confirmBlock;
 
-        while (lastConfirmedBlock < latestConfirmedBlockNumber) {
+        while (lastConfirmedBlock <= latestConfirmedBlockNumber) {
             try {
                 if (lastConfirmedBlock <= latestConfirmedBlockNumber - 1000) {
                     this.logger.debug("CONFIRM scanning block from " + lastConfirmedBlock + " to " + (lastConfirmedBlock + 1000));
@@ -245,6 +245,16 @@ export class MantleWorker {
         // Get the last sync block from MongoDB
         const lastSyncBlock = await this.blockSyncService.findOne(this.rpcUrl);
         return lastSyncBlock?.lastSync;
+    }
+
+    async getBlockNumber(): Promise<number> {
+        try {
+            const blockNumber = await this.provider.getBlockNumber();
+            return blockNumber;
+        } catch (error) {
+            this.logger.error("error while getting block number", error);
+        }
+        return 0;
     }
 
     async sendMessage(url: string, message: WebhookDto): Promise<void> {

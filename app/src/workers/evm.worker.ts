@@ -88,7 +88,7 @@ export class EvmWorker {
         const lastDetectedBlock = this.detectInfo.blockNumber;
 
         // Get the latest block number
-        const latestDetectedBlockNumber = await this.provider.getBlockNumber();
+        const latestDetectedBlockNumber = await this.getBlockNumber();
 
         // Scan each block
         for (let blockNumber = lastDetectedBlock + 1; blockNumber <= latestDetectedBlockNumber; blockNumber++) {
@@ -130,7 +130,7 @@ export class EvmWorker {
         const lastConfirmedBlock = this.confirmInfo.blockNumber;
 
         // Get the latest block number
-        const latestConfirmedBlockNumber = (await this.provider.getBlockNumber()) - this.confirmBlock;
+        const latestConfirmedBlockNumber = (await this.getBlockNumber()) - this.confirmBlock;
 
         // Scan each block
         for (let blockNumber = lastConfirmedBlock + 1; blockNumber <= latestConfirmedBlockNumber; blockNumber++) {
@@ -226,6 +226,16 @@ export class EvmWorker {
         // Get the last sync block from MongoDB
         const lastSyncBlock = await this.blockSyncService.findOne(this.rpcUrl);
         return lastSyncBlock?.lastSync;
+    }
+
+    async getBlockNumber(): Promise<number> {
+        try {
+            const blockNumber = await this.provider.getBlockNumber();
+            return blockNumber;
+        } catch (error) {
+            this.logger.error("error while getting block number", error);
+        }
+        return 0;
     }
 
     async sendMessage(url: string, message: WebhookDto): Promise<void> {
