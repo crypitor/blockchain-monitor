@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AllExceptionsFilter } from './exeption/exeption';
 dotenv.config();
 
 async function bootstrap() {
@@ -12,6 +13,7 @@ async function bootstrap() {
     },
   });
 
+  // setting up swagger
   const options = new DocumentBuilder()
     .setTitle('Blockchain Webhook')
     .setDescription('Blockchain transaction and address monitoring with webhook')
@@ -21,6 +23,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.SERVER_PORT);
+  // setting up exception handler
+  const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+
+  await app.listen(process.env.SERVER_PORT); 
 }
 bootstrap();
