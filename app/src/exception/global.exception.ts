@@ -7,12 +7,12 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { MongoError } from 'mongodb';
+import { MongoError, MongoServerError } from 'mongodb';
 
 export function handleException(exception): HttpException {
     let error: HttpException;
-    if (exception.hasOwnProperty('code')) {
-        if (exception.name === 'MongoServerError' && exception.code === 11000) {
+    if (exception instanceof MongoError) {
+        if (exception instanceof MongoServerError && exception.code === 11000) {
             Object.keys(exception.keyValue).forEach((key) => {
                 error = new DuplicateKeyException(key);
             });
