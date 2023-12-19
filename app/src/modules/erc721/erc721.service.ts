@@ -5,15 +5,11 @@ import { ERC721 } from './schemas/erc721.schema';
 
 @Injectable()
 export class ERC721Service {
-  constructor(@Inject('ERC721_MODEL') private readonly erc721Model: Model<ERC721>) {}
+  constructor(@Inject('ERC721_MODEL') private readonly erc721Model: Model<ERC721>) { }
 
   async create(createERC721Dto: CreateERC721TokenInfoDto): Promise<ERC721> {
     const createdERC721 = new this.erc721Model(createERC721Dto);
-    try {
-      return await createdERC721.save();
-    } catch (error) {
-      throw error;
-    }
+    return await createdERC721.save();
   }
 
   /**
@@ -36,10 +32,6 @@ export class ERC721Service {
   }
 
   async deleteOne(address: string): Promise<void> {
-    try {
-      await this.erc721Model.deleteOne({ address: address });
-    } catch (error) {
-      throw error;
-    }
+    await this.erc721Model.deleteOne({ address: address });
   }
 }
