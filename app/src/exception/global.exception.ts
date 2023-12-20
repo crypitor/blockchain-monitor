@@ -19,6 +19,8 @@ export function handleException(exception): HttpException {
         } else {
             error = new BadRequestException(exception);
         }
+    } else if (exception instanceof HttpException) {
+        error = exception;
     } else {
         error = new InternalServerErrorException(exception);
     }
@@ -67,12 +69,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         const httpStatus = error.getStatus();
 
-        const responseBody = {
-            statusCode: httpStatus,
-            timestamp: new Date().toISOString(),
-            path: httpAdapter.getRequestUrl(ctx.getRequest()),
-            detail: error.getResponse()
-        };
+        const responseBody = error.getResponse();
 
         httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
     }
