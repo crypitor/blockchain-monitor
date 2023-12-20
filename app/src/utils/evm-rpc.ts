@@ -1,4 +1,29 @@
 import { ethers } from 'ethers';
+import { Erc721Abi } from './abi/erc721.abi';
+
+
+export class NftUtil {
+  private static contractAddress = '';
+  private static provider: ethers.Provider;
+  static getProvider(): ethers.Provider {
+    if (provider) {
+      return provider;
+    }
+    return new ethers.JsonRpcProvider('https://dev1.crypitor.com/rpc');
+  }
+
+  static async balanceOf(address: string): Promise<bigint> {
+    const provider = NftUtil.getProvider();
+    const nftContract = new ethers.Contract(NftUtil.contractAddress, Erc721Abi, provider);
+    return nftContract.balanceOf(address);
+  }
+
+  static async tokenUri(tokenId: string): Promise<string> {
+    const provider = NftUtil.getProvider();
+    const nftContract = new ethers.Contract(NftUtil.contractAddress, Erc721Abi, provider);
+    return nftContract.tokenURI(tokenId);
+  }
+}
 
 // Initialize provider
 const provider = new ethers.JsonRpcProvider('');
