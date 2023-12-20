@@ -13,39 +13,18 @@ import { CreateUserValidationPipe } from './users.pipe';
 
 @Controller('user')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService) { }
 
   @Post('/register')
   @UsePipes(new CreateUserValidationPipe())
   async register(@Body() user: CreateUserDto) {
-    try {
-      const result: InstanceType<typeof User> = await this.usersService.create(
-        user,
-      );
-      const UserModel = Model<typeof UserSchema>;
-      // ...
-      if (result instanceof UserModel) {
-        return result;
-      }
-    } catch (error) {
-      if (error.hasOwnProperty('code')) {
-        if (error.name === 'MongoServerError' && error.code === 11000) {
-          throw new BadRequestException({
-            error: {
-              email: {
-                notUnique: 'Email is already in use by a different id',
-              },
-            },
-          });
-        }
-      }
-
-      throw new BadRequestException(
-        {
-          error: error,
-        },
-        'Bad request',
-      );
+    const result: InstanceType<typeof User> = await this.usersService.create(
+      user,
+    );
+    const UserModel = Model<typeof UserSchema>;
+    result.password = undefined;
+    if (result instanceof UserModel) {
+      return result;
     }
   }
 }
