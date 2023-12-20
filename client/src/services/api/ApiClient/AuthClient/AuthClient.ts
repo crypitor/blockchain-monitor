@@ -58,7 +58,7 @@ export class AuthClient extends ApiClient {
     };
 
     try {
-      const response = await this.post('/register', options);
+      const response = await this.post('/user/register', options);
       return response.data;
     } catch (error) {
       throw error;
