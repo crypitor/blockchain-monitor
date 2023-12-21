@@ -22,7 +22,7 @@ export function handleException(exception): HttpException {
     } else if (exception instanceof HttpException) {
         error = exception;
     } else {
-        error = new InternalServerErrorException(exception);
+        error = new InternalServerErrorException(exception.message);
     }
 
     return error;
