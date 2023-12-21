@@ -7,7 +7,6 @@ import { NftUtil } from 'src/utils/evm-rpc';
 @Injectable()
 export class NftService {
   private provider: ethers.Provider;
-  // todo connect ethers to constructor for ether provider
   constructor() {
     this.provider = new ethers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   }
