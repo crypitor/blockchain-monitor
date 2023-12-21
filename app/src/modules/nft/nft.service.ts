@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateNftDto } from './dto/create-nft.dto';
 import { UpdateNftDto } from './dto/update-nft.dto';
 import { ethers } from 'ethers';
+import { NftUtil } from 'src/utils/evm-rpc';
 
 @Injectable()
 export class NftService {
@@ -11,28 +12,16 @@ export class NftService {
     this.provider = new ethers.JsonRpcProvider(process.env.WEB3_PROVIDER_URL);
   }
   async tokenUri(tokenId: string) {
-    throw new Error('Method not implemented.');
+    return await NftUtil.tokenUri(tokenId);
   }
-  balanceOf(address: string) {
-    throw new Error('Method not implemented.');
-  }
-  create(createNftDto: CreateNftDto) {
-    return 'This action adds a new nft';
+  async balanceOf(address: string) {
+    return await NftUtil.balanceOf(address);
   }
 
-  findAll() {
-    return `This action returns all nft`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} nft`;
-  }
-
-  update(id: number, updateNftDto: UpdateNftDto) {
-    return `This action updates a #${id} nft`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} nft`;
+  async tokenMetadata(tokenId: string) {
+    const tokenUri = await this.tokenUri(tokenId);
+    fetch(tokenUri).then((res) => {
+      return res.json();
+    })
   }
 }

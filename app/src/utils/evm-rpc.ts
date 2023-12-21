@@ -3,7 +3,7 @@ import { Erc721Abi } from './abi/erc721.abi';
 
 
 export class NftUtil {
-  private static contractAddress = '';
+  private static contractAddress = '0xbEA6Cfc108ff90f8d3a203EbaC2205fceF280183';
   private static provider: ethers.Provider;
   static getProvider(): ethers.Provider {
     if (provider) {
