@@ -30,12 +30,14 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_DATABASE: ${DB_DATABASE_NAME}
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_USERNAME: ${MONGO_INITDB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${MONGO_INITDB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./data:/data/db
-      - ./.config/mongo-entrypoint:/docker-entrypoint-initdb.d/"
+      - ./.config/mongo-entrypoint/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh:ro
     ports:
       - 27017:27017
     networks:
