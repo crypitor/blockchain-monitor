@@ -16,7 +16,9 @@ services:
     env_file:
       - .env
     networks:
-      - onebox-network
+      onebox-network:
+        aliases:
+        - onebox
     depends_on:
       - redis
       - mongo
@@ -24,7 +26,9 @@ services:
     container_name: redis
     image: redis:5
     networks:
-      - onebox-network
+      onebox-network:
+        aliases:
+        - redis
   mongo:
     container_name: mongo
     image: mongo
@@ -41,7 +45,9 @@ services:
     ports:
       - 27017:27017
     networks:
-      - onebox-network
+      onebox-network:
+        aliases:
+        - mongo
 networks:
   onebox-network:
 volumes:
