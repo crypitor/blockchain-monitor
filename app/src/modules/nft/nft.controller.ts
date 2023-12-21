@@ -27,6 +27,11 @@ export class NftController {
     return this.nftService.tokenUri(tokenId);
   }
 
+  @Get('token/metadata/:tokenId')
+  async tokenMetadata(@Param('tokenId') tokenId: string) {
+    return this.nftService.tokenMetadata(tokenId);
+  }
+
   // @Patch('token/uri/:id')
   // update(@Param('id') id: string, @Body() updateNftDto: UpdateNftDto) {
   //   return this.nftService.update(+id, updateNftDto);

@@ -20,8 +20,7 @@ export class NftService {
 
   async tokenMetadata(tokenId: string) {
     const tokenUri = await this.tokenUri(tokenId);
-    fetch(tokenUri).then((res) => {
-      return res.json();
-    })
+    const result = await fetch(tokenUri)
+    return result.json();
   }
 }
