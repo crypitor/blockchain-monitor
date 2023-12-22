@@ -5,14 +5,13 @@ services:
     container_name: onebox
     build:
       context: .
-      target: development
+      target: ${TARGET}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
       - 9229:9229
-    command: npm run start:debug
     env_file:
       - .env
     networks:

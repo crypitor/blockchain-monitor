@@ -10,6 +10,8 @@ COPY . .
 
 RUN yarn build
 
+CMD ["yarn", "start:dev"]
+
 FROM node:18-alpine as production
 
 ARG NODE_ENV=production
