@@ -5,14 +5,13 @@ services:
     container_name: onebox
     build:
       context: .
-      target: development
+      target: ${TARGET}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
       - 9229:9229
-    command: npm run start:debug
     env_file:
       - .env
     networks:
@@ -41,7 +40,7 @@ services:
       MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
     volumes:
       - ./data:/data/db
-      - ./.config/mongo-entrypoint/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh:ro
+      - ./.config/mongo-entrypoint:/docker-entrypoint-initdb.d/
     ports:
       - 27017:27017
     networks:
