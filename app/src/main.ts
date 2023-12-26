@@ -2,7 +2,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AllExceptionsFilter } from './exception/global.exception';
+import { AllExceptionsFilter } from './global/global.exception';
 dotenv.config();
 
 async function bootstrap() {
