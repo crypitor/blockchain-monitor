@@ -18,13 +18,15 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiBearerAuth('JWT')
 @Controller('wallet')
 export class WalletController {
-  constructor(private WalletService: WalletService) { }
+  constructor(private WalletService: WalletService) {}
 
   @Post('/create')
   // @UseGuards(JwtAuthGuard)
   @UsePipes(new CreateWalletValidationPipe())
   async create(@Body() wallet: CreateWalletWebhookDto) {
-    const result: InstanceType<typeof Wallet> = await this.WalletService.create(wallet);
+    const result: InstanceType<typeof Wallet> = await this.WalletService.create(
+      wallet,
+    );
     return result;
   }
 

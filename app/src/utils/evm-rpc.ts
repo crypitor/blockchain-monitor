@@ -1,10 +1,9 @@
 import { ethers } from 'ethers';
 import { Erc721Abi } from './abi/erc721.abi';
 
-
 export class NftUtil {
   private static contractAddress = '0xbEA6Cfc108ff90f8d3a203EbaC2205fceF280183';
-  private  static provider: ethers.Provider;
+  private static provider: ethers.Provider;
   static getProvider(): ethers.Provider {
     if (NftUtil.provider) {
       return NftUtil.provider;
@@ -14,13 +13,21 @@ export class NftUtil {
 
   static async balanceOf(address: string): Promise<bigint> {
     const provider = NftUtil.getProvider();
-    const nftContract = new ethers.Contract(NftUtil.contractAddress, Erc721Abi, provider);
+    const nftContract = new ethers.Contract(
+      NftUtil.contractAddress,
+      Erc721Abi,
+      provider,
+    );
     return nftContract.balanceOf(address);
   }
 
   static async tokenUri(tokenId: string): Promise<string> {
     const provider = NftUtil.getProvider();
-    const nftContract = new ethers.Contract(NftUtil.contractAddress, Erc721Abi, provider);
+    const nftContract = new ethers.Contract(
+      NftUtil.contractAddress,
+      Erc721Abi,
+      provider,
+    );
     return nftContract.tokenURI(tokenId);
   }
 }

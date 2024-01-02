@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { NftService } from './nft.service';
 import { CreateNftDto } from './dto/create-nft.dto';
 import { UpdateNftDto } from './dto/update-nft.dto';
@@ -21,7 +29,7 @@ export class NftController {
   async balanceOf(@Param('address') address: string) {
     return this.nftService.balanceOf(address);
   }
-  
+
   @Get('token/uri/:tokenId')
   async tokenUri(@Param('tokenId') tokenId: string) {
     return this.nftService.tokenUri(tokenId);

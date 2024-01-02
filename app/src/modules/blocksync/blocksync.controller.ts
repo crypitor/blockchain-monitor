@@ -14,16 +14,14 @@ import { DeleteBlockSyncDto } from './dto/delete-blocksync.dto';
 
 @Controller('blocksync')
 export class BlockSyncController {
-  constructor(private BlockSyncService: BlockSyncService) { }
+  constructor(private BlockSyncService: BlockSyncService) {}
 
   @Post('/create')
   @UsePipes(new CreateBlockSyncValidationPipe())
   async create(@Body() blockSync: CreateBlockSyncDto) {
     try {
-      
-      const result: InstanceType<typeof BlockSync> = await this.BlockSyncService.create(
-        blockSync,
-      );
+      const result: InstanceType<typeof BlockSync> =
+        await this.BlockSyncService.create(blockSync);
 
       return result;
     } catch (error) {
@@ -52,9 +50,7 @@ export class BlockSyncController {
   @UsePipes(new CreateBlockSyncValidationPipe())
   async remove(@Body() blockSync: DeleteBlockSyncDto) {
     try {
-      await this.BlockSyncService.deleteOne(
-        blockSync.rpcUrl,
-      );
+      await this.BlockSyncService.deleteOne(blockSync.rpcUrl);
     } catch (error) {
       if (error.hasOwnProperty('code')) {
         if (error.name === 'MongoServerError' && error.code === 11000) {

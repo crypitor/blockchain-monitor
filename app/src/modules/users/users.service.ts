@@ -6,7 +6,7 @@ import { hashPassword } from 'src/utils/bcrypt.util';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) { }
+  constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     // store password as hash

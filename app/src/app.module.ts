@@ -17,8 +17,20 @@ import { MantleWorker } from './workers/mantle.worker';
 import { NftModule } from './modules/nft/nft.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, UsersModule, AuthModule, GlobalModule, WalletModule, BlockSyncModule, ERC721Module, SwaggerModule, ScheduleModule.forRoot(), NftModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    GlobalModule,
+    WalletModule,
+    BlockSyncModule,
+    ERC721Module,
+    SwaggerModule,
+    ScheduleModule.forRoot(),
+    NftModule,
+  ],
   controllers: [AppController],
   providers: [AppService, GlobalService, EvmWorker, MantleWorker],
 })
-export class AppModule { }
+export class AppModule {}
