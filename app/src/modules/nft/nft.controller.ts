@@ -10,7 +10,9 @@ import {
 import { NftService } from './nft.service';
 import { CreateNftDto } from './dto/create-nft.dto';
 import { UpdateNftDto } from './dto/update-nft.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('NFT API')
 @Controller('nft')
 export class NftController {
   constructor(private readonly nftService: NftService) {}
@@ -38,6 +40,11 @@ export class NftController {
   @Get('token/metadata/:tokenId')
   async tokenMetadata(@Param('tokenId') tokenId: string) {
     return this.nftService.tokenMetadata(tokenId);
+  }
+
+  @Get('token/owner/:tokenId')
+  async tokenOwner(@Param('tokenId') tokenId: string) {
+    return this.nftService.ownerOf(tokenId);
   }
 
   // @Patch('token/uri/:id')

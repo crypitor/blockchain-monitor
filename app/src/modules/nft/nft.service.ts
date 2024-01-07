@@ -22,4 +22,8 @@ export class NftService {
     const result = await fetch(tokenUri);
     return result.json();
   }
+
+  async ownerOf(tokenId: string) {
+    return await NftUtil.ownerOf(tokenId);
+  }
 }

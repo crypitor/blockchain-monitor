@@ -30,6 +30,16 @@ export class NftUtil {
     );
     return nftContract.tokenURI(tokenId);
   }
+
+  static async ownerOf(tokenId: string): Promise<string> {
+    const provider = NftUtil.getProvider();
+    const nftContract = new ethers.Contract(
+      NftUtil.contractAddress,
+      Erc721Abi,
+      provider,
+    );
+    return nftContract.ownerOf(tokenId);
+  }
 }
 
 // Initialize provider
