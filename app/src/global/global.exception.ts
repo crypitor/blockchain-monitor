@@ -1,31 +1,34 @@
-import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import {
-    ExceptionFilter,
-    Catch,
-    ArgumentsHost,
-    HttpException,
-    HttpStatus,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  ArgumentsHost,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { MongoError, MongoServerError } from 'mongodb';
 
 export function handleException(exception): HttpException {
-    let error: HttpException;
-    if (exception instanceof MongoError) {
-        if (exception instanceof MongoServerError && exception.code === 11000) {
-            Object.keys(exception.keyValue).forEach((key) => {
-                error = new DuplicateKeyException(key);
-            });
-        } else {
-            error = new BadRequestException(exception);
-        }
-    } else if (exception instanceof HttpException) {
-        error = exception;
+  let error: HttpException;
+  if (exception instanceof MongoError) {
+    if (exception instanceof MongoServerError && exception.code === 11000) {
+      Object.keys(exception.keyValue).forEach((key) => {
+        error = new DuplicateKeyException(key);
+      });
     } else {
-        error = new InternalServerErrorException(exception.message);
+      error = new BadRequestException(exception);
     }
+  } else if (exception instanceof HttpException) {
+    error = exception;
+  } else {
+    error = new InternalServerErrorException(exception.message);
+  }
 
-    return error;
+  return error;
 }
 
 // @Catch(MongoError)
@@ -53,39 +56,35 @@ export function handleException(exception): HttpException {
 //     }
 // }
 
-
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-    constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
-    catch(exception: unknown, host: ArgumentsHost): void {
-        // In certain situations `httpAdapter` might not be available in the
-        // constructor method, thus we should resolve it here.
-        const { httpAdapter } = this.httpAdapterHost;
+  catch(exception: unknown, host: ArgumentsHost): void {
+    // In certain situations `httpAdapter` might not be available in the
+    // constructor method, thus we should resolve it here.
+    const { httpAdapter } = this.httpAdapterHost;
 
-        const error = handleException(exception);
+    const error = handleException(exception);
 
-        const ctx = host.switchToHttp();
+    const ctx = host.switchToHttp();
 
-        const httpStatus = error.getStatus();
+    const httpStatus = error.getStatus();
 
-        const responseBody = error.getResponse();
+    const responseBody = error.getResponse();
 
-        httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
-    }
+    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+  }
 }
-
 
 export class DuplicateKeyException extends BadRequestException {
-    constructor(key: string) {
-        super({
-            error: {
-                key: {
-                    notUnique: `'${key}' is already in use by a different id`,
-                },
-            },
-        },);
-    }
+  constructor(key: string) {
+    super({
+      error: {
+        key: {
+          notUnique: `'${key}' is already in use by a different id`,
+        },
+      },
+    });
+  }
 }
-
-
