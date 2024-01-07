@@ -5,7 +5,9 @@ import { Wallet } from './schemas/wallet.schema';
 
 @Injectable()
 export class WalletService {
-  constructor(@Inject('WALLET_MODEL') private readonly walletModel: Model<Wallet>) {}
+  constructor(
+    @Inject('WALLET_MODEL') private readonly walletModel: Model<Wallet>,
+  ) {}
 
   async create(createWalletDto: CreateWalletWebhookDto): Promise<Wallet> {
     const createdWallet = new this.walletModel(createWalletDto);

@@ -5,7 +5,9 @@ import { BlockSync } from './schemas/blocksync.schema';
 
 @Injectable()
 export class BlockSyncService {
-  constructor(@Inject('BLOCKSYNC_MODEL') private readonly blockSync: Model<BlockSync>) {}
+  constructor(
+    @Inject('BLOCKSYNC_MODEL') private readonly blockSync: Model<BlockSync>,
+  ) {}
 
   async create(createBlockSyncDto: CreateBlockSyncDto): Promise<BlockSync> {
     const createdBlockSync = new this.blockSync(createBlockSyncDto);
@@ -45,7 +47,10 @@ export class BlockSyncService {
 
   async updateLastSync(rpcUrl: string, lastSync: number): Promise<void> {
     try {
-      await this.blockSync.updateOne({ rpcUrl: rpcUrl }, { lastSync: lastSync });
+      await this.blockSync.updateOne(
+        { rpcUrl: rpcUrl },
+        { lastSync: lastSync },
+      );
     } catch (error) {
       throw error;
     }

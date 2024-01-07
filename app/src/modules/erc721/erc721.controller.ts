@@ -18,13 +18,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @ApiBearerAuth('JWT')
 @Controller('erc721')
 export class ERC721Controller {
-  constructor(private ERC721Service: ERC721Service) { }
+  constructor(private ERC721Service: ERC721Service) {}
 
   @Post('/create')
   // @UseGuards(JwtAuthGuard)
   @UsePipes(new CreateERC721ValidationPipe())
   async create(@Body() erc721: CreateERC721TokenInfoDto) {
-    const result: InstanceType<typeof ERC721> = await this.ERC721Service.create(erc721);
+    const result: InstanceType<typeof ERC721> = await this.ERC721Service.create(
+      erc721,
+    );
     return result;
   }
 

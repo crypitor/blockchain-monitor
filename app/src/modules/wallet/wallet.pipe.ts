@@ -25,7 +25,7 @@ export class CreateWalletValidationPipe implements PipeTransform {
 
   private buildError(errors) {
     const result = {
-      error: {}
+      error: {},
     };
     errors.forEach((el) => {
       const prop = el.property;

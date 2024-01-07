@@ -5,7 +5,9 @@ import { ERC721 } from './schemas/erc721.schema';
 
 @Injectable()
 export class ERC721Service {
-  constructor(@Inject('ERC721_MODEL') private readonly erc721Model: Model<ERC721>) { }
+  constructor(
+    @Inject('ERC721_MODEL') private readonly erc721Model: Model<ERC721>,
+  ) {}
 
   async create(createERC721Dto: CreateERC721TokenInfoDto): Promise<ERC721> {
     const createdERC721 = new this.erc721Model(createERC721Dto);
