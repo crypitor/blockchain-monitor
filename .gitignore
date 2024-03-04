@@ -1,3 +1,4 @@
 /app/node_modules/*
 .history/
 .vscode/
+.DS_Store
