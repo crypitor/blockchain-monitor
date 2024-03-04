@@ -13,7 +13,7 @@ import { CreateUserValidationPipe } from './users.pipe';
 
 @Controller('user')
 export class UsersController {
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService) {}
 
   @Post('/register')
   @UsePipes(new CreateUserValidationPipe())
