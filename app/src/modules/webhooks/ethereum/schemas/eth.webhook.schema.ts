@@ -1,19 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-enum MonitoringType {
+export enum MonitoringType {
   IN = 'IN',
   OUT = 'OUT',
   ALL = 'ALL',
 }
 
-enum MonitoringCondition {
+export enum MonitoringCondition {
   ALL = 'ALL', // native, erc20, erc721, erc1155
   SPECIFIC = 'SPECIFIC', // use for only specific crypto
   // CUSTOM = 'CUSTOM',
 }
 
-enum Method {
+export enum Method {
   WEBHOOK = 'WEBHOOK',
   SMS = 'SMS',
   EMAIL = 'EMAIL',
@@ -21,7 +21,7 @@ enum Method {
   DISCORD = 'DISCORD',
 }
 
-class NotificationMethod {
+export class NotificationMethod {
   name: Method;
   url: string;
 }
@@ -29,7 +29,7 @@ class NotificationMethod {
 // note: only apply for purchased user
 // tokens not having price will be excluded in when calculating USD value
 // filter value in USD
-class FilterValue {
+export class FilterValue {
   min: bigint;
   max: bigint;
 }
