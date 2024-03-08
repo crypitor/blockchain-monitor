@@ -120,16 +120,14 @@ export class EthereumWorker {
           toBlock: blockNumber,
           topics: [
             '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-            null,
-            null,
-            null,
           ],
         });
 
-        // Handle the extracted NFT transfer events
+        // handle extracted event for erc20 and nft
         logs.forEach((event) => {
-          // Check if the event is an NFT transfer
-          if (event.topics.length === 4) {
+          if (event.topics.length === 3) {
+            this.handleErc20Transfer(event, 'detected');
+          } else if (event.topics.length === 4) {
             this.handleNftTransfer(event, 'detected');
           }
         });
@@ -180,18 +178,14 @@ export class EthereumWorker {
           toBlock: blockNumber,
           topics: [
             '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-            null,
-            null,
-            null,
-            null,
-            null,
           ],
         });
 
-        // Handle the extracted NFT transfer events
+        // handle extracted event for erc20 and nft
         logs.forEach((event) => {
-          // Check if the event is an NFT transfer
-          if (event.topics.length === 4) {
+          if (event.topics.length === 3) {
+            this.handleErc20Transfer(event, 'confirmed');
+          } else if (event.topics.length === 4) {
             this.handleNftTransfer(event, 'confirmed');
           }
         });
@@ -221,20 +215,14 @@ export class EthereumWorker {
       .getAddress(event.topics[2].substring(26))
       .toLowerCase();
     const tokenId = ethers.toBigInt(event.topics[3]).toString();
-    // check contract address is supported in erc721
-    const erc721 = await this.erc721Service.findOne(contractAddress);
-    if (!erc721) {
-      return;
-    }
 
     // handle from wallet
     const fromWallet = await this.ethWebhookService.findOne(fromAddress);
     if (fromWallet) {
+      // @todo change webhookDTO to general dto
       const body = {
         contract: {
-          address: erc721.token_address,
-          name: erc721.name,
-          symbol: erc721.symbol,
+          address: contractAddress,
         },
         transactionHash: event.transactionHash,
         fromAddress: fromAddress,
@@ -247,24 +235,83 @@ export class EthereumWorker {
       // @todo send message to webhook module to deliver for user
       await this.sendMessage(fromWallet.notificationMethods[0].url, body);
 
-      this.logger.log(
+      this.logger.debug(
         action + ' nft transfer OUT with database: ' + JSON.stringify(body),
+      );
+    }
+
+    // @todo handle multiple webhook connected with 1 address
+    const toWallet = await this.ethWebhookService.findOne(toAddress);
+    if (toWallet) {
+      // @todo change webhookDTO to general dto
+      const body = {
+        contract: {
+          address: contractAddress,
+        },
+        transactionHash: event.transactionHash,
+        fromAddress: fromAddress,
+        toAddress: toAddress,
+        tokenId: tokenId,
+        type: 'in',
+        action: action,
+      } as WebhookDto;
+
+      // @todo send message to webhook module to deliver for user
+      await this.sendMessage(toWallet.notificationMethods[0].url, body);
+
+      this.logger.debug(
+        action + ' nft transfer OUT with database: ' + JSON.stringify(body),
+      );
+    }
+  }
+
+  async handleErc20Transfer(event: Log, action: 'detected' | 'confirmed') {
+    // Extract relevant information from the event
+    const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    const fromAddress = ethers
+      .getAddress(event.topics[1].substring(26))
+      .toLowerCase();
+    const toAddress = ethers
+      .getAddress(event.topics[2].substring(26))
+      .toLowerCase();
+    const value = ethers.toBigInt(event.data).toString();
+
+    // handle from wallet
+    const fromWallet = await this.ethWebhookService.findOne(fromAddress);
+    if (fromWallet) {
+      // @todo change webhookDTO to general dto
+      const body = {
+        contract: {
+          address: contractAddress,
+        },
+        transactionHash: event.transactionHash,
+        fromAddress: fromAddress,
+        toAddress: toAddress,
+        tokenId: value,
+        type: 'out',
+        action: action,
+      } as WebhookDto;
+
+      // @todo send message to webhook module to deliver for user
+      await this.sendMessage(fromWallet.notificationMethods[0].url, body);
+
+      this.logger.debug(
+        action + ' ERC20 transfer OUT: ' + JSON.stringify(body),
       );
     }
 
     // handle to wallet
     const toWallet = await this.ethWebhookService.findOne(toAddress);
     if (toWallet) {
+      // @todo change webhookDTO to general dto
       const body = {
         contract: {
-          address: erc721.token_address,
-          name: erc721.name,
-          symbol: erc721.symbol,
+          address: contractAddress,
         },
         transactionHash: event.transactionHash,
         fromAddress: fromAddress,
         toAddress: toAddress,
-        tokenId: tokenId,
+        tokenId: value,
         type: 'in',
         action: action,
       } as WebhookDto;
