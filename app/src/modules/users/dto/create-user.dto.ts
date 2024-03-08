@@ -23,7 +23,7 @@ export class CreateUserDto {
   @MinLength(2)
   @MaxLength(30)
   @IsAlpha()
-  lastName: number;
+  lastName: string;
 
   @ApiProperty()
   @IsString()
