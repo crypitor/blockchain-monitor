@@ -5,9 +5,9 @@ import {
   MonitoringCondition,
   MonitoringType,
   NotificationMethod,
-} from '../schemas/eth.webhook.schema';
+} from '../schemas/eth.monitor.schema';
 
-export class CreateEthWebhookDto {
+export class CreateEthMonitorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

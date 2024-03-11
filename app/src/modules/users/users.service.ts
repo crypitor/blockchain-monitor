@@ -1,17 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from 'src/modules/users/schemas/user.schema';
-import { CreateUserDto } from './dto/create-user.dto';
 import { hashPassword } from 'src/utils/bcrypt.util';
+import { generateUUID } from 'src/utils/uuidUtils';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
+    const userId = generateUUID();
     // store password as hash
     createUserDto.password = await hashPassword(createUserDto.password);
-    const createdUser = new this.userModel(createUserDto);
+    const createdUser = new this.userModel({ ...createUserDto, userId });
     try {
       return await createdUser.save();
     } catch (error) {
