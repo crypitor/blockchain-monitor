@@ -8,6 +8,9 @@ export class BlockSync {
   @Prop({ required: true, unique: true, lowercase: true })
   rpcUrl: string;
 
+  @Prop({ required: true })
+  chain: string;
+
   @Prop()
   lastSync: number;
 
