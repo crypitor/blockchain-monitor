@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { EthWebhookService } from './eth.webhook.service';
 import { DatabaseModule } from 'src/database/database.module';
 import { EthWebhookProviders } from './eth.webhook.providers';
-import { WalletController } from './eth.webhook.controller';
+import { EthWebhookController } from './eth.webhook.controller';
 @Module({
-  controllers: [WalletController],
+  controllers: [EthWebhookController],
   providers: [EthWebhookService, ...EthWebhookProviders],
   exports: [EthWebhookService],
   imports: [DatabaseModule],
 })
-export class WalletModule {}
+export class EthWebhookModule {}

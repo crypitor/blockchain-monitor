@@ -10,7 +10,10 @@ export class EthWebhookService {
     private readonly ethWebhookModel: Model<EthWebhook>,
   ) {}
 
-  async create(createEthWebhookDto: CreateEthWebhookDto): Promise<EthWebhook> {
+  async create(
+    user: any,
+    createEthWebhookDto: CreateEthWebhookDto,
+  ): Promise<EthWebhook> {
     const createdEthWebhook = new this.ethWebhookModel(createEthWebhookDto);
     try {
       return await createdEthWebhook.save();
@@ -29,6 +32,15 @@ export class EthWebhookService {
   }
 
   /**
+   * Get all EthWebhook.
+   *
+   * @returns {EthWebhook[]}
+   */
+  async findAllByAddress(address: string): Promise<EthWebhook[]> {
+    return this.ethWebhookModel.find({ address: address }).exec();
+  }
+
+  /**
    * Find a single EthWebhook by their address.
    *
    * @param address The EthWebhook address to filter by.
@@ -38,9 +50,9 @@ export class EthWebhookService {
     return this.ethWebhookModel.findOne({ address: address });
   }
 
-  async deleteOne(address: string): Promise<void> {
+  async deleteOne(webhookId: string): Promise<void> {
     try {
-      await this.ethWebhookModel.deleteOne({ address: address });
+      await this.ethWebhookModel.deleteOne({ webhookId: webhookId });
     } catch (error) {
       throw error;
     }
