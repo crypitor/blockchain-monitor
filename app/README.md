@@ -57,6 +57,8 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+## Swagger 
+access localhost:3002/api
 
 ## Support
 
