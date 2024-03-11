@@ -15,7 +15,7 @@ import { EvmWorker } from './workers/evm.worker';
 import { BlockSyncModule } from './modules/blocksync/blocksync.module';
 import { MantleWorker } from './workers/mantle.worker';
 import { NftModule } from './modules/nft/nft.module';
-import { EthWebhookModule } from './modules/webhooks/ethereum/eth.webhook.module';
+import { EthMonitorModule } from './modules/webhooks/ethereum/eth.monitor.module';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { EthWebhookModule } from './modules/webhooks/ethereum/eth.webhook.module
     SwaggerModule,
     ScheduleModule.forRoot(),
     NftModule,
-    EthWebhookModule,
+    EthMonitorModule,
   ],
   controllers: [AppController],
   providers: [AppService, GlobalService, EvmWorker, MantleWorker],

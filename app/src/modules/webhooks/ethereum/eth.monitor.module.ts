@@ -9,4 +9,4 @@ import { EthMonitorController } from './eth.monitor.controller';
   exports: [EthMonitorService],
   imports: [DatabaseModule],
 })
-export class EthWebhookModule {}
+export class EthMonitorModule {}
