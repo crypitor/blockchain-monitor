@@ -34,12 +34,12 @@ export class FilterValue {
   max: bigint;
 }
 
-export type EthWebhookDocument = HydratedDocument<EthWebhook>;
+export type EthMonitorDocument = HydratedDocument<EthMonitor>;
 
 @Schema()
-export class EthWebhook {
+export class EthMonitor {
   @Prop({ required: true, unique: true })
-  webhookId: string;
+  monitorId: string;
 
   @Prop({ required: true, lowercase: true })
   address: string;
@@ -69,4 +69,4 @@ export class EthWebhook {
   dateCreated: Date;
 }
 
-export const EthWebhookSchema = SchemaFactory.createForClass(EthWebhook);
+export const EthMonitorSchema = SchemaFactory.createForClass(EthMonitor);

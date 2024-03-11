@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class DeleteWalletDto {
+export class DeleteMonitorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  webhookId: string;
+  monitorId: string;
 }

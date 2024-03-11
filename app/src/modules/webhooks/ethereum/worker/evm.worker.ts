@@ -3,7 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Log, ethers } from 'ethers';
 import { BlockSyncService } from 'src/modules/blocksync/blocksync.service';
 import { ERC721Service } from 'src/modules/erc721/erc721.service';
-import { EthWebhookService } from '../eth.webhook.service';
+import { EthMonitorService } from '../eth.monitor.service';
 
 // @todo define webhook dto interface for ethereum
 interface WebhookDto extends ReadableStream {
@@ -34,12 +34,12 @@ export class EthereumWorker {
   rpcUrl: string;
   provider: ethers.Provider;
   blockSyncService: BlockSyncService;
-  ethWebhookService: EthWebhookService;
+  ethWebhookService: EthMonitorService;
   erc721Service: ERC721Service;
 
   constructor(
     blockSyncService: BlockSyncService,
-    ethWebhookService: EthWebhookService,
+    ethWebhookService: EthMonitorService,
     erc721Service: ERC721Service,
   ) {
     if (process.env.EVM_DISABLE === 'true') {

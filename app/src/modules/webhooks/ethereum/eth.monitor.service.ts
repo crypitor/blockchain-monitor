@@ -1,30 +1,30 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { CreateEthWebhookDto } from './dto/eth.create-webhook.dto';
-import { EthWebhook } from './schemas/eth.webhook.schema';
+import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
+import { EthMonitor } from './schemas/eth.monitor.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { Log, ethers } from 'ethers';
-import { WebhookDeliveryDto } from './dto/eth.webhook.dto';
+import { WebhookDeliveryDto } from './dto/eth.webhook-delivery.dto';
 
 @Injectable()
-export class EthWebhookService {
-  private readonly logger = new Logger(EthWebhookService.name);
+export class EthMonitorService {
+  private readonly logger = new Logger(EthMonitorService.name);
   constructor(
-    @Inject('ETH_WEBHOOK_MODEL')
-    private readonly ethWebhookModel: Model<EthWebhook>,
+    @Inject('ETH_MONITOR_MODEL')
+    private readonly ethMonitorModel: Model<EthMonitor>,
   ) {}
 
   async create(
     user: any,
-    createEthWebhookDto: CreateEthWebhookDto,
-  ): Promise<EthWebhook> {
-    const createdEthWebhook = new this.ethWebhookModel({
-      ...createEthWebhookDto,
+    createEthMonitorDto: CreateEthMonitorDto,
+  ): Promise<EthMonitor> {
+    const createdEthMonitor = new this.ethMonitorModel({
+      ...createEthMonitorDto,
       userId: user.userId,
-      webhookId: uuidv4(),
+      monitorId: uuidv4(),
     });
     try {
-      return await createdEthWebhook.save();
+      return await createdEthMonitor.save();
     } catch (error) {
       throw error;
     }
@@ -33,34 +33,34 @@ export class EthWebhookService {
   /**
    * Get all EthWebhook.
    *
-   * @returns {EthWebhook[]}
+   * @returns {EthMonitor[]}
    */
-  async findAll(): Promise<EthWebhook[]> {
-    return this.ethWebhookModel.find().exec();
+  async findAll(): Promise<EthMonitor[]> {
+    return this.ethMonitorModel.find().exec();
   }
 
   /**
    * Get all EthWebhook.
    *
-   * @returns {EthWebhook[]}
+   * @returns {EthMonitor[]}
    */
-  async findAllByAddress(address: string): Promise<EthWebhook[]> {
-    return this.ethWebhookModel.find({ address: address }).exec();
+  async findAllByAddress(address: string): Promise<EthMonitor[]> {
+    return this.ethMonitorModel.find({ address: address }).exec();
   }
 
   /**
    * Find a single EthWebhook by their address.
    *
    * @param address The EthWebhook address to filter by.
-   * @returns {EthWebhook}
+   * @returns {EthMonitor}
    */
-  async findOne(address: string): Promise<EthWebhook | undefined> {
-    return this.ethWebhookModel.findOne({ address: address });
+  async findOne(address: string): Promise<EthMonitor | undefined> {
+    return this.ethMonitorModel.findOne({ address: address });
   }
 
-  async deleteOne(webhookId: string): Promise<void> {
+  async deleteOne(monitorId: string): Promise<void> {
     try {
-      await this.ethWebhookModel.deleteOne({ webhookId: webhookId });
+      await this.ethMonitorModel.deleteOne({ monitorId: monitorId });
     } catch (error) {
       throw error;
     }
@@ -81,10 +81,10 @@ export class EthWebhookService {
     const fromWallet = await this.findOne(fromAddress);
     if (fromWallet) {
       // @todo change webhookDTO to general dto
-      const body = new WebhookDeliveryDto(
+      const body = WebhookDeliveryDto.fromLogToERC20(
         event,
         1,
-        fromWallet.webhookId,
+        fromWallet.monitorId,
         'out',
         confirm,
         value,
@@ -102,10 +102,10 @@ export class EthWebhookService {
     const toWallet = await this.findOne(toAddress);
     if (toWallet) {
       // @todo change webhookDTO to general dto
-      const body = new WebhookDeliveryDto(
+      const body = WebhookDeliveryDto.fromLogToERC20(
         event,
         1,
-        toWallet.webhookId,
+        toWallet.monitorId,
         'out',
         confirm,
         value,
@@ -120,7 +120,7 @@ export class EthWebhookService {
     }
   }
 
-  async sendMessage(wallet: EthWebhook, body: WebhookDeliveryDto) {
+  async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
     // @todo handle all notification method
     // @todo handle reesponse fail
     const response = await fetch(wallet.notificationMethods[0].url, {
