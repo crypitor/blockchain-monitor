@@ -16,7 +16,7 @@ import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
 @ApiTags('Webhook Monitoing')
 @ApiBearerAuth('JWT')
-@Controller('eth-monitor')
+@Controller('monitor/eth')
 export class EthMonitorController {
   constructor(private ethMonitorService: EthMonitorService) {}
 
