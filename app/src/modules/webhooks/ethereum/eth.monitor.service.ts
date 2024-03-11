@@ -4,7 +4,10 @@ import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
 import { EthMonitor } from './schemas/eth.monitor.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { Log, ethers } from 'ethers';
-import { WebhookDeliveryDto } from './dto/eth.webhook-delivery.dto';
+import {
+  WebhookDeliveryDto,
+  WebhookType,
+} from './dto/eth.webhook-delivery.dto';
 
 @Injectable()
 export class EthMonitorService {
@@ -31,7 +34,7 @@ export class EthMonitorService {
   }
 
   /**
-   * Get all EthWebhook.
+   * Get all EthMonitor.
    *
    * @returns {EthMonitor[]}
    */
@@ -40,7 +43,7 @@ export class EthMonitorService {
   }
 
   /**
-   * Get all EthWebhook.
+   * Get all EthMonitor.
    *
    * @returns {EthMonitor[]}
    */
@@ -49,9 +52,9 @@ export class EthMonitorService {
   }
 
   /**
-   * Find a single EthWebhook by their address.
+   * Find a single EthMonitor by their address.
    *
-   * @param address The EthWebhook address to filter by.
+   * @param address The EthMonitor address to filter by.
    * @returns {EthMonitor}
    */
   async findOne(address: string): Promise<EthMonitor | undefined> {
@@ -78,57 +81,145 @@ export class EthMonitorService {
     const value = ethers.toBigInt(event.data).toString();
 
     // handle from wallet
-    const fromWallet = await this.findOne(fromAddress);
+    const fromWallet = await this.findAllByAddress(fromAddress);
     if (fromWallet) {
-      // @todo change webhookDTO to general dto
-      const body = WebhookDeliveryDto.fromLogToERC20(
-        event,
-        1,
-        fromWallet.monitorId,
-        'out',
+      this.handleMatchConditionERC20(
+        fromWallet,
         confirm,
+        event,
         value,
-      );
-
-      // @todo send message to webhook module to deliver for user
-      await this.sendMessage(fromWallet, body);
-
-      this.logger.debug(
-        'Confirmed:' + confirm + ' ERC20 transfer OUT: ' + JSON.stringify(body),
+        WebhookType.out,
       );
     }
 
     // handle to wallet
-    const toWallet = await this.findOne(toAddress);
+    const toWallet = await this.findAllByAddress(toAddress);
     if (toWallet) {
       // @todo change webhookDTO to general dto
-      const body = WebhookDeliveryDto.fromLogToERC20(
-        event,
-        1,
-        toWallet.monitorId,
-        'out',
+      this.handleMatchConditionERC20(
+        toWallet,
         confirm,
+        event,
         value,
-      );
-
-      // @todo send message to webhook module to deliver for user
-      await this.sendMessage(toWallet, body);
-
-      this.logger.debug(
-        'Confirmed:' + confirm + ' ERC20 transfer OUT: ' + JSON.stringify(body),
+        WebhookType.in,
       );
     }
   }
 
-  async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
-    // @todo handle all notification method
-    // @todo handle reesponse fail
-    const response = await fetch(wallet.notificationMethods[0].url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+  async handleErc721Transfer(event: Log, confirm: boolean) {
+    // Extract relevant information from the event
+    const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    const fromAddress = ethers
+      .getAddress(event.topics[1].substring(26))
+      .toLowerCase();
+    const toAddress = ethers
+      .getAddress(event.topics[2].substring(26))
+      .toLowerCase();
+    const tokenId = ethers.toBigInt(event.topics[3]).toString();
+
+    // handle from wallet
+    const fromWallet = await this.findAllByAddress(fromAddress);
+    if (fromWallet) {
+      this.handleMatchConditionERC721(
+        fromWallet,
+        confirm,
+        event,
+        tokenId,
+        WebhookType.out,
+      );
+    }
+
+    // handle to wallet
+    const toWallet = await this.findAllByAddress(toAddress);
+    if (toWallet) {
+      // @todo change webhookDTO to general dto
+      this.handleMatchConditionERC721(
+        toWallet,
+        confirm,
+        event,
+        tokenId,
+        WebhookType.in,
+      );
+    }
+  }
+
+  private async handleMatchConditionERC721(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    event: Log,
+    tokenId: string,
+    type: WebhookType,
+  ) {
+    for (const monitor of monitors) {
+      const body = WebhookDeliveryDto.fromLogToERC721(
+        event,
+        1,
+        monitor.monitorId,
+        type,
+        confirm,
+        tokenId,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} ERC721 transfer ${type.toUpperCase()}:\n${JSON.stringify(
+          body,
+        )}`,
+      );
+    }
+  }
+
+  private async handleMatchConditionERC20(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    event: Log,
+    value: string,
+    type: WebhookType,
+  ) {
+    for (const monitor of monitors) {
+      const body = WebhookDeliveryDto.fromLogToERC20(
+        event,
+        1,
+        monitor.monitorId,
+        type,
+        confirm,
+        value,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} ERC20 transfer ${type.toUpperCase()}:\n${JSON.stringify(
+          body,
+        )}`,
+      );
+    }
+  }
+
+  private async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
+    // @todo handle calling failed and retry for user
+    for (const notificationMethod of wallet.notificationMethods) {
+      try {
+        const response = await fetch(notificationMethod.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+          this.logger.error(
+            `Error while sending webhook request to: ${notificationMethod.url}`,
+            response,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Error while sending webhook request to: ${notificationMethod.url}`,
+          error,
+        );
+      }
+    }
   }
 }

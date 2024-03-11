@@ -1,6 +1,16 @@
 import { Log, ethers } from 'ethers';
 import { generateUUID } from 'src/utils/uuidUtils';
 
+export enum WebhookCategory {
+  NFT = 'NFT',
+  Native = 'Native',
+  ERC20 = 'ERC20',
+}
+
+export enum WebhookType {
+  in = 'in',
+  out = 'out',
+}
 export class WebhookDeliveryDto {
   id: string;
   chainId: number;
@@ -17,9 +27,9 @@ export class WebhookDeliveryDto {
   tokenId: string; // decimal string
   tokenValue: string; // decimal string
   nativeAmount: string; // decimal string
-  type: 'in' | 'out';
+  type: WebhookType;
   confirm: boolean;
-  category: 'NFT' | 'Native' | 'ERC20';
+  category: WebhookCategory;
   rawLog: {
     topics: string[];
     data: string;
@@ -31,7 +41,7 @@ export class WebhookDeliveryDto {
     log: Log,
     chainId: number,
     webhookId: string,
-    type: 'in' | 'out',
+    type: WebhookType,
     confirm: boolean,
     tokenValue: string,
   ): WebhookDeliveryDto {
@@ -55,15 +65,16 @@ export class WebhookDeliveryDto {
     instance.rawLog.data = log.data;
     instance.type = type;
     instance.confirm = confirm;
+    instance.category = WebhookCategory.ERC20;
 
     return instance;
   }
 
-  public static fromLogToNFT(
+  public static fromLogToERC721(
     log: Log,
     chainId: number,
     webhookId: string,
-    type: 'in' | 'out',
+    type: WebhookType,
     confirm: boolean,
     tokenId: string,
   ): WebhookDeliveryDto {
@@ -87,6 +98,7 @@ export class WebhookDeliveryDto {
     instance.rawLog.data = log.data;
     instance.type = type;
     instance.confirm = confirm;
+    instance.category = WebhookCategory.NFT;
 
     return instance;
   }
