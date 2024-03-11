@@ -1,13 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
-import { EthMonitor } from './schemas/eth.monitor.schema';
+import { EthMonitor, MonitoringType } from './schemas/eth.monitor.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { Log, ethers } from 'ethers';
 import {
   WebhookDeliveryDto,
   WebhookType,
 } from './dto/eth.webhook-delivery.dto';
+import { chainName } from 'src/utils/chainNameUtils';
 
 @Injectable()
 export class EthMonitorService {
@@ -95,7 +96,6 @@ export class EthMonitorService {
     // handle to wallet
     const toWallet = await this.findAllByAddress(toAddress);
     if (toWallet) {
-      // @todo change webhookDTO to general dto
       this.handleMatchConditionERC20(
         toWallet,
         confirm,
@@ -132,7 +132,6 @@ export class EthMonitorService {
     // handle to wallet
     const toWallet = await this.findAllByAddress(toAddress);
     if (toWallet) {
-      // @todo change webhookDTO to general dto
       this.handleMatchConditionERC721(
         toWallet,
         confirm,
@@ -150,10 +149,22 @@ export class EthMonitorService {
     tokenId: string,
     type: WebhookType,
   ) {
+    // @todo check condition of monitor and event log if it match
     for (const monitor of monitors) {
+      // ignore monitor condition on erc721
+      if (!monitor.condition.erc721) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL ||
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+      // @todo check condition on specific cryptos
       const body = WebhookDeliveryDto.fromLogToERC721(
         event,
-        1,
+        chainName.ETH,
         monitor.monitorId,
         type,
         confirm,
@@ -177,10 +188,22 @@ export class EthMonitorService {
     value: string,
     type: WebhookType,
   ) {
+    // @todo check condition of monitor and event log if it match
     for (const monitor of monitors) {
+      // ignore monitor condition on erc20
+      if (!monitor.condition.erc20) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL ||
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+      // @todo check condition on specific cryptos
       const body = WebhookDeliveryDto.fromLogToERC20(
         event,
-        1,
+        chainName.ETH,
         monitor.monitorId,
         type,
         confirm,

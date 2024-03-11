@@ -13,7 +13,7 @@ export enum WebhookType {
 }
 export class WebhookDeliveryDto {
   id: string;
-  chainId: number;
+  chain: string;
   webhookId: string;
   hash: string;
   blockNum: number; // decimal string
@@ -39,7 +39,7 @@ export class WebhookDeliveryDto {
 
   public static fromLogToERC20(
     log: Log,
-    chainId: number,
+    chain: string,
     webhookId: string,
     type: WebhookType,
     confirm: boolean,
@@ -47,7 +47,7 @@ export class WebhookDeliveryDto {
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
     instance.id = generateUUID();
-    instance.chainId = chainId;
+    instance.chain = chain;
     instance.webhookId = webhookId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;
@@ -72,7 +72,7 @@ export class WebhookDeliveryDto {
 
   public static fromLogToERC721(
     log: Log,
-    chainId: number,
+    chain: string,
     webhookId: string,
     type: WebhookType,
     confirm: boolean,
@@ -80,7 +80,7 @@ export class WebhookDeliveryDto {
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
     instance.id = generateUUID();
-    instance.chainId = chainId;
+    instance.chain = chain;
     instance.webhookId = webhookId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;

@@ -1,0 +1,12 @@
+export enum chainName {
+  ETH = 'ETH',
+  BSC = 'BSC',
+  POLYGON = 'POLYGON',
+  AVALANCHE = 'AVALANCHE',
+  FANTOM = 'FANTOM',
+  ARBITRUM = 'ARBITRUM',
+  OPTIMISM = 'OPTIMISM',
+  MOONRIVER = 'MOONRIVER',
+  METIS = 'METIS',
+  CRONOS = 'CRONOS',
+}

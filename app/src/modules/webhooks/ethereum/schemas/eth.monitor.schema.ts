@@ -2,23 +2,31 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export enum MonitoringType {
-  IN = 'IN',
-  OUT = 'OUT',
-  ALL = 'ALL',
+  IN = 'in',
+  OUT = 'out',
+  ALL = 'all',
 }
 
-export enum MonitoringCondition {
-  ALL = 'ALL', // native, erc20, erc721, erc1155
-  SPECIFIC = 'SPECIFIC', // use for only specific crypto
-  // CUSTOM = 'CUSTOM',
+export class MonitorCondition {
+  native: boolean;
+  erc721: boolean;
+  erc20: boolean;
+  specific: boolean;
+  cryptos: {
+    [key: string]: boolean;
+  };
+
+  // ALL = 'ALL', // native, erc20, erc721, erc1155
+  // SPECIFIC = 'SPECIFIC', // use for only specific crypto
+  // // CUSTOM = 'CUSTOM',
 }
 
 export enum Method {
-  WEBHOOK = 'WEBHOOK',
-  SMS = 'SMS',
-  EMAIL = 'EMAIL',
-  TELEGRAM = 'TELEGRAM',
-  DISCORD = 'DISCORD',
+  WEBHOOK = 'webhook',
+  SMS = 'sms',
+  EMAIL = 'email',
+  TELEGRAM = 'telegram',
+  DISCORD = 'discord',
 }
 
 export class NotificationMethod {
@@ -47,11 +55,8 @@ export class EthMonitor {
   @Prop({ required: true })
   userId: string;
 
-  @Prop({ default: MonitoringCondition.ALL })
-  condition: MonitoringCondition;
-
-  @Prop({ default: [] })
-  crypto: [];
+  @Prop({ required: true })
+  condition: MonitorCondition;
 
   @Prop({ default: MonitoringType.ALL })
   type: MonitoringType;

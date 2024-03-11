@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import {
   FilterValue,
-  MonitoringCondition,
+  MonitorCondition,
   MonitoringType,
   NotificationMethod,
 } from '../schemas/eth.monitor.schema';
@@ -17,10 +17,7 @@ export class CreateEthMonitorDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  condition: MonitoringCondition;
-
-  @ApiProperty()
-  crypto: [];
+  condition: MonitorCondition;
 
   @ApiProperty()
   @IsNotEmpty()
