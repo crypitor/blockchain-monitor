@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Log, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { BlockSyncService } from 'src/modules/blocksync/blocksync.service';
 import { ERC721Service } from 'src/modules/erc721/erc721.service';
 import { EthMonitorService } from '../eth.monitor.service';
@@ -96,26 +96,10 @@ export class EthereumWorker {
     ) {
       try {
         this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
-        // Retrieve the block
-        // const block = await this.provider.getBlock(blockNumber);
-
-        // Retrieve transfer event the block's logs
-        const logs = await this.provider.getLogs({
-          fromBlock: blockNumber,
-          toBlock: blockNumber,
-          topics: [
-            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-          ],
-        });
-
+        // handle native transfer
+        this.handleNativeTransfer(blockNumber, false);
         // handle extracted event for erc20 and nft
-        logs.forEach((event) => {
-          if (event.topics.length === 3) {
-            this.ethMonitorService.handleErc20Transfer(event, false);
-          } else if (event.topics.length === 4) {
-            this.ethMonitorService.handleErc721Transfer(event, false);
-          }
-        });
+        this.handleLog(blockNumber, false);
         this.detectInfo.blockNumber = blockNumber;
         //only update last sync for confirm
         // await this.updateLastSyncBlock(blockNumber);
@@ -156,24 +140,10 @@ export class EthereumWorker {
     ) {
       try {
         this.logger.debug(['CONFIRM', `Scanning block ${blockNumber}`]);
-
-        // Retrieve transfer event the block's logs
-        const logs = await this.provider.getLogs({
-          fromBlock: blockNumber,
-          toBlock: blockNumber,
-          topics: [
-            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-          ],
-        });
-
+        // handle native transfer
+        this.handleNativeTransfer(blockNumber, true);
         // handle extracted event for erc20 and nft
-        logs.forEach((event) => {
-          if (event.topics.length === 3) {
-            this.ethMonitorService.handleErc20Transfer(event, true);
-          } else if (event.topics.length === 4) {
-            this.ethMonitorService.handleErc721Transfer(event, true);
-          }
-        });
+        this.handleLog(blockNumber, true);
         this.confirmInfo.blockNumber = blockNumber;
         await this.updateLastSyncBlock(blockNumber);
       } catch (error) {
@@ -188,6 +158,42 @@ export class EthereumWorker {
 
     this.confirmInfo.flag = false;
     return;
+  }
+
+  private async handleLog(
+    blockNumber: number,
+    confirm: boolean,
+  ): Promise<void> {
+    // Retrieve transfer event the block's logs
+    const logs = await this.provider.getLogs({
+      fromBlock: blockNumber,
+      toBlock: blockNumber,
+      topics: [
+        '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+      ],
+    });
+
+    // handle extracted event for erc20 and nft
+    logs.forEach((event) => {
+      if (event.topics.length === 3) {
+        this.ethMonitorService.handleErc20Transfer(event, confirm);
+      } else if (event.topics.length === 4) {
+        this.ethMonitorService.handleErc721Transfer(event, confirm);
+      }
+    });
+  }
+
+  private async handleNativeTransfer(
+    blockNumber: number,
+    confirm: boolean,
+  ): Promise<void> {
+    // Retrieve all transaction in block
+    const block = await this.provider.getBlock(blockNumber, true);
+
+    // handle extracted event for native
+    block.prefetchedTransactions.forEach((transaction) => {
+      this.ethMonitorService.handleNativeTransfer(transaction, confirm);
+    });
   }
 
   private async updateLastSyncBlock(blockNumber: number): Promise<void> {

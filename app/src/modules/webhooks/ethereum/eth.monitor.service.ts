@@ -1,14 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Log, TransactionResponse, ethers } from 'ethers';
 import { Model } from 'mongoose';
-import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
-import { EthMonitor, MonitoringType } from './schemas/eth.monitor.schema';
+import { chainName } from 'src/utils/chainNameUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { Log, ethers } from 'ethers';
+import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
 import {
   WebhookDeliveryDto,
   WebhookType,
 } from './dto/eth.webhook-delivery.dto';
-import { chainName } from 'src/utils/chainNameUtils';
+import { EthMonitor, MonitoringType } from './schemas/eth.monitor.schema';
 
 @Injectable()
 export class EthMonitorService {
@@ -72,7 +72,7 @@ export class EthMonitorService {
 
   async handleErc20Transfer(event: Log, confirm: boolean) {
     // Extract relevant information from the event
-    const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    // const contractAddress = ethers.getAddress(event.address).toLowerCase();
     const fromAddress = ethers
       .getAddress(event.topics[1].substring(26))
       .toLowerCase();
@@ -82,10 +82,10 @@ export class EthMonitorService {
     const value = ethers.toBigInt(event.data).toString();
 
     // handle from wallet
-    const fromWallet = await this.findAllByAddress(fromAddress);
-    if (fromWallet) {
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
+    if (fromWallet_monitors) {
       this.handleMatchConditionERC20(
-        fromWallet,
+        fromWallet_monitors,
         confirm,
         event,
         value,
@@ -94,10 +94,10 @@ export class EthMonitorService {
     }
 
     // handle to wallet
-    const toWallet = await this.findAllByAddress(toAddress);
-    if (toWallet) {
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
+    if (toWallet_monitors) {
       this.handleMatchConditionERC20(
-        toWallet,
+        toWallet_monitors,
         confirm,
         event,
         value,
@@ -108,7 +108,7 @@ export class EthMonitorService {
 
   async handleErc721Transfer(event: Log, confirm: boolean) {
     // Extract relevant information from the event
-    const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    // const contractAddress = ethers.getAddress(event.address).toLowerCase();
     const fromAddress = ethers
       .getAddress(event.topics[1].substring(26))
       .toLowerCase();
@@ -118,10 +118,10 @@ export class EthMonitorService {
     const tokenId = ethers.toBigInt(event.topics[3]).toString();
 
     // handle from wallet
-    const fromWallet = await this.findAllByAddress(fromAddress);
-    if (fromWallet) {
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
+    if (fromWallet_monitors) {
       this.handleMatchConditionERC721(
-        fromWallet,
+        fromWallet_monitors,
         confirm,
         event,
         tokenId,
@@ -130,14 +130,77 @@ export class EthMonitorService {
     }
 
     // handle to wallet
-    const toWallet = await this.findAllByAddress(toAddress);
-    if (toWallet) {
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
+    if (toWallet_monitors) {
       this.handleMatchConditionERC721(
-        toWallet,
+        toWallet_monitors,
         confirm,
         event,
         tokenId,
         WebhookType.in,
+      );
+    }
+  }
+
+  async handleNativeTransfer(
+    transaction: TransactionResponse,
+    confirm: boolean,
+  ): Promise<void> {
+    const fromWallet_monitors = await this.findAllByAddress(
+      ethers.getAddress(transaction.from).toLowerCase(),
+    );
+    if (fromWallet_monitors) {
+      this.handleMatchConditionNative(
+        fromWallet_monitors,
+        confirm,
+        transaction,
+        WebhookType.out,
+      );
+    }
+
+    const toWallet_monitors = await this.findAllByAddress(
+      ethers.getAddress(transaction.to).toLowerCase(),
+    );
+    if (toWallet_monitors) {
+      this.handleMatchConditionNative(
+        toWallet_monitors,
+        confirm,
+        transaction,
+        WebhookType.in,
+      );
+    }
+  }
+
+  private async handleMatchConditionNative(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    transaction: TransactionResponse,
+    type: WebhookType,
+  ) {
+    // @todo check condition of monitor and event log if it match
+    for (const monitor of monitors) {
+      if (!monitor.condition.native) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL ||
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+
+      const body = WebhookDeliveryDto.fromTransactionToNative(
+        transaction,
+        chainName.ETH,
+        monitor.monitorId,
+        type,
+        confirm,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} native transfer:\n${JSON.stringify(body)}`,
       );
     }
   }
