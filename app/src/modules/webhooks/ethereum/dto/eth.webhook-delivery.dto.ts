@@ -1,10 +1,11 @@
-import { Log, ethers } from 'ethers';
+import { Log, TransactionResponse, ethers } from 'ethers';
 import { generateUUID } from 'src/utils/uuidUtils';
 
 export enum WebhookCategory {
   NFT = 'NFT',
   Native = 'Native',
   ERC20 = 'ERC20',
+  INTERNAL = 'INTERNAL',
 }
 
 export enum WebhookType {
@@ -99,6 +100,40 @@ export class WebhookDeliveryDto {
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.NFT;
+
+    return instance;
+  }
+
+  public static fromTransactionToNative(
+    transaction: TransactionResponse,
+    chain: string,
+    webhookId: string,
+    type: WebhookType,
+    confirm: boolean,
+  ): WebhookDeliveryDto {
+    const instance = new WebhookDeliveryDto();
+    instance.id = generateUUID();
+    instance.chain = chain;
+    instance.webhookId = webhookId;
+    instance.hash = transaction.hash;
+    instance.blockNum = transaction.blockNumber;
+    // instance.contract = {
+    //   address: null,
+    //   name: null,
+    //   symbol: null,
+    // };
+    instance.fromAddress = transaction.from;
+    instance.toAddress = transaction.to;
+
+    instance.tokenId = '0';
+    instance.tokenValue = '0';
+    instance.nativeAmount = transaction.value.toString();
+    // instance.rawLog.topics = null;
+    // instance.rawLog.data = null;
+    instance.type = type;
+    instance.confirm = confirm;
+    instance.category = WebhookCategory.Native;
+    // @todo assign data from transaction data
 
     return instance;
   }
