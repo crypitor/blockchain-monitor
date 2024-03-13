@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ethers } from 'ethers';
 import { BlockSyncService } from 'src/modules/blocksync/blocksync.service';
-import { ERC721Service } from 'src/modules/erc721/erc721.service';
 import { EthMonitorService } from '../eth.monitor.service';
 
 interface ScanInfo {
@@ -20,12 +19,10 @@ export class EthereumWorker {
   provider: ethers.Provider;
   blockSyncService: BlockSyncService;
   ethMonitorService: EthMonitorService;
-  erc721Service: ERC721Service;
 
   constructor(
     blockSyncService: BlockSyncService,
     ethMonitorService: EthMonitorService,
-    erc721Service: ERC721Service,
   ) {
     if (process.env.EVM_DISABLE === 'true') {
       return;
@@ -34,7 +31,6 @@ export class EthereumWorker {
     this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
     this.blockSyncService = blockSyncService;
     this.ethMonitorService = ethMonitorService;
-    this.erc721Service = erc721Service;
     this.initWorker();
   }
 
@@ -56,15 +52,15 @@ export class EthereumWorker {
         'force running latest block from network ' + latestBlockNumber,
       );
       this.blockSyncService.updateLastSync(this.rpcUrl, latestBlockNumber);
-      this.detectInfo.blockNumber = latestBlockNumber;
-      this.confirmInfo.blockNumber = latestBlockNumber;
+      this.detectInfo.blockNumber = latestBlockNumber - 1;
+      this.confirmInfo.blockNumber = latestBlockNumber - 1;
     } else if (startBlockConfig === 'config') {
       this.logger.warn(
         'force running start block from config ' + process.env.EVM_START_BLOCK,
       );
       this.updateLastSyncBlock(parseInt(process.env.EVM_START_BLOCK));
-      this.detectInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK);
-      this.confirmInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK);
+      this.detectInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK) - 1;
+      this.confirmInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK) - 1;
     } else {
       this.logger.warn('running start block from db ' + blockSync.lastSync);
       this.detectInfo.blockNumber = blockSync.lastSync + this.confirmBlock;
