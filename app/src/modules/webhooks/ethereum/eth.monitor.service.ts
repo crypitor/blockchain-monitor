@@ -1,10 +1,14 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Log, TransactionResponse, ethers } from 'ethers';
 import { Model } from 'mongoose';
-import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
-import { EthMonitor } from './schemas/eth.monitor.schema';
+import { chainName } from 'src/utils/chainNameUtils';
 import { v4 as uuidv4 } from 'uuid';
-import { Log, ethers } from 'ethers';
-import { WebhookDeliveryDto } from './dto/eth.webhook-delivery.dto';
+import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
+import {
+  WebhookDeliveryDto,
+  WebhookType,
+} from './dto/eth.webhook-delivery.dto';
+import { EthMonitor, MonitoringType } from './schemas/eth.monitor.schema';
 
 @Injectable()
 export class EthMonitorService {
@@ -31,7 +35,7 @@ export class EthMonitorService {
   }
 
   /**
-   * Get all EthWebhook.
+   * Get all EthMonitor.
    *
    * @returns {EthMonitor[]}
    */
@@ -40,7 +44,7 @@ export class EthMonitorService {
   }
 
   /**
-   * Get all EthWebhook.
+   * Get all EthMonitor.
    *
    * @returns {EthMonitor[]}
    */
@@ -49,9 +53,9 @@ export class EthMonitorService {
   }
 
   /**
-   * Find a single EthWebhook by their address.
+   * Find a single EthMonitor by their address.
    *
-   * @param address The EthWebhook address to filter by.
+   * @param address The EthMonitor address to filter by.
    * @returns {EthMonitor}
    */
   async findOne(address: string): Promise<EthMonitor | undefined> {
@@ -68,7 +72,7 @@ export class EthMonitorService {
 
   async handleErc20Transfer(event: Log, confirm: boolean) {
     // Extract relevant information from the event
-    const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    // const contractAddress = ethers.getAddress(event.address).toLowerCase();
     const fromAddress = ethers
       .getAddress(event.topics[1].substring(26))
       .toLowerCase();
@@ -78,57 +82,231 @@ export class EthMonitorService {
     const value = ethers.toBigInt(event.data).toString();
 
     // handle from wallet
-    const fromWallet = await this.findOne(fromAddress);
-    if (fromWallet) {
-      // @todo change webhookDTO to general dto
-      const body = WebhookDeliveryDto.fromLogToERC20(
-        event,
-        1,
-        fromWallet.monitorId,
-        'out',
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
+    if (fromWallet_monitors) {
+      this.handleMatchConditionERC20(
+        fromWallet_monitors,
         confirm,
+        event,
         value,
-      );
-
-      // @todo send message to webhook module to deliver for user
-      await this.sendMessage(fromWallet, body);
-
-      this.logger.debug(
-        'Confirmed:' + confirm + ' ERC20 transfer OUT: ' + JSON.stringify(body),
+        WebhookType.out,
       );
     }
 
     // handle to wallet
-    const toWallet = await this.findOne(toAddress);
-    if (toWallet) {
-      // @todo change webhookDTO to general dto
-      const body = WebhookDeliveryDto.fromLogToERC20(
-        event,
-        1,
-        toWallet.monitorId,
-        'out',
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
+    if (toWallet_monitors) {
+      this.handleMatchConditionERC20(
+        toWallet_monitors,
         confirm,
+        event,
         value,
-      );
-
-      // @todo send message to webhook module to deliver for user
-      await this.sendMessage(toWallet, body);
-
-      this.logger.debug(
-        'Confirmed:' + confirm + ' ERC20 transfer OUT: ' + JSON.stringify(body),
+        WebhookType.in,
       );
     }
   }
 
-  async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
-    // @todo handle all notification method
-    // @todo handle reesponse fail
-    const response = await fetch(wallet.notificationMethods[0].url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+  async handleErc721Transfer(event: Log, confirm: boolean) {
+    // Extract relevant information from the event
+    // const contractAddress = ethers.getAddress(event.address).toLowerCase();
+    const fromAddress = ethers
+      .getAddress(event.topics[1].substring(26))
+      .toLowerCase();
+    const toAddress = ethers
+      .getAddress(event.topics[2].substring(26))
+      .toLowerCase();
+    const tokenId = ethers.toBigInt(event.topics[3]).toString();
+
+    // handle from wallet
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
+    if (fromWallet_monitors) {
+      this.handleMatchConditionERC721(
+        fromWallet_monitors,
+        confirm,
+        event,
+        tokenId,
+        WebhookType.out,
+      );
+    }
+
+    // handle to wallet
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
+    if (toWallet_monitors) {
+      this.handleMatchConditionERC721(
+        toWallet_monitors,
+        confirm,
+        event,
+        tokenId,
+        WebhookType.in,
+      );
+    }
+  }
+
+  async handleNativeTransfer(
+    transaction: TransactionResponse,
+    confirm: boolean,
+  ): Promise<void> {
+    const fromWallet_monitors = await this.findAllByAddress(
+      ethers.getAddress(transaction.from).toLowerCase(),
+    );
+    if (fromWallet_monitors) {
+      this.handleMatchConditionNative(
+        fromWallet_monitors,
+        confirm,
+        transaction,
+        WebhookType.out,
+      );
+    }
+
+    const toWallet_monitors = await this.findAllByAddress(
+      ethers.getAddress(transaction.to).toLowerCase(),
+    );
+    if (toWallet_monitors) {
+      this.handleMatchConditionNative(
+        toWallet_monitors,
+        confirm,
+        transaction,
+        WebhookType.in,
+      );
+    }
+  }
+
+  private async handleMatchConditionNative(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    transaction: TransactionResponse,
+    type: WebhookType,
+  ) {
+    // @todo check condition of monitor and event log if it match
+    for (const monitor of monitors) {
+      if (!monitor.condition.native) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL &&
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+
+      const body = WebhookDeliveryDto.fromTransactionToNative(
+        transaction,
+        chainName.ETH,
+        monitor.monitorId,
+        type,
+        confirm,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} native transfer:\n${JSON.stringify(body)}`,
+      );
+    }
+  }
+
+  private async handleMatchConditionERC721(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    event: Log,
+    tokenId: string,
+    type: WebhookType,
+  ) {
+    // @todo check condition of monitor and event log if it match
+    for (const monitor of monitors) {
+      // ignore monitor condition on erc721
+      if (!monitor.condition.erc721) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL &&
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+      // @todo check condition on specific cryptos
+      const body = WebhookDeliveryDto.fromLogToERC721(
+        event,
+        chainName.ETH,
+        monitor.monitorId,
+        type,
+        confirm,
+        tokenId,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} ERC721 transfer ${type.toUpperCase()}:\n${JSON.stringify(
+          body,
+        )}`,
+      );
+    }
+  }
+
+  private async handleMatchConditionERC20(
+    monitors: EthMonitor[],
+    confirm: boolean,
+    event: Log,
+    value: string,
+    type: WebhookType,
+  ) {
+    // @todo check condition of monitor and event log if it match
+    for (const monitor of monitors) {
+      // ignore monitor condition on erc20
+      if (!monitor.condition.erc20) {
+        continue;
+      }
+      if (
+        monitor.type !== MonitoringType.ALL &&
+        monitor.type.toString() !== type.toString()
+      ) {
+        continue;
+      }
+      // @todo check condition on specific cryptos
+      const body = WebhookDeliveryDto.fromLogToERC20(
+        event,
+        chainName.ETH,
+        monitor.monitorId,
+        type,
+        confirm,
+        value,
+      );
+
+      await this.sendMessage(monitor, body);
+
+      this.logger.debug(
+        `Confirmed: ${confirm} ERC20 transfer ${type.toUpperCase()}:\n${JSON.stringify(
+          body,
+        )}`,
+      );
+    }
+  }
+
+  private async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
+    // @todo handle calling failed and retry for user
+    // @todo check user plan and quota for sending webhooks
+    for (const notificationMethod of wallet.notificationMethods) {
+      try {
+        const response = await fetch(notificationMethod.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+          this.logger.error(
+            `Error while sending webhook request to: ${notificationMethod.url}`,
+            response,
+          );
+        }
+      } catch (error) {
+        this.logger.error(
+          `Error while sending webhook request to: ${notificationMethod.url}`,
+          error,
+        );
+      }
+    }
   }
 }

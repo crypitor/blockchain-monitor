@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './global/global.exception';
+import { ValidationPipe } from '@nestjs/common';
 dotenv.config();
 
 async function bootstrap() {
@@ -29,6 +30,7 @@ async function bootstrap() {
 
   // setting up exception handler
   const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   await app.listen(process.env.SERVER_PORT);

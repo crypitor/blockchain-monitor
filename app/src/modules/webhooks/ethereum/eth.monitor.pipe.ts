@@ -27,11 +27,34 @@ export class CreateEthMonitorValidationPipe implements PipeTransform {
     const result = {
       error: {},
     };
+    if (!errors) {
+      throw new Error('`errors` should not be null or undefined');
+    }
     errors.forEach((el) => {
+      if (!el) {
+        throw new Error('`el` should not be null or undefined');
+      }
       const prop = el.property;
+      if (!prop) {
+        throw new Error('`prop` should not be null or undefined');
+      }
       result.error[prop] = {};
-      Object.entries(el.constraints).forEach((constraint) => {
-        result.error[prop][constraint[0]] = `${constraint[1]}`;
+      const constraints = el.children;
+      if (!constraints) {
+        throw new Error('`constraints` should not be null or undefined');
+      }
+      Object.entries(constraints).forEach((constraint) => {
+        if (!constraint) {
+          throw new Error('`constraint` should not be null or undefined');
+        }
+        const [key, value] = constraint;
+        if (!key) {
+          throw new Error('`key` should not be null or undefined');
+        }
+        if (!value) {
+          throw new Error('`value` should not be null or undefined');
+        }
+        result.error[prop][key] = `${value}`;
       });
     });
     return result;

@@ -1,9 +1,20 @@
-import { Log, ethers } from 'ethers';
+import { Log, TransactionResponse, ethers } from 'ethers';
 import { generateUUID } from 'src/utils/uuidUtils';
 
+export enum WebhookCategory {
+  NFT = 'NFT',
+  Native = 'Native',
+  ERC20 = 'ERC20',
+  INTERNAL = 'INTERNAL',
+}
+
+export enum WebhookType {
+  in = 'in',
+  out = 'out',
+}
 export class WebhookDeliveryDto {
   id: string;
-  chainId: number;
+  chain: string;
   webhookId: string;
   hash: string;
   blockNum: number; // decimal string
@@ -17,9 +28,9 @@ export class WebhookDeliveryDto {
   tokenId: string; // decimal string
   tokenValue: string; // decimal string
   nativeAmount: string; // decimal string
-  type: 'in' | 'out';
+  type: WebhookType;
   confirm: boolean;
-  category: 'NFT' | 'Native' | 'ERC20';
+  category: WebhookCategory;
   rawLog: {
     topics: string[];
     data: string;
@@ -29,15 +40,15 @@ export class WebhookDeliveryDto {
 
   public static fromLogToERC20(
     log: Log,
-    chainId: number,
+    chain: string,
     webhookId: string,
-    type: 'in' | 'out',
+    type: WebhookType,
     confirm: boolean,
     tokenValue: string,
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
     instance.id = generateUUID();
-    instance.chainId = chainId;
+    instance.chain = chain;
     instance.webhookId = webhookId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;
@@ -55,21 +66,22 @@ export class WebhookDeliveryDto {
     instance.rawLog.data = log.data;
     instance.type = type;
     instance.confirm = confirm;
+    instance.category = WebhookCategory.ERC20;
 
     return instance;
   }
 
-  public static fromLogToNFT(
+  public static fromLogToERC721(
     log: Log,
-    chainId: number,
+    chain: string,
     webhookId: string,
-    type: 'in' | 'out',
+    type: WebhookType,
     confirm: boolean,
     tokenId: string,
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
     instance.id = generateUUID();
-    instance.chainId = chainId;
+    instance.chain = chain;
     instance.webhookId = webhookId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;
@@ -87,6 +99,41 @@ export class WebhookDeliveryDto {
     instance.rawLog.data = log.data;
     instance.type = type;
     instance.confirm = confirm;
+    instance.category = WebhookCategory.NFT;
+
+    return instance;
+  }
+
+  public static fromTransactionToNative(
+    transaction: TransactionResponse,
+    chain: string,
+    webhookId: string,
+    type: WebhookType,
+    confirm: boolean,
+  ): WebhookDeliveryDto {
+    const instance = new WebhookDeliveryDto();
+    instance.id = generateUUID();
+    instance.chain = chain;
+    instance.webhookId = webhookId;
+    instance.hash = transaction.hash;
+    instance.blockNum = transaction.blockNumber;
+    // instance.contract = {
+    //   address: null,
+    //   name: null,
+    //   symbol: null,
+    // };
+    instance.fromAddress = transaction.from;
+    instance.toAddress = transaction.to;
+
+    instance.tokenId = '0';
+    instance.tokenValue = '0';
+    instance.nativeAmount = transaction.value.toString();
+    // instance.rawLog.topics = null;
+    // instance.rawLog.data = null;
+    instance.type = type;
+    instance.confirm = confirm;
+    instance.category = WebhookCategory.Native;
+    // @todo assign data from transaction data
 
     return instance;
   }
