@@ -1,30 +1,60 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  ValidateNested
+} from 'class-validator';
 import {
   FilterValue,
   MonitorCondition,
   MonitoringType,
-  NotificationMethod,
+  NotificationMethod
 } from '../schemas/eth.monitor.schema';
 
 export class CreateEthMonitorDto {
-  @ApiProperty()
+  @ApiProperty({
+    example: '0xcC9eFE8992b02eaeA81A9129242a05EbCb006931',
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(42)
   address: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({
+    example: {
+      native: true,
+      erc721: true,
+      erc20: true,
+      specific: false,
+      cryptos: [],
+    },
+  })
   condition: MonitorCondition;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: 'all',
+    enum: MonitoringType,
+  })
   @IsNotEmpty()
   type: MonitoringType;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({
+    example: [
+      {
+        name: 'webhook',
+        url: 'https://webhookurl.com',
+      },
+    ],
+    isArray: true,
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => NotificationMethod)
   notificationMethods: NotificationMethod[];
 
   @ApiProperty()
