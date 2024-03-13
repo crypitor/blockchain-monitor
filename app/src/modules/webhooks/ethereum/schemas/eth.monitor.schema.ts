@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 
 export enum MonitoringType {
@@ -8,10 +10,19 @@ export enum MonitoringType {
 }
 
 export class MonitorCondition {
+  @Prop()
   native: boolean;
+
+  @Prop()
   erc721: boolean;
+
+  @Prop()
   erc20: boolean;
+
+  @Prop()
   specific: boolean;
+
+  @Prop({ type: Object })
   cryptos: {
     [key: string]: boolean;
   };
@@ -30,7 +41,11 @@ export enum Method {
 }
 
 export class NotificationMethod {
+  @IsEnum(Method, { message: 'Invalid notification method' })
+  @Prop()
   name: Method;
+
+  @Prop()
   url: string;
 }
 
@@ -38,7 +53,9 @@ export class NotificationMethod {
 // tokens not having price will be excluded in when calculating USD value
 // filter value in USD
 export class FilterValue {
+  @Prop()
   min: bigint;
+  @Prop()
   max: bigint;
 }
 
