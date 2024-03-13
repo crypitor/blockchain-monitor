@@ -183,7 +183,7 @@ export class EthMonitorService {
         continue;
       }
       if (
-        monitor.type !== MonitoringType.ALL ||
+        monitor.type !== MonitoringType.ALL &&
         monitor.type.toString() !== type.toString()
       ) {
         continue;
@@ -285,6 +285,7 @@ export class EthMonitorService {
 
   private async sendMessage(wallet: EthMonitor, body: WebhookDeliveryDto) {
     // @todo handle calling failed and retry for user
+    // @todo check user plan and quota for sending webhooks
     for (const notificationMethod of wallet.notificationMethods) {
       try {
         const response = await fetch(notificationMethod.url, {
