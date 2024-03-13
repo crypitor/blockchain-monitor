@@ -219,7 +219,7 @@ export class EthMonitorService {
         continue;
       }
       if (
-        monitor.type !== MonitoringType.ALL ||
+        monitor.type !== MonitoringType.ALL &&
         monitor.type.toString() !== type.toString()
       ) {
         continue;
@@ -258,7 +258,7 @@ export class EthMonitorService {
         continue;
       }
       if (
-        monitor.type !== MonitoringType.ALL ||
+        monitor.type !== MonitoringType.ALL &&
         monitor.type.toString() !== type.toString()
       ) {
         continue;
