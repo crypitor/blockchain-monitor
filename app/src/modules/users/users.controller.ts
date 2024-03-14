@@ -3,20 +3,20 @@ import {
   Post,
   Body,
   UsePipes,
-  BadRequestException,
   UseGuards,
   Get,
   Req,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { User, UserSchema } from '../users/schemas/user.schema';
-import { Model } from 'mongoose';
+import { User } from '../users/schemas/user.schema';
 import { CreateUserValidationPipe } from './users.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { UserProfileDto } from './dto/user-profile.dto';
 
+@ApiTags('User')
 @Controller('user')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -27,11 +27,7 @@ export class UsersController {
     const result: InstanceType<typeof User> = await this.usersService.create(
       user,
     );
-    const UserModel = Model<typeof UserSchema>;
-    result.password = undefined;
-    if (result instanceof UserModel) {
-      return result;
-    }
+    return UserProfileDto.from(result);
   }
 
   @ApiBearerAuth('JWT')
@@ -39,6 +35,6 @@ export class UsersController {
   @Get('profile')
   getProfile(@Req() req: Request) {
     console.log(req);
-    return req.user;
+    return UserProfileDto.from(req.user as User);
   }
 }
