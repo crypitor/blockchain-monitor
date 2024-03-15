@@ -84,8 +84,6 @@ up-prod:
 
 .PHONY: down-prod
 down-prod:
-	@echo "Init prod environment..."
-	sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
 	docker-compose -f docker-compose-prod.yml down
 
