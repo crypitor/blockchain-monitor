@@ -13,7 +13,7 @@ services:
     environment:
       API_DOMAIN: ${API_DOMAIN:-localhost}
     volumes:
-      - ./.config/nginx/:/etc/nginx/templates"
+      - ./.config/nginx/:/etc/nginx/templates
       - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - onebox-network
