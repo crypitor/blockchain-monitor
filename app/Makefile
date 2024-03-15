@@ -80,14 +80,14 @@ up-prod:
 	# @echo "Init prod environment..."
 	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
-	docker-compose up -f docker-compose-prod.yml -d
+	docker-compose -f docker-compose-prod.yml up -d
 
 .PHONY: down-prod
 down-prod:
 	@echo "Init prod environment..."
 	sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
-	docker-compose down -f docker-compose-prod.yml
+	docker-compose -f docker-compose-prod.yml down
 
 .PHONY: build
 build-prod:
