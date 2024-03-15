@@ -77,8 +77,8 @@ db:
 
 .PHONY: up-prod
 up-prod:
-	@echo "Init prod environment..."
-	sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
+	# @echo "Init prod environment..."
+	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
 	docker-compose up -f docker-compose-prod.yml -d
 
