@@ -1,0 +1,73 @@
+version: '3.7'
+
+services:
+  # create docker nginx that fw port to onebox 3002
+  nginx:
+    image: nginx
+    container_name: nginx
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      API_DOMAIN: ${API_DOMAIN:-localhost}
+    volumes:
+      - ./.config/nginx/:/etc/nginx/templates
+      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - onebox-network
+    depends_on:
+      - onebox
+
+  onebox:
+    container_name: onebox
+    build:
+      context: .
+      target: ${TARGET}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+      - 9229:9229
+    env_file:
+      - .env
+    networks:
+      onebox-network:
+        aliases:
+        - onebox
+    depends_on:
+      # - redis
+      - mongo
+  # redis:
+  #   container_name: redis
+  #   image: redis:5
+  #   networks:
+  #     onebox-network:
+  #       aliases:
+  #       - redis
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_USERNAME: ${MONGO_INITDB_USERNAME}
+      MONGO_INITDB_PASSWORD: ${MONGO_INITDB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - ./data:/data/db
+      - ./.config/mongo-entrypoint:/docker-entrypoint-initdb.d/
+    ports:
+      - 27017:27017
+    networks:
+      onebox-network:
+        aliases:
+        - mongo
+networks:
+  onebox-network:
+volumes:
+  pgdata:
+  data:

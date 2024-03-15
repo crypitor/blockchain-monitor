@@ -75,6 +75,23 @@ db:
 	@echo 'mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongo:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.5.0'
 	@echo "-------------------------------------------------------------------------"
 
+.PHONY: up-prod
+up-prod:
+	# @echo "Init prod environment..."
+	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
+	@echo "Building application and starting container..."
+	docker-compose -f docker-compose-prod.yml up -d
+
+.PHONY: down-prod
+down-prod:
+	@echo "Building application and starting container..."
+	docker-compose -f docker-compose-prod.yml down
+
+.PHONY: build
+build-prod:
+	@echo "Re-building container and installing dependancies..."
+	docker-compose down -f docker-compose-prod.yml && docker-compose build --no-cache -f docker-compose-prod.yml && docker-compose up -f docker-compose-prod.yml
+
 # https://stackoverflow.com/a/6273809/1826109
 %:
 	@:
