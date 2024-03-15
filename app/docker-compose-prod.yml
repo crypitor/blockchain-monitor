@@ -36,7 +36,7 @@ services:
         aliases:
         - onebox
     depends_on:
-      - redis
+      # - redis
       - mongo
   # redis:
   #   container_name: redis
