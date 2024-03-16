@@ -1,20 +1,24 @@
 import {
-  Controller,
-  Post,
   Body,
-  UsePipes,
-  UseGuards,
+  Controller,
   Get,
+  Post,
   Req,
+  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UsersService } from './users.service';
-import { User } from '../users/schemas/user.schema';
-import { CreateUserValidationPipe } from './users.pipe';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { User } from '../users/schemas/user.schema';
+import {
+  ChangePasswordDto,
+  ChangePasswordResponseDto,
+} from './dto/change-password.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
+import { CreateUserValidationPipe } from './users.pipe';
+import { UsersService } from './users.service';
 
 @ApiTags('User')
 @Controller('user')
@@ -23,7 +27,8 @@ export class UsersController {
 
   @Post('/register')
   @UsePipes(new CreateUserValidationPipe())
-  async register(@Body() user: CreateUserDto) {
+  @ApiCreatedResponse({ type: UserProfileDto })
+  async register(@Body() user: CreateUserDto): Promise<UserProfileDto> {
     const result: InstanceType<typeof User> = await this.usersService.create(
       user,
     );
@@ -33,8 +38,23 @@ export class UsersController {
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Req() req: Request) {
+  @ApiOkResponse({ type: UserProfileDto })
+  async getProfile(@Req() req: Request): Promise<UserProfileDto> {
     console.log(req);
     return UserProfileDto.from(req.user as User);
+  }
+
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  @ApiCreatedResponse({ type: ChangePasswordResponseDto })
+  async changePassword(
+    @Req() req: Request,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    return this.usersService.changePassword(
+      req.user as User,
+      changePasswordDto,
+    );
   }
 }

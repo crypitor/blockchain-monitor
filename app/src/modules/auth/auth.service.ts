@@ -24,6 +24,7 @@ export class AuthService {
     const payload = {
       userId: user.userId,
       email: user.email,
+      token: user.passwordHash,
     };
     return new LoginResponseDto(this.jwtService.sign(payload));
   }

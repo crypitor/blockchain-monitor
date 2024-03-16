@@ -1,9 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from 'src/modules/users/schemas/user.schema';
-import { hashPassword } from 'src/utils/bcrypt.util';
+import { comparePassword, hashPassword } from 'src/utils/bcrypt.util';
 import { generateUUID } from 'src/utils/uuidUtils';
+import {
+  ChangePasswordDto,
+  ChangePasswordResponseDto,
+} from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { hashMd5 } from 'src/utils/md5';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +28,12 @@ export class UsersService {
     const userId = generateUUID();
     // store password as hash
     createUserDto.password = await hashPassword(createUserDto.password);
-    return new this.userModel({ ...createUserDto, userId }).save();
+    const passwordHash = hashMd5(createUserDto.password);
+    return new this.userModel({
+      ...createUserDto,
+      userId,
+      passwordHash,
+    }).save();
   }
 
   /**
@@ -53,5 +63,39 @@ export class UsersService {
    */
   async findOneByUserId(userId: string): Promise<User | undefined> {
     return this.userModel.findOne({ userId: userId });
+  }
+
+  /**
+   * Change user password.
+   * @param user user
+   * @param changePasswordDto changePasswordDto
+   * @returns {ChangePasswordResponseDto}
+   */
+  async changePassword(
+    user: User,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<ChangePasswordResponseDto> {
+    // check new password
+    if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
+      throw new BadRequestException(
+        'New password and confirm password do not match',
+      );
+    }
+
+    // check old password
+    if (
+      !(await comparePassword(changePasswordDto.oldPassword, user.password))
+    ) {
+      throw new BadRequestException('Wrong old password');
+    }
+
+    // update password
+    user.password = await hashPassword(changePasswordDto.newPassword);
+    user.passwordHash = hashMd5(user.password);
+    await this.userModel.updateOne(
+      { userId: user.userId },
+      { password: user.password, passwordHash: user.passwordHash },
+    );
+    return new ChangePasswordResponseDto(true);
   }
 }

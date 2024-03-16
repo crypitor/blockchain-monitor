@@ -1,12 +1,20 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
 import { User } from '../schemas/user.schema';
 
 export class UserProfileDto {
+  @ApiResponseProperty()
   userId: string;
+  @ApiResponseProperty()
   email: string;
+  @ApiResponseProperty()
   name: string;
+  @ApiResponseProperty()
   country: string;
+  @ApiResponseProperty()
   dateCreated: Date;
+  @ApiResponseProperty()
   enableEmailUpdate: boolean;
+  @ApiResponseProperty()
   language: string;
 
   static from(user: User) {
