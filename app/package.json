@@ -38,6 +38,7 @@
     "ethers": "^6.9.0",
     "express-basic-auth": "^1.2.1",
     "mongoose": "^6.8.1",
+    "nodemailer": "^6.9.12",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-jwt": "^4.0.1",
@@ -46,6 +47,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^5.0.0",
+    "template-file": "^6.0.1",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
