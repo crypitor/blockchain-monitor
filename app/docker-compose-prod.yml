@@ -24,7 +24,7 @@ services:
     container_name: onebox
     build:
       context: .
-      target: ${TARGET}
+      target: production
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

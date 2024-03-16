@@ -5,7 +5,7 @@ services:
     container_name: onebox
     build:
       context: .
-      target: ${TARGET}
+      target: development
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
