@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './global/global.exception';
 import { ValidationPipe } from '@nestjs/common';
+import * as expressBasicAuth from 'express-basic-auth';
 dotenv.config();
 
 async function bootstrap() {
@@ -12,6 +13,17 @@ async function bootstrap() {
       origin: 'http://localhost:3000',
     },
   });
+
+  // HTTP Basic Auth for Swagger Docs
+  app.use(
+    '/docs/*',
+    expressBasicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+      },
+    }),
+  );
 
   // setting up swagger
   const options = new DocumentBuilder()
@@ -26,7 +38,7 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   // setting up exception handler
   const httpAdapter = app.get(HttpAdapterHost);
