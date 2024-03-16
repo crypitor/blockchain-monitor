@@ -90,7 +90,7 @@ down-prod:
 .PHONY: build
 build-prod:
 	@echo "Re-building container and installing dependancies..."
-	docker-compose down -f docker-compose-prod.yml && docker-compose build --no-cache -f docker-compose-prod.yml && docker-compose up -f docker-compose-prod.yml
+	docker-compose -f docker-compose-prod.yml down && docker-compose -f docker-compose-prod.yml build --no-cache && docker-compose -f docker-compose-prod.yml up
 
 # https://stackoverflow.com/a/6273809/1826109
 %:

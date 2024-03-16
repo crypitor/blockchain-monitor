@@ -81,6 +81,25 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 - Website - [https://nestjs.com](https://nestjs.com/)
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
+## Set up SSL from certbot
+```bash
+source .env
+echo "Install certbot:"
+sudo apt install snapd
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+sudo ufw allow 80
+sudo certbot certonly --standalone -d $DOMAIN -m $EMAIL
+sudo ufw delete allow 80
+```
+
+OR
+```
+sudo docker run -it --rm --name certbot -v "/etc/letsencrypt:/etcletsencrypt" -v "/var/lib/letsencrypt:/var/lib letsencrypt" -p 80:80 certbot/certbot certonly
+
+sudo ufw-docker allow certbot
+```
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
