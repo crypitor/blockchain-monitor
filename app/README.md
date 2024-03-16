@@ -94,8 +94,8 @@ sudo ufw delete allow 80
 ```
 
 OR
-```
-sudo docker run -it --rm --name certbot -v "/etc/letsencrypt:/etcletsencrypt" -v "/var/lib/letsencrypt:/var/lib letsencrypt" -p 80:80 certbot/certbot certonly
+```bash
+sudo docker run -it --rm --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib letsencrypt" -p 80:80 certbot/certbot certonly
 
 sudo ufw-docker allow certbot
 ```
