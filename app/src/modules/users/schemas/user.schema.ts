@@ -31,6 +31,12 @@ export class User {
 
   @Prop({ default: 'en' })
   language: string;
+
+  @Prop({ type: Object })
+  forgotPassword: {
+    token: string;
+    expire: number;
+  };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
