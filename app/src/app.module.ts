@@ -18,7 +18,11 @@ import { EthereumWorker } from './modules/webhooks/ethereum/worker/evm.worker';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
+      expandVariables: true,
+    }),
     DatabaseModule,
     UsersModule,
     AuthModule,
