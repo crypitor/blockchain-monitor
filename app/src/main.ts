@@ -5,7 +5,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllExceptionsFilter } from './global/global.exception';
 import { ValidationPipe } from '@nestjs/common';
 import * as expressBasicAuth from 'express-basic-auth';
-dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
