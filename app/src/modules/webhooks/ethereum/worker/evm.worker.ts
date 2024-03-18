@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { ethers } from 'ethers';
 import { BlockSyncService } from 'src/modules/blocksync/blocksync.service';
 import { EthMonitorService } from '../eth.monitor.service';
@@ -19,18 +19,25 @@ export class EthereumWorker {
   provider: ethers.Provider;
   blockSyncService: BlockSyncService;
   ethMonitorService: EthMonitorService;
+  scheduleRegistry: SchedulerRegistry;
+  enable: boolean;
 
   constructor(
     blockSyncService: BlockSyncService,
     ethMonitorService: EthMonitorService,
+    scheduleRegistry: SchedulerRegistry,
   ) {
+    this.scheduleRegistry = scheduleRegistry;
     if (process.env.EVM_DISABLE === 'true') {
+      this.detectInfo.flag = true;
+      this.confirmInfo.flag = true;
       return;
     }
     this.rpcUrl = process.env.ETH_PROVIDER_URL;
     this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
     this.blockSyncService = blockSyncService;
     this.ethMonitorService = ethMonitorService;
+
     this.initWorker();
   }
 
@@ -71,6 +78,7 @@ export class EthereumWorker {
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS, {
+    name: 'detect',
     disabled: process.env.EVM_DISABLE === 'true',
   })
   async detect() {
