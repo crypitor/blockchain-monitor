@@ -10,7 +10,7 @@ COPY . .
 
 RUN yarn build
 
-CMD ["yarn", "start:dev"]
+CMD yarn start:dev --entryFile ${MAIN_FILE}
 
 FROM node:18-alpine as production
 
@@ -27,4 +27,4 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-CMD ["node", "dist/main"]
+CMD node dist/${MAIN_FILE}

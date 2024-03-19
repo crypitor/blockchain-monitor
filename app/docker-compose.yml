@@ -1,23 +1,75 @@
 version: '3.7'
 
 services:
-  onebox:
-    container_name: onebox
+  crypitor-backend:
+    container_name: crypitor-backend
     build:
       context: .
-      target: development
+      target: ${TARGET:-development}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
+      - 3002:3002
       - 9229:9229
     env_file:
       - .env
+      - ./src/apps/main/.env
+    environment:
+      - MAIN_FILE=apps/main/main
+      - SERVER_PORT=3002
     networks:
-      onebox-network:
+      crypitor-network:
         aliases:
-        - onebox
+        - crypitor-backend
+    depends_on:
+      - redis
+      - mongo
+  crypitor-scanner:
+    container_name: crypitor-scanner
+    build:
+      context: .
+      target: ${TARGET:-development}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3003:3003
+      - 9229:9229
+    env_file:
+      - .env
+      - ./src/apps/scanner/.env
+    environment:
+      - MAIN_FILE=apps/scanner/main
+      - SERVER_PORT=3003
+    networks:
+      crypitor-network:
+        aliases:
+        - crypitor-scanner
+    depends_on:
+      - redis
+      - mongo
+  crypitor-webhook:
+    container_name: crypitor-webhook
+    build:
+      context: .
+      target: ${TARGET:-development}
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3004:3004
+      - 9229:9229
+    env_file:
+      - .env
+      - ./src/apps/webhook/.env
+    environment:
+      - MAIN_FILE=apps/webhook/main
+      - SERVER_PORT=3004
+    networks:
+      crypitor-network:
+        aliases:
+        - crypitor-webhook
     depends_on:
       - redis
       - mongo
@@ -25,7 +77,7 @@ services:
     container_name: redis
     image: redis:5
     networks:
-      onebox-network:
+      crypitor-network:
         aliases:
         - redis
   mongo:
@@ -44,11 +96,11 @@ services:
     ports:
       - 27017:27017
     networks:
-      onebox-network:
+      crypitor-network:
         aliases:
         - mongo
 networks:
-  onebox-network:
+  crypitor-network:
 volumes:
   pgdata:
   data:
