@@ -34,18 +34,18 @@ help : Makefile
 
 .PHONY: up
 up:
-	@echo "Building application and starting container..."
-	docker-compose up
+	@echo "Building application and starting container $(app)..."
+	docker-compose up $(app)
 
 .PHONY: build
 build:
-	@echo "Re-building container and installing dependancies..."
-	docker-compose down && docker-compose build --no-cache && docker-compose up
+	@echo "Re-building container $(app) and installing dependancies..."
+	docker-compose down && TARGET=development docker-compose build --no-cache $(app) && docker-compose up $(app)
 
 .PHONY: up-silent
 up-silent:
-	@echo "Building application and starting container in background mode..."
-	docker-compose up -d
+	@echo "Building application and starting container $(app) in background mode..."
+	docker-compose up -d $(app)
 
 .PHONY: down
 down:
