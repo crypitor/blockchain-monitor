@@ -40,13 +40,13 @@ services:
     depends_on:
       # - redis
       - mongo
-  # redis:
-  #   container_name: redis
-  #   image: redis:5
-  #   networks:
-  #     onebox-network:
-  #       aliases:
-  #       - redis
+  redis:
+    container_name: redis
+    image: redis:5
+    networks:
+      onebox-network:
+        aliases:
+        - redis
   mongo:
     container_name: mongo
     image: mongo
