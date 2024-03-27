@@ -3,6 +3,6 @@ import { WorkerServiceModule } from './worker-service.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(WorkerServiceModule);
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();

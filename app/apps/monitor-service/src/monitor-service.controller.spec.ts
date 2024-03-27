@@ -11,12 +11,14 @@ describe('MonitorServiceController', () => {
       providers: [MonitorServiceService],
     }).compile();
 
-    monitorServiceController = app.get<MonitorServiceController>(MonitorServiceController);
+    monitorServiceController = app.get<MonitorServiceController>(
+      MonitorServiceController,
+    );
   });
 
   describe('root', () => {
     it('should return "Hello World!"', () => {
-      expect(monitorServiceController.getHello()).toBe('Hello World!');
+      expect(monitorServiceController.getHello('abc')).toBe('Hello World!');
     });
   });
 });

@@ -11,7 +11,9 @@ describe('WorkerServiceController', () => {
       providers: [WorkerServiceService],
     }).compile();
 
-    workerServiceController = app.get<WorkerServiceController>(WorkerServiceController);
+    workerServiceController = app.get<WorkerServiceController>(
+      WorkerServiceController,
+    );
   });
 
   describe('root', () => {
