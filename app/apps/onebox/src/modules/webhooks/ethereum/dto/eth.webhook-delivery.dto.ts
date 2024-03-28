@@ -117,19 +117,12 @@ export class WebhookDeliveryDto {
     instance.webhookId = webhookId;
     instance.hash = transaction.hash;
     instance.blockNum = transaction.blockNumber;
-    // instance.contract = {
-    //   address: null,
-    //   name: null,
-    //   symbol: null,
-    // };
     instance.fromAddress = transaction.from;
     instance.toAddress = transaction.to;
 
     instance.tokenId = '0';
     instance.tokenValue = '0';
     instance.nativeAmount = transaction.value.toString();
-    // instance.rawLog.topics = null;
-    // instance.rawLog.data = null;
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.Native;
