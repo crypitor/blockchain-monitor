@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { Producer } from 'kafkajs';
 
 @Injectable()
 export class WorkerServiceService {
