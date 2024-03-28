@@ -1,5 +1,76 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src/modules"
+  "sourceRoot": "apps/onebox/src",
+  "monorepo": true,
+  "root": "apps/onebox",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/onebox/tsconfig.app.json"
+  },
+  "projects": {
+    "onebox": {
+      "type": "application",
+      "root": "apps/onebox",
+      "entryFile": "main",
+      "sourceRoot": "apps/onebox/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/onebox/tsconfig.app.json"
+      }
+    },
+    "monitor-service": {
+      "type": "application",
+      "root": "apps/monitor-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/monitor-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/monitor-service/tsconfig.app.json"
+      }
+    },
+    "worker-service": {
+      "type": "application",
+      "root": "apps/worker-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/worker-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/worker-service/tsconfig.app.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
+    },
+    "global": {
+      "type": "library",
+      "root": "libs/global",
+      "entryFile": "index",
+      "sourceRoot": "libs/global/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/global/tsconfig.lib.json"
+      }
+    },
+    "database": {
+      "type": "library",
+      "root": "libs/database",
+      "entryFile": "index",
+      "sourceRoot": "libs/database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database/tsconfig.lib.json"
+      }
+    },
+    "shared_modules": {
+      "type": "library",
+      "root": "libs/shared_modules",
+      "entryFile": "index",
+      "sourceRoot": "libs/shared_modules/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/shared_modules/tsconfig.lib.json"
+      }
+    }
+  }
 }
