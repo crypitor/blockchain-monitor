@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { WorkerServiceController } from './worker-service.controller';
-import { WorkerServiceService } from './worker-service.service';
-// import { EthereumWorker } from './worker/evm.worker';
-import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '@app/database';
 import { GlobalModule } from '@app/global';
-import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ScheduleModule } from '@nestjs/schedule';
 import { BlockSyncModule } from './blocksync/blocksync.module';
+import { WorkerServiceController } from './worker-service.controller';
+import { WorkerServiceService } from './worker-service.service';
+import { EthereumWorker } from './worker/evm.worker';
 
 @Module({
   imports: [
@@ -34,17 +35,9 @@ import { BlockSyncModule } from './blocksync/blocksync.module';
     DatabaseModule,
     GlobalModule,
     BlockSyncModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [WorkerServiceController],
-  providers: [
-    WorkerServiceService,
-    // {
-    //   provide: 'KAFKA_PRODUCER',
-    //   useFactory: async (kafkaClient: ClientKafka) => {
-    //     return kafkaClient.connect();
-    //   },
-    //   inject: ['MONITOR_SERVICE'],
-    // },
-  ],
+  providers: [WorkerServiceService, EthereumWorker],
 })
 export class WorkerServiceModule {}
