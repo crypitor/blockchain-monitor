@@ -6,13 +6,13 @@ import {
   IsNotEmpty,
   IsString,
   MaxLength,
-  ValidateNested
+  ValidateNested,
 } from 'class-validator';
 import {
   FilterValue,
   MonitorCondition,
   MonitoringType,
-  NotificationMethod
+  NotificationMethod,
 } from '../schemas/eth.monitor.schema';
 
 export class CreateEthMonitorDto {

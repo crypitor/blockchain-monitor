@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 
