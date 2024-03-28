@@ -1,8 +1,10 @@
+import { DatabaseModule } from '@app/database';
+import { GlobalModule } from '@app/global';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { EthMonitorModule } from 'apps/onebox/src/modules/webhooks/ethereum/eth.monitor.module';
 import { MonitorServiceController } from './monitor-service.controller';
 import { MonitorServiceService } from './monitor-service.service';
-import { ConfigModule } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -11,6 +13,9 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
       expandVariables: true,
     }),
+    DatabaseModule,
+    GlobalModule,
+    EthMonitorModule,
   ],
   controllers: [MonitorServiceController],
   providers: [MonitorServiceService],
