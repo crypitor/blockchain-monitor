@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
-import { EthMonitor } from './schemas/eth.monitor.schema';
+import { EthMonitor } from '@app/shared_modules/eth.monitor/schemas/eth.monitor.schema';
 
 @Injectable()
 export class EthMonitorService {
