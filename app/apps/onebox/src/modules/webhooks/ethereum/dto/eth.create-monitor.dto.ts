@@ -13,7 +13,7 @@ import {
   MonitorCondition,
   MonitoringType,
   NotificationMethod,
-} from '../schemas/eth.monitor.schema';
+} from '@app/shared_modules/eth.monitor/schemas/eth.monitor.schema';
 
 export class CreateEthMonitorDto {
   @ApiProperty({

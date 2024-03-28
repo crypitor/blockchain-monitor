@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateEthMonitorDto } from './dto/eth.create-monitor.dto';
 import { DeleteMonitorDto } from './dto/eth.delete-monitor.dto';
 import { EthMonitorService } from './eth.monitor.service';
-import { EthMonitor } from './schemas/eth.monitor.schema';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { EthMonitor } from '@app/shared_modules/eth.monitor/schemas/eth.monitor.schema';
 
 @ApiTags('Webhook Monitoring')
 @ApiBearerAuth('JWT')

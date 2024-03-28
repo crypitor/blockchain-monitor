@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { EthMonitorService } from './eth.monitor.service';
-import { EthMonitorProviders } from './eth.monitor.providers';
 import { EthMonitorController } from './eth.monitor.controller';
 import { DatabaseModule } from '@app/database';
+import { SharedModulesModule } from '@app/shared_modules';
 @Module({
   controllers: [EthMonitorController],
-  providers: [EthMonitorService, ...EthMonitorProviders],
+  providers: [EthMonitorService],
   exports: [EthMonitorService],
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, SharedModulesModule],
 })
 export class EthMonitorModule {}
