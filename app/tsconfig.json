@@ -41,6 +41,12 @@
       ],
       "@app/kafka/*": [
         "libs/kafka/src/*"
+      ],
+      "@app/shared_modules": [
+        "libs/shared_modules/src"
+      ],
+      "@app/shared_modules/*": [
+        "libs/shared_modules/src/*"
       ]
     }
   }
