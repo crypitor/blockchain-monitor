@@ -1,26 +1,30 @@
+import {
+  EthMonitor,
+  MonitoringType,
+} from '@app/shared_modules/eth.monitor/schemas/eth.monitor.schema';
 import { chainName } from '@app/utils/chainNameUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   WebhookDeliveryDto,
   WebhookType,
 } from 'apps/onebox/src/modules/webhooks/ethereum/dto/eth.webhook-delivery.dto';
-import { EthMonitorService } from 'apps/onebox/src/modules/webhooks/ethereum/eth.monitor.service';
-import {
-  EthMonitor,
-  MonitoringType,
-} from 'apps/onebox/src/modules/webhooks/ethereum/schemas/eth.monitor.schema';
 import { ethers, Log, TransactionResponse } from 'ethers';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class MonitorServiceService {
   private readonly logger = new Logger(MonitorServiceService.name);
 
-  @Inject(EthMonitorService)
-  private readonly ethMonitorService: EthMonitorService;
+  @Inject('ETH_MONITOR_MODEL')
+  private readonly ethMonitorModel: Model<EthMonitor>;
 
   getHello(value: any): string {
     console.log(value);
     return 'Hello World!';
+  }
+
+  async findAllByAddress(address: string): Promise<EthMonitor[]> {
+    return this.ethMonitorModel.find({ address: address }).exec();
   }
 
   async handleErc20Transfer(data: any): Promise<void> {
@@ -37,9 +41,7 @@ export class MonitorServiceService {
     const value = ethers.toBigInt(event.data).toString();
 
     // handle from wallet
-    const fromWallet_monitors = await this.ethMonitorService.findAllByAddress(
-      fromAddress,
-    );
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
     if (fromWallet_monitors) {
       this.handleMatchConditionERC20(
         fromWallet_monitors,
@@ -51,9 +53,7 @@ export class MonitorServiceService {
     }
 
     // handle to wallet
-    const toWallet_monitors = await this.ethMonitorService.findAllByAddress(
-      toAddress,
-    );
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
     if (toWallet_monitors) {
       this.handleMatchConditionERC20(
         toWallet_monitors,
@@ -81,9 +81,7 @@ export class MonitorServiceService {
     const tokenId = ethers.toBigInt(event.topics[3]).toString();
 
     // handle from wallet
-    const fromWallet_monitors = await this.ethMonitorService.findAllByAddress(
-      fromAddress,
-    );
+    const fromWallet_monitors = await this.findAllByAddress(fromAddress);
     if (fromWallet_monitors) {
       this.handleMatchConditionERC721(
         fromWallet_monitors,
@@ -95,9 +93,7 @@ export class MonitorServiceService {
     }
 
     // handle to wallet
-    const toWallet_monitors = await this.ethMonitorService.findAllByAddress(
-      toAddress,
-    );
+    const toWallet_monitors = await this.findAllByAddress(toAddress);
     if (toWallet_monitors) {
       this.handleMatchConditionERC721(
         toWallet_monitors,
@@ -113,7 +109,7 @@ export class MonitorServiceService {
     const transaction = data.transaction as TransactionResponse;
     const confirm = data.confirm as boolean;
 
-    const fromWallet_monitors = await this.ethMonitorService.findAllByAddress(
+    const fromWallet_monitors = await this.findAllByAddress(
       ethers.getAddress(transaction.from).toLowerCase(),
     );
     if (fromWallet_monitors) {
@@ -125,7 +121,7 @@ export class MonitorServiceService {
       );
     }
 
-    const toWallet_monitors = await this.ethMonitorService.findAllByAddress(
+    const toWallet_monitors = await this.findAllByAddress(
       ethers.getAddress(transaction.to).toLowerCase(),
     );
     if (toWallet_monitors) {

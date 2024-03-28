@@ -1,7 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
-import { MonitorServiceService } from './monitor-service.service';
-import { EventPattern } from '@nestjs/microservices';
 import { TopicName } from '@app/utils/topicUtils';
+import { Controller } from '@nestjs/common';
+import { EventPattern } from '@nestjs/microservices';
+import { MonitorServiceService } from './monitor-service.service';
 
 @Controller()
 export class MonitorServiceController {

@@ -1,8 +1,8 @@
 import { DatabaseModule } from '@app/database';
 import { GlobalModule } from '@app/global';
+import { SharedModulesModule } from '@app/shared_modules';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { EthMonitorModule } from 'apps/onebox/src/modules/webhooks/ethereum/eth.monitor.module';
 import { MonitorServiceController } from './monitor-service.controller';
 import { MonitorServiceService } from './monitor-service.service';
 
@@ -15,7 +15,7 @@ import { MonitorServiceService } from './monitor-service.service';
     }),
     DatabaseModule,
     GlobalModule,
-    EthMonitorModule,
+    SharedModulesModule,
   ],
   controllers: [MonitorServiceController],
   providers: [MonitorServiceService],
