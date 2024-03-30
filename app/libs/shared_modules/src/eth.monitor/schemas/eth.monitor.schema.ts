@@ -13,6 +13,9 @@ export class MonitorCondition {
   native: boolean;
 
   @Prop()
+  internal: boolean;
+
+  @Prop()
   erc721: boolean;
 
   @Prop()
@@ -23,7 +26,9 @@ export class MonitorCondition {
 
   @Prop({ type: Object })
   cryptos: {
-    [key: string]: boolean;
+    [key: string]: {
+      filterValue: FilterRange; // @todo check this later
+    };
   };
 
   // ALL = 'ALL', // native, erc20, erc721, erc1155
@@ -51,7 +56,7 @@ export class NotificationMethod {
 // note: only apply for purchased user
 // tokens not having price will be excluded in when calculating USD value
 // filter value in USD
-export class FilterValue {
+export class FilterRange {
   @Prop()
   min: bigint;
   @Prop()
@@ -79,9 +84,6 @@ export class EthMonitor {
 
   @Prop({ required: true })
   notificationMethods: NotificationMethod[];
-
-  @Prop({ required: false })
-  filter: FilterValue;
 
   @Prop({ require: false, maxlength: 200 })
   note: string;

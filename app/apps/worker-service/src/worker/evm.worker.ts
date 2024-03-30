@@ -75,7 +75,7 @@ export class EthereumWorker {
       this.logger.warn(
         'force running latest block from network ' + latestBlockNumber,
       );
-      this.blockSyncService.updateLastSync(this.rpcUrl, latestBlockNumber);
+      this.updateLastSyncBlock(latestBlockNumber);
       this.detectInfo.blockNumber = latestBlockNumber - 1;
       this.confirmInfo.blockNumber = latestBlockNumber - 1;
     } else if (startBlockConfig === 'config') {
