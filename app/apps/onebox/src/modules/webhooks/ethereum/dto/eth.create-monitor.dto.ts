@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import {
-  FilterValue,
+  FilterRange,
   MonitorCondition,
   MonitoringType,
   NotificationMethod,
@@ -56,9 +56,6 @@ export class CreateEthMonitorDto {
   @ValidateNested({ each: true })
   @Type(() => NotificationMethod)
   notificationMethods: NotificationMethod[];
-
-  @ApiProperty()
-  filter: FilterValue;
 
   @ApiProperty()
   note: string;
