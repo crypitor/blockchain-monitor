@@ -23,5 +23,8 @@ jobs:
         docker build -t ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION .
 
     - name: Push Docker image to Docker Hub
-      run: docker push ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION
+      run: |
+        cd app
+        VERSION=$(jq -r '.version' package.json)
+        docker push ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION
 
