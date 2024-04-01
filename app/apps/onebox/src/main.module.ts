@@ -8,7 +8,8 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { WalletModule } from './modules/wallet/wallet.module';
-import { PollingBlockService } from './polling.block/polling.block.service';
+import { PollingBlockService } from './polling.block/polling.block.servicee';
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PollingBlockService } from './polling.block/polling.block.service';
     SwaggerModule,
     SharedModulesModule,
     ScheduleModule.forRoot(),
+    ProjectModule,
   ],
   providers: [GlobalService, PollingBlockService],
 })
