@@ -5,7 +5,7 @@ export type BlockSyncDocument = HydratedDocument<BlockSync>;
 
 @Schema()
 export class BlockSync {
-  @Prop({ required: true, unique: true, lowercase: true })
+  @Prop({ required: true, unique: true, lowercase: true, index: true })
   rpcUrl: string;
 
   @Prop({ default: 'ETH' })
