@@ -21,7 +21,7 @@ jobs:
         cd app
         VERSION=$(jq -r '.version' package.json)
         echo "::set-output name=version::$VERSION"
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/onebox:${{ steps.determine_version.outputs.version }} .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION .
 
     - name: Push Docker image to Docker Hub
       run: docker push ${{ secrets.DOCKER_USERNAME }}/onebox:${{ steps.determine_version.outputs.version }}
