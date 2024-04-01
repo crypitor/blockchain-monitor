@@ -13,13 +13,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Change directory to app
-      run: cd app && pwd
-
     - name: Determine version from codebase
       run: |
         # Example: Extract version from package.json
-        ls -al
+        cd app
         VERSION=$(jq -r '.version' package.json)
         echo "::set-output name=version::$VERSION"
 
