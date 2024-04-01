@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Client, ClientKafka, Transport } from '@nestjs/microservices';
-import { BlockSyncService } from '../modules/blocksync/blocksync.service';
-import { ethers } from 'ethers';
-import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
+import { ClientKafka } from '@nestjs/microservices';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
+import { ethers } from 'ethers';
+import { BlockSyncService } from '../modules/blocksync/blocksync.service';
 
 @Injectable()
 export class PollingBlockService {
@@ -11,18 +11,7 @@ export class PollingBlockService {
   private detectInfo = { flag: false, blockNumber: 0 };
 
   private readonly logger = new Logger(EthereumWorker.name);
-  @Client({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'worker',
-        brokers: process.env.KAFKA_BROKERS.split(','),
-      },
-      consumer: {
-        groupId: 'worker-consumer',
-      },
-    },
-  })
+  @Inject('POLLING_BLOCK_SERVICE')
   private readonly workerClient: ClientKafka;
 
   @Inject(BlockSyncService)
