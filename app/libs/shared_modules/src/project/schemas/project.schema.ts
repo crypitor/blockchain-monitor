@@ -21,7 +21,7 @@ export class Project {
   status: ProjectStatus;
 
   @Prop()
-  maxMembers: number;
+  maxMember: number;
 
   @Prop()
   memberCount: number;

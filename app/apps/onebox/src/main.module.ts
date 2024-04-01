@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { EthMonitorModule } from './modules/webhooks/ethereum/eth.monitor.module';
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EthMonitorModule } from './modules/webhooks/ethereum/eth.monitor.module
     WalletModule,
     SwaggerModule,
     EthMonitorModule,
+    ProjectModule,
   ],
   providers: [GlobalService],
 })
