@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { Project } from './schemas/project.schema';
+import { Project } from '../schemas/project.schema';
 
 @Injectable()
 export class ProjectRepository {
@@ -10,5 +10,13 @@ export class ProjectRepository {
 
   async findById(id: string): Promise<Project> {
     return await this.projectModel.findOne({ projectId: id });
+  }
+
+  async saveProject(project: Project): Promise<Project> {
+    return await new this.projectModel(project).save();
+  }
+
+  async listUserProjects(userId: string): Promise<Project[]> {
+    return await this.projectModel.find({ ownerId: userId });
   }
 }
