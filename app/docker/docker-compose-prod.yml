@@ -42,7 +42,7 @@ services:
       - mongo
   redis:
     container_name: redis
-    image: redis:5
+    image: redis:7-alpine
     networks:
       onebox-network:
         aliases:

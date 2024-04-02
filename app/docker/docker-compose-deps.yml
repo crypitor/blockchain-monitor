@@ -23,11 +23,8 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   redis:
-    image: redis:5
-    networks:
-      onebox-network:
-        aliases:
-          - redis
+    image: redis:7-alpine
+
   mongo:
     image: mongo
     restart: always
@@ -42,12 +39,7 @@ services:
       - ../.config/mongo-entrypoint:/docker-entrypoint-initdb.d/
     ports:
       - 27017:27017
-    networks:
-      onebox-network:
-        aliases:
-          - mongo
-networks:
-  onebox-network:
+
 volumes:
   pgdata:
   data:

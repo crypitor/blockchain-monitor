@@ -1,104 +1,92 @@
 version: '3.7'
 
 services:
-  crypitor-backend:
-    container_name: crypitor-backend
+  onebox:
+    container_name: onebox
     build:
-      context: .
+      context: ..
       target: ${TARGET:-development}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 3002:3002
-      - 9229:9229
-    env_file:
-      - .env
-      - ./src/apps/main/.env
-    environment:
-      - MAIN_FILE=apps/main/main
-      - SERVER_PORT=3002
+      - 3000:3000
     networks:
       crypitor-network:
         aliases:
-        - crypitor-backend
+        - onebox
     depends_on:
       - redis
       - mongo
-  crypitor-scanner:
-    container_name: crypitor-scanner
+  monitor:
+    container_name: monitor
     build:
-      context: .
+      context: ..
       target: ${TARGET:-development}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - 3003:3003
-      - 9229:9229
-    env_file:
-      - .env
-      - ./src/apps/scanner/.env
     environment:
-      - MAIN_FILE=apps/scanner/main
-      - SERVER_PORT=3003
+      - APP=monitor-service
+      
     networks:
       crypitor-network:
         aliases:
-        - crypitor-scanner
+        - monitor
     depends_on:
       - redis
       - mongo
-  crypitor-webhook:
-    container_name: crypitor-webhook
+  worker:
+    container_name: worker
     build:
-      context: .
+      context: ..
       target: ${TARGET:-development}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    ports:
-      - 3004:3004
-      - 9229:9229
     env_file:
-      - .env
-      - ./src/apps/webhook/.env
-    environment:
-      - MAIN_FILE=apps/webhook/main
-      - SERVER_PORT=3004
+      - ../.env
     networks:
       crypitor-network:
         aliases:
-        - crypitor-webhook
+        - worker
     depends_on:
       - redis
       - mongo
   redis:
-    container_name: redis
-    image: redis:5
+    extends:
+      file: ./docker-compose-deps.yml
+      service: redis
     networks:
       crypitor-network:
         aliases:
         - redis
   mongo:
-    container_name: mongo
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_USERNAME: ${MONGO_INITDB_USERNAME}
-      MONGO_INITDB_PASSWORD: ${MONGO_INITDB_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    volumes:
-      - ./data:/data/db
-      - ./.config/mongo-entrypoint:/docker-entrypoint-initdb.d/
-    ports:
-      - 27017:27017
+    extends:
+      file: ./docker-compose-deps.yml
+      service: mongo
     networks:
       crypitor-network:
         aliases:
         - mongo
+
+  zookeeper:
+    extends:
+      file: ./docker-compose-deps.yml
+      service: zookeeper
+    networks:
+      crypitor-network:
+        aliases:
+        - zookeeper
+
+  kafka:
+    extends:
+      file: ./docker-compose-deps.yml
+      service: kafka
+    networks:
+      crypitor-network:
+        aliases:
+        - kafka
 networks:
   crypitor-network:
 volumes:
