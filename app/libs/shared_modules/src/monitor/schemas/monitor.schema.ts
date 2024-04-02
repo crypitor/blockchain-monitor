@@ -1,32 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-@Schema()
-export class Monitor {
-  @Prop({ required: true })
-  projectId: string;
-
-  @Prop({ required: true, unique: true })
-  monitorId: string;
-
-  @Prop({ required: true })
-  network: MonitorNetwork;
-
-  @Prop()
-  condition: MonitorCondition;
-
-  @Prop()
-  notification: MonitorNotification;
-
-  @Prop()
-  note: string;
-
-  @Prop()
-  tags: string[];
-}
-export type MonitorDocument = HydratedDocument<Monitor>;
-export const MonitorSchema = SchemaFactory.createForClass(Monitor);
-
 export enum MonitorNetwork {
   Ethereum = 'Ethereum',
   BSC = 'BSC',
@@ -87,6 +61,32 @@ export class MonitorNotification {
   @Prop({ enum: MonitorNotificationMethod })
   method: MonitorNotificationMethod;
 }
+
+@Schema()
+export class Monitor {
+  @Prop({ required: true, index: 1 })
+  projectId: string;
+
+  @Prop({ required: true, unique: true })
+  monitorId: string;
+
+  @Prop({ required: true })
+  network: MonitorNetwork;
+
+  @Prop()
+  condition: MonitorCondition;
+
+  @Prop()
+  notification: MonitorNotification;
+
+  @Prop()
+  note: string;
+
+  @Prop()
+  tags: string[];
+}
+export type MonitorDocument = HydratedDocument<Monitor>;
+export const MonitorSchema = SchemaFactory.createForClass(Monitor);
 
 export class SMSNotification extends MonitorNotification {
   constructor() {

@@ -13,7 +13,7 @@ export class MonitorAddress {
   @Prop({ required: true, index: true })
   address: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: Object })
   network: MonitorNetwork;
 
   @Prop({ required: true })
