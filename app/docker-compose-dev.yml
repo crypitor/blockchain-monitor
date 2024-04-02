@@ -7,15 +7,10 @@ services:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/onebox/Dockerfile
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/dist
     env_file:
       - .env
     ports:
       - 3000:3000
-      - 19229:9229
     networks:
       crypitor-network:
         aliases:
@@ -23,20 +18,15 @@ services:
     depends_on:
       - redis
       - mongo
+      - kafka
   monitor:
     container_name: monitor
     build:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/monitor-service/Dockerfile
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/dist
     env_file:
       - .env
-    ports:
-      - 29229:9229
     networks:
       crypitor-network:
         aliases:
@@ -44,20 +34,15 @@ services:
     depends_on:
       - redis
       - mongo
+      - kafka
   worker:
     container_name: worker
     build:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/worker-service/Dockerfile
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-      - /usr/src/app/dist
     env_file:
       - .env
-    ports:
-      - 39229:9229
     networks:
       crypitor-network:
         aliases:
@@ -65,6 +50,7 @@ services:
     depends_on:
       - redis
       - mongo
+      - kafka
   redis:
     extends:
       file: ./docker/docker-compose-deps.yml
