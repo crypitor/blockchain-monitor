@@ -1,8 +1,8 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "master" ]
+#   push:
+#     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 
@@ -20,11 +20,15 @@ jobs:
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION .
+        docker build -f apps/onebox/Dockerfile --target production -t ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION .
+        docker build -f apps/monitor-service/Dockerfile --target production -t ${{ secrets.DOCKER_USERNAME }}/monitor:$VERSION .
+        docker build -f apps/worker-service/Dockerfile --target production -t ${{ secrets.DOCKER_USERNAME }}/worker:$VERSION .
 
     - name: Push Docker image to Docker Hub
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
         docker push ${{ secrets.DOCKER_USERNAME }}/onebox:$VERSION
+        docker push ${{ secrets.DOCKER_USERNAME }}/monitor:$VERSION
+        docker push ${{ secrets.DOCKER_USERNAME }}/worker:$VERSION
 
