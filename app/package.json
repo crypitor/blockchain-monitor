@@ -6,7 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "npx nest build",
+    "prebuild": "rimraf dist",
+    "build": "yarn build:app && yarn build:worker && yarn build:monitor",
+    "build:app": "npx nest build onebox",
+    "build:worker": "npx nest build worker-service",
+    "build:monitor": "npx nest build monitor-service",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "npx nest start",
     "start:dev": "npx nest start --watch",
