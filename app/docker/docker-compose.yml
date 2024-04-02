@@ -1,92 +1,98 @@
 version: '3.7'
 
 services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      API_DOMAIN: ${API_DOMAIN:-localhost}
+    volumes:
+      - ../.config/nginx/:/etc/nginx/templates
+      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - crypitor-network
+    depends_on:
+      - onebox
   onebox:
     container_name: onebox
-    build:
-      context: ..
-      target: ${TARGET:-development}
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+    image: crypitor/onebox
+    env_file:
+      - .env.production
     ports:
       - 3000:3000
     networks:
       crypitor-network:
         aliases:
-        - onebox
+          - onebox
     depends_on:
       - redis
       - mongo
+      - kafka
   monitor:
     container_name: monitor
-    build:
-      context: ..
-      target: ${TARGET:-development}
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - APP=monitor-service
-      
+    image: crypitor/monitor
+    env_file:
+      - .env.production
     networks:
       crypitor-network:
         aliases:
-        - monitor
+          - monitor
     depends_on:
       - redis
       - mongo
+      - kafka
   worker:
     container_name: worker
-    build:
-      context: ..
-      target: ${TARGET:-development}
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+    image: crypitor/worker
     env_file:
-      - ../.env
+      - .env.production
     networks:
       crypitor-network:
         aliases:
-        - worker
+          - worker
     depends_on:
       - redis
       - mongo
+      - kafka
   redis:
     extends:
-      file: ./docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: redis
     networks:
       crypitor-network:
         aliases:
-        - redis
+          - redis
   mongo:
     extends:
-      file: ./docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: mongo
     networks:
       crypitor-network:
         aliases:
-        - mongo
+          - mongo
 
   zookeeper:
     extends:
-      file: ./docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: zookeeper
     networks:
       crypitor-network:
         aliases:
-        - zookeeper
+          - zookeeper
 
   kafka:
     extends:
-      file: ./docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: kafka
     networks:
       crypitor-network:
         aliases:
-        - kafka
+          - kafka
 networks:
   crypitor-network:
 volumes:
