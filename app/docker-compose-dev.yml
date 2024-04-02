@@ -1,28 +1,14 @@
 version: '3.7'
 
 services:
-  nginx:
-    image: nginx
-    container_name: nginx
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    ports:
-      - 80:80
-      - 443:443
-    environment:
-      API_DOMAIN: ${API_DOMAIN:-localhost}
-    volumes:
-      - ../.config/nginx/:/etc/nginx/templates
-      - /etc/letsencrypt:/etc/letsencrypt
-    networks:
-      - crypitor-network
-    depends_on:
-      - onebox
   onebox:
     container_name: onebox
-    image: crypitor/onebox
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/onebox/Dockerfile
     env_file:
-      - .env.production
+      - .env
     ports:
       - 3000:3000
     networks:
@@ -35,9 +21,12 @@ services:
       - kafka
   monitor:
     container_name: monitor
-    image: crypitor/monitor
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/monitor-service/Dockerfile
     env_file:
-      - .env.production
+      - .env
     networks:
       crypitor-network:
         aliases:
@@ -48,9 +37,12 @@ services:
       - kafka
   worker:
     container_name: worker
-    image: crypitor/worker
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/worker-service/Dockerfile
     env_file:
-      - .env.production
+      - .env
     networks:
       crypitor-network:
         aliases:

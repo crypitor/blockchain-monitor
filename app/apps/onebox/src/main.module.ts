@@ -47,6 +47,6 @@ import { BlockSyncModule } from './modules/blocksync/blocksync.module';
     ProjectModule,
     BlockSyncModule,
   ],
-  providers: [GlobalService, PollingBlockService],
+  providers: [GlobalService],
 })
 export class MainModule {}
