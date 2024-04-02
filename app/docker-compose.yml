@@ -1,0 +1,106 @@
+version: '3.7'
+
+services:
+  onebox:
+    container_name: onebox
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/onebox/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/dist
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+      - 19229:9229
+    networks:
+      crypitor-network:
+        aliases:
+          - onebox
+    depends_on:
+      - redis
+      - mongo
+  monitor:
+    container_name: monitor
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/monitor-service/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/dist
+    env_file:
+      - .env
+    ports:
+      - 29229:9229
+    networks:
+      crypitor-network:
+        aliases:
+          - monitor
+    depends_on:
+      - redis
+      - mongo
+  worker:
+    container_name: worker
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/worker-service/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+      - /usr/src/app/dist
+    env_file:
+      - .env
+    ports:
+      - 39229:9229
+    networks:
+      crypitor-network:
+        aliases:
+          - worker
+    depends_on:
+      - redis
+      - mongo
+  redis:
+    extends:
+      file: ./docker/docker-compose-deps.yml
+      service: redis
+    networks:
+      crypitor-network:
+        aliases:
+          - redis
+  mongo:
+    extends:
+      file: ./docker/docker-compose-deps.yml
+      service: mongo
+    networks:
+      crypitor-network:
+        aliases:
+          - mongo
+
+  zookeeper:
+    extends:
+      file: ./docker/docker-compose-deps.yml
+      service: zookeeper
+    networks:
+      crypitor-network:
+        aliases:
+          - zookeeper
+
+  kafka:
+    extends:
+      file: ./docker/docker-compose-deps.yml
+      service: kafka
+    networks:
+      crypitor-network:
+        aliases:
+          - kafka
+networks:
+  crypitor-network:
+volumes:
+  pgdata:
+  data:
