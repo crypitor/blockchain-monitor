@@ -84,6 +84,12 @@ export class Monitor {
 
   @Prop()
   tags: string[];
+
+  @Prop()
+  createdBy: string;
+
+  @Prop()
+  dateCreated: Date;
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);

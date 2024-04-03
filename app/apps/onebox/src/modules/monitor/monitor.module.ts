@@ -1,4 +1,5 @@
 import { MonitorModule as MonitorModelModule } from '@app/shared_modules/monitor/monitor.module';
+import { ProjectModule as ProjectModelModule } from '@app/shared_modules/project/project.module';
 import { Module } from '@nestjs/common';
 import { MonitorController } from './monitor.controller';
 import { MonitorService } from './monitor.service';
@@ -6,6 +7,6 @@ import { MonitorService } from './monitor.service';
   controllers: [MonitorController],
   providers: [MonitorService],
   exports: [MonitorService],
-  imports: [MonitorModelModule],
+  imports: [MonitorModelModule, ProjectModelModule],
 })
 export class MonitorModule {}

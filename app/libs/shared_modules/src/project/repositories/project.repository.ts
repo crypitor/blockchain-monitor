@@ -19,4 +19,14 @@ export class ProjectRepository {
   async listUserProjects(userId: string): Promise<Project[]> {
     return await this.projectModel.find({ ownerId: userId });
   }
+
+  async increaseMonitorCount(projectId: string): Promise<Project> {
+    return await this.projectModel
+      .findOneAndUpdate(
+        { projectId },
+        { $inc: { monitorCount: 1 } },
+        { new: true },
+      )
+      .exec();
+  }
 }

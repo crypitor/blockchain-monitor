@@ -12,4 +12,8 @@ export class ProjectMemberRepository {
   async save(member: ProjectMember) {
     return await new this.projectMemnberModel(member).save();
   }
+
+  async findByUserAndProject(userId: string, projectId: string) {
+    return await this.projectMemnberModel.findOne({ projectId, userId });
+  }
 }
