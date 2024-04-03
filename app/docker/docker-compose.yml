@@ -19,10 +19,10 @@ services:
     depends_on:
       - onebox
   onebox:
-    container_name: onebox
-    image: crypitor/onebox
+    container_name: crypitor-onebox
+    image: crypitor/onebox:0.2.0
     env_file:
-      - .env.production
+      - .env
     ports:
       - 3000:3000
     networks:
@@ -34,10 +34,10 @@ services:
       - mongo
       - kafka
   monitor:
-    container_name: monitor
-    image: crypitor/monitor
+    container_name: crypitor-monitor
+    image: crypitor/monitor:0.2.0
     env_file:
-      - .env.production
+      - .env
     networks:
       crypitor-network:
         aliases:
@@ -47,10 +47,10 @@ services:
       - mongo
       - kafka
   worker:
-    container_name: worker
-    image: crypitor/worker
+    container_name: crypitor-worker
+    image: crypitor/worker:0.2.0
     env_file:
-      - .env.production
+      - .env
     networks:
       crypitor-network:
         aliases:
@@ -61,7 +61,7 @@ services:
       - kafka
   redis:
     extends:
-      file: ./docker/docker-compose-deps.yml
+      file: docker-compose-deps.yml
       service: redis
     networks:
       crypitor-network:
@@ -69,7 +69,7 @@ services:
           - redis
   mongo:
     extends:
-      file: ./docker/docker-compose-deps.yml
+      file: docker-compose-deps.yml
       service: mongo
     networks:
       crypitor-network:
@@ -78,7 +78,7 @@ services:
 
   zookeeper:
     extends:
-      file: ./docker/docker-compose-deps.yml
+      file: docker-compose-deps.yml
       service: zookeeper
     networks:
       crypitor-network:
@@ -87,7 +87,7 @@ services:
 
   kafka:
     extends:
-      file: ./docker/docker-compose-deps.yml
+      file: docker-compose-deps.yml
       service: kafka
     networks:
       crypitor-network:
