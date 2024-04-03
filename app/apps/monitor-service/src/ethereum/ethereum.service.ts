@@ -8,11 +8,11 @@ import {
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
 import { chainName } from '@app/utils/chainNameUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ethers, Log, TransactionResponse } from 'ethers';
 import {
   WebhookDeliveryDto,
   WebhookType,
-} from 'apps/onebox/src/modules/webhooks/ethereum/dto/eth.webhook-delivery.dto';
-import { ethers, Log, TransactionResponse } from 'ethers';
+} from './dto/eth.webhook-delivery.dto';
 
 @Injectable()
 export class EthereumService {
