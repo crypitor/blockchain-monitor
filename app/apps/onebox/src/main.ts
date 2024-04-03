@@ -44,7 +44,7 @@ async function bootstrap() {
 
   // setting up exception handler
   const httpAdapter = app.get(HttpAdapterHost);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   await app.listen(process.env.SERVER_PORT);
