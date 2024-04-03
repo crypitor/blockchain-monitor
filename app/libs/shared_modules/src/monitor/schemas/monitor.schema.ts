@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export enum MonitorNetwork {
   Ethereum = 'Ethereum',
+  Sepolia = 'Sepolia',
   BSC = 'BSC',
   Polygon = 'Polygon',
   Avalanche = 'Avalanche',
@@ -80,6 +81,9 @@ export class Monitor {
   notification: MonitorNotification;
 
   @Prop()
+  type: MonitoringType;
+
+  @Prop()
   note: string;
 
   @Prop()
@@ -93,6 +97,12 @@ export class Monitor {
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);
+
+export enum MonitoringType {
+  IN = 'in',
+  OUT = 'out',
+  ALL = 'all',
+}
 
 export class SMSNotification extends MonitorNotification {
   constructor() {
