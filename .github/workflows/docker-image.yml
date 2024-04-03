@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
+      - run: cd app
       - run: yarn install
       - run: yarn build
   build-docker-image:
