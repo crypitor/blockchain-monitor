@@ -77,13 +77,24 @@ docker push <name>/onebox:<version>
 docker push <name>/monitor:<version>
 docker push <name>/worker:<version>
 ```
+## Run production
+```bash
+cd docker
+
+# config env for production
+cp .env.sample .env
+
+# start docker compose
+docker compose up -d
+```
+
 ## Set up dev environment
 Start local dev env
 ```bash
 make up-deps
 
 # start onebox module
-yarn start:dev
+yarn start:dev onebox
 
 # start monitor service
 yarn start:dev monitor-service
