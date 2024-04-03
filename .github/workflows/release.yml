@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
@@ -27,19 +25,19 @@ jobs:
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:$VERSION .
+        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:${VERSION} .
         docker push crypitor/onebox:$VERSION
 
     - name: Build and push Monitor Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/monitor-service/Dockerfile --target production -t crypitor/monitor:$VERSION .
+        docker build -f apps/monitor-service/Dockerfile --target production -t crypitor/monitor:${VERSION} .
         docker push crypitor/monitor:$VERSION
 
     - name: Build and push Worker Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/worker-service/Dockerfile --target production -t crypitor/worker:$VERSION .
+        docker build -f apps/worker-service/Dockerfile --target production -t crypitor/worker:${VERSION} .
         docker push crypitor/worker:$VERSION
