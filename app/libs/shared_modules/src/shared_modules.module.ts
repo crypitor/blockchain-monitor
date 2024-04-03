@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { SharedModulesService } from './shared_modules.service';
-import { EthMonitorModule } from './eth.monitor/eth.monitor.module';
+import { MonitorModule } from './monitor/monitor.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
-  imports: [EthMonitorModule],
+  imports: [MonitorModule, ProjectModule],
   providers: [SharedModulesService],
-  exports: [SharedModulesService, EthMonitorModule],
+  exports: [SharedModulesService, MonitorModule, ProjectModule],
 })
 export class SharedModulesModule {}
