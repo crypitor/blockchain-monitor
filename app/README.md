@@ -66,20 +66,38 @@ make up
 ```
 
 ## Build production
-un-comment `TARGET=production` in .env
+Build docker container and push to docker registry
 ```bash
-make build
-make up
+yarn build
+docker build -f apps/onebox/Dockerfile --target production -t <name>/onebox:<version> .
+docker build -f apps/monitor-service/Dockerfile --target production -t <name>/monitor:<version> .
+docker build -f apps/worker-service/Dockerfile --target production -t <name>/worker:<version> .
+
+docker push <name>/onebox:<version>
+docker push <name>/monitor:<version>
+docker push <name>/worker:<version>
 ```
-## Support
+## Set up dev environment
+Start local dev env
+```bash
+make up-deps
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# start onebox module
+yarn start:dev
 
-## Stay in touch
+# start monitor service
+yarn start:dev monitor-service
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# start worker service
+yarn start:dev worker-service
+
+# stop deps
+make down-deps
+```
+Start docker compose dev
+```bash
+docker compose -f docker-compose-dev.yml up -d
+```
 
 ## Set up SSL from certbot
 ```bash
