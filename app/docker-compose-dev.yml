@@ -1,26 +1,12 @@
 version: '3.7'
 
 services:
-  nginx:
-    image: nginx
-    container_name: nginx
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    ports:
-      - 80:80
-      - 443:443
-    environment:
-      API_DOMAIN: ${API_DOMAIN:-localhost}
-    volumes:
-      - ../.config/nginx/:/etc/nginx/templates
-      - /etc/letsencrypt:/etc/letsencrypt
-    networks:
-      - crypitor-network
-    depends_on:
-      - onebox
   onebox:
-    container_name: crypitor-onebox
-    image: crypitor/onebox:0.2.0
+    container_name: onebox
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/onebox/Dockerfile
     env_file:
       - .env
     ports:
@@ -34,8 +20,11 @@ services:
       - mongo
       - kafka
   monitor:
-    container_name: crypitor-monitor
-    image: crypitor/monitor:0.2.0
+    container_name: monitor
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/monitor-service/Dockerfile
     env_file:
       - .env
     networks:
@@ -47,8 +36,11 @@ services:
       - mongo
       - kafka
   worker:
-    container_name: crypitor-worker
-    image: crypitor/worker:0.2.0
+    container_name: worker
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/worker-service/Dockerfile
     env_file:
       - .env
     networks:
@@ -61,7 +53,7 @@ services:
       - kafka
   redis:
     extends:
-      file: docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: redis
     networks:
       crypitor-network:
@@ -69,7 +61,7 @@ services:
           - redis
   mongo:
     extends:
-      file: docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: mongo
     networks:
       crypitor-network:
@@ -78,7 +70,7 @@ services:
 
   zookeeper:
     extends:
-      file: docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: zookeeper
     networks:
       crypitor-network:
@@ -87,7 +79,7 @@ services:
 
   kafka:
     extends:
-      file: docker-compose-deps.yml
+      file: ./docker/docker-compose-deps.yml
       service: kafka
     networks:
       crypitor-network:

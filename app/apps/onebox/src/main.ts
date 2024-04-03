@@ -15,6 +15,17 @@ async function bootstrap() {
   }
 
   if (process.env.SWAGGER_ENABLE === 'true') {
+    // HTTP Basic Auth for Swagger Docs
+    app.use(
+      '/docs/*',
+      expressBasicAuth({
+        challenge: true,
+        users: {
+          [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+        },
+      }),
+    );
+
     // setting up swagger
     const options = new DocumentBuilder()
       .setTitle(process.env.SWAGGER_TITLE || 'Blockchain Webhook API')
@@ -29,17 +40,6 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('docs', app, document);
-
-    // HTTP Basic Auth for Swagger Docs
-    app.use(
-      '/docs/*',
-      expressBasicAuth({
-        challenge: true,
-        users: {
-          [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
-        },
-      }),
-    );
   }
 
   // setting up exception handler
