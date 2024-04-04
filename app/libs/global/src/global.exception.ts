@@ -1,18 +1,16 @@
 import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  BadRequestException,
+  Catch,
+  ExceptionFilter,
   HttpException,
-  HttpStatus,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { MongoError, MongoServerError } from 'mongodb';
 
 export function handleException(exception): HttpException {
+  console.log(exception);
   let error: HttpException;
   if (exception instanceof MongoError) {
     if (exception instanceof MongoServerError && exception.code === 11000) {
