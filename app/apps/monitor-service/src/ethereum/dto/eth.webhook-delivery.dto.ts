@@ -38,6 +38,10 @@ export class WebhookDeliveryDto {
   logIndex: number;
   txnIndex: number;
 
+  toString(): string {
+    return JSON.stringify(this);
+  }
+
   public static fromLogToERC20(
     log: Log,
     chain: string,
