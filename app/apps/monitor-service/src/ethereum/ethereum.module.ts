@@ -10,20 +10,21 @@ import { EthereumService } from './ethereum.service';
   controllers: [EthereumController],
   exports: [EthereumService],
   imports: [
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'WEBHOOK_SERVICE',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'worker',
-            brokers: ['localhost:9092'],
+        useFactory: () => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'webhook',
+              brokers: process.env.KAFKA_BROKERS.split(','),
+            },
+            consumer: {
+              groupId: 'webhook-consumer',
+            },
           },
-          producer: {},
-          consumer: {
-            groupId: 'worker-consumer',
-          },
-        },
+        }),
       },
     ]),
     WebhookModule,
