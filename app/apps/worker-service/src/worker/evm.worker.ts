@@ -27,21 +27,6 @@ export class EthereumWorker {
 
   enable: boolean;
 
-  constructor() {
-    // ethMonitorService: EthMonitorService, // blockSyncService: BlockSyncService, // @Inject('MONITOR_SERVICE') monitorConsumer: ClientKafka,
-    // if (process.env.EVM_DISABLE === 'true') {
-    //   this.detectInfo.flag = true;
-    //   this.confirmInfo.flag = true;
-    //   return;
-    // }
-    // this.rpcUrl = process.env.ETH_PROVIDER_URL;
-    // this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
-    // this.blockSyncService = blockSyncService;
-    // this.ethMonitorService = ethMonitorService;
-    // this.monitorConsumer = monitorConsumer;
-    // this.initWorker();
-  }
-
   onModuleInit() {
     console.log(`The module has been initialized.`);
     if (process.env.EVM_DISABLE === 'true') {
