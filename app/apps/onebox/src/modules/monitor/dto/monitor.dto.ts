@@ -101,6 +101,7 @@ export class CreateMonitorDto {
       method: MonitorNotificationMethod.Webhook,
       url: 'https://example.com',
       authorization: 'Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA==',
+      secretToken: '',
     },
   })
   @ValidateNested()

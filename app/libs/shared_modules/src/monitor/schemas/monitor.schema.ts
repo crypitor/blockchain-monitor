@@ -94,6 +94,9 @@ export class Monitor {
 
   @Prop()
   dateCreated: Date;
+
+  @Prop()
+  webhookId: string;
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);
@@ -126,6 +129,9 @@ export class WebhookNotification extends MonitorNotification {
   }
   @Prop()
   url: string;
+
+  @Prop()
+  secret_token: string;
 
   @Prop()
   authorization: string;
