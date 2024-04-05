@@ -13,6 +13,7 @@ import {
   WebhookDeliveryDto,
   WebhookType,
 } from './dto/eth.webhook-delivery.dto';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class EthereumService {
@@ -23,6 +24,9 @@ export class EthereumService {
 
   @Inject()
   private readonly monitorRepository: MonitorRepository;
+
+  @Inject('WEBHOOK_SERVICE')
+  private readonly webhookClient: ClientKafka;
 
   async findEthAddress(address: string): Promise<MonitorAddress[]> {
     return this.ethMonitorAddressRepository.findByAddress(address);
@@ -273,5 +277,20 @@ export class EthereumService {
         error,
       );
     }
+  }
+
+  private async sendToWebhook(monitor: Monitor, body: WebhookDeliveryDto) {
+    // every monitor has a webhook id in webhook-service
+    // we need to send body payload to webhook service
+    // curl --location --request POST 'http://localhost:8000/v1/deliveries' \
+    //   --header 'Content-Type: application/json' \
+    //   --data-raw '{
+    //       "webhook_id": "3b81e80e-3c4d-470d-be1f-e692c69d0b9d",
+    //       "payload": "{\"success2\": true}"
+    //   }'
+    this.webhookClient.emit('webhook-event', {
+      webhook_id: monitor.webhookId,
+      payload: body,
+    });
   }
 }
