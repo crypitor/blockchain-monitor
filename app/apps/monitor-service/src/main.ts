@@ -12,7 +12,7 @@ async function bootstrap() {
           brokers: process.env.KAFKA_BROKERS.split(','),
         },
         consumer: {
-          groupId: 'blockchain-event-consumer',
+          groupId: 'monitor-consumer',
         },
       },
     },

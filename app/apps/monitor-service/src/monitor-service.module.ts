@@ -3,10 +3,10 @@ import { GlobalModule } from '@app/global';
 import { SharedModulesModule } from '@app/shared_modules';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MonitorServiceController } from './monitor-service.controller';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EthereumModule } from './ethereum/ethereum.module';
 import { EthereumService } from './ethereum/ethereum.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MonitorServiceController } from './monitor-service.controller';
 
 @Module({
   imports: [
@@ -33,8 +33,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
     DatabaseModule,
     GlobalModule,
-    SharedModulesModule,
     EthereumModule,
+    SharedModulesModule,
   ],
   controllers: [MonitorServiceController],
   providers: [EthereumService],
