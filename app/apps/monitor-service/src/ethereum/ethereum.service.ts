@@ -8,12 +8,12 @@ import {
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
 import { chainName } from '@app/utils/chainNameUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientKafka } from '@nestjs/microservices';
 import { ethers, Log, TransactionResponse } from 'ethers';
 import {
   WebhookDeliveryDto,
   WebhookType,
 } from './dto/eth.webhook-delivery.dto';
-import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class EthereumService {
