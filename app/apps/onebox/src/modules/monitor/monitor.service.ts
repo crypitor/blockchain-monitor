@@ -4,11 +4,11 @@ import { ProjectRepository } from '@app/shared_modules/project/repositories/proj
 import { HttpException, Injectable } from '@nestjs/common';
 import { User } from '../users/schemas/user.schema';
 import { CreateMonitorDto, MonitorResponseDto } from './dto/monitor.dto';
-import { WebhookService } from '../webhook/webhook.service';
 import {
   MonitorNotificationMethod,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
 
 @Injectable()
 export class MonitorService {

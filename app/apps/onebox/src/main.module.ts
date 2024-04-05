@@ -13,7 +13,6 @@ import { MonitorModule } from './modules/monitor/monitor.module';
 import { ProjectModule } from './modules/project/project.module';
 import { UsersModule } from './modules/users/users.module';
 import { WalletModule } from './modules/wallet/wallet.module';
-import { WebhookModule } from './modules/webhook/webhook.module';
 
 @Module({
   imports: [
@@ -50,7 +49,6 @@ import { WebhookModule } from './modules/webhook/webhook.module';
     BlockSyncModule,
     MonitorModule,
     MonitorAddressModule,
-    WebhookModule,
   ],
   providers: [GlobalService],
 })
