@@ -4,6 +4,11 @@ import { ProjectRepository } from '@app/shared_modules/project/repositories/proj
 import { HttpException, Injectable } from '@nestjs/common';
 import { User } from '../users/schemas/user.schema';
 import { CreateMonitorDto, MonitorResponseDto } from './dto/monitor.dto';
+import { WebhookService } from '../webhook/webhook.service';
+import {
+  MonitorNotificationMethod,
+  WebhookNotification,
+} from '@app/shared_modules/monitor/schemas/monitor.schema';
 
 @Injectable()
 export class MonitorService {
@@ -11,6 +16,7 @@ export class MonitorService {
     private readonly projectMemberRepository: ProjectMemberRepository,
     private readonly projectRepository: ProjectRepository,
     private readonly monitorRepository: MonitorRepository,
+    private readonly webhookService: WebhookService,
   ) {}
 
   async listMonitors(
@@ -58,6 +64,17 @@ export class MonitorService {
     }
 
     const monitor = request.toMonitor(user.userId);
+    // request create webhook in webhook microservice
+    if (monitor.notification.method === MonitorNotificationMethod.Webhook) {
+      const method = monitor.notification as WebhookNotification;
+      const webhookId = await this.webhookService.createWebhook(
+        monitor.monitorId,
+        monitor.notification.method,
+        method.secret_token,
+        method.authorization,
+      );
+      monitor.webhookId = webhookId;
+    }
     await this.monitorRepository.saveMonitor(monitor);
     await this.projectRepository.increaseMonitorCount(monitor.projectId);
     // todo: check max monitor
