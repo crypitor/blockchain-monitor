@@ -9,14 +9,20 @@ export class MonitorRepository {
   ) {}
 
   async findById(id: string): Promise<Monitor> {
-    return await this.monitorModel.findOne({ monitorId: id });
+    return this.monitorModel.findOne({ monitorId: id });
   }
 
   async saveMonitor(monitor: Monitor): Promise<Monitor> {
-    return await new this.monitorModel(monitor).save();
+    return new this.monitorModel(monitor).save();
   }
 
   async listMonitorsByProject(projectId: string): Promise<Monitor[]> {
-    return await this.monitorModel.find({ projectId: projectId });
+    return this.monitorModel.find({ projectId: projectId });
+  }
+
+  async deleteMonitor(monitorId: string): Promise<boolean> {
+    return this.monitorModel
+      .deleteOne({ monitorId: monitorId })
+      .then((result) => result.deletedCount > 0);
   }
 }

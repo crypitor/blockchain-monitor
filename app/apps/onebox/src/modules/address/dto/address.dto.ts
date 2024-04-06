@@ -69,3 +69,20 @@ export class GetMonitorAddressResponseDto {
   @ApiResponseProperty()
   addresses: MonitorAddressResponseDto[];
 }
+
+export class DeleteMonitorAddressDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  monitorId: string;
+
+  @ApiProperty({ type: String, isArray: true })
+  @IsNotEmpty()
+  @ArrayMaxSize(50)
+  @ArrayMinSize(1)
+  addresses: string[];
+}
+
+export class DeleteMonitorAddressResponseDto {
+  @ApiResponseProperty()
+  success: boolean;
+}

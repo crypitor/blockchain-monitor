@@ -1,5 +1,5 @@
-import { Prop, Schema } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 import { MonitorNetwork } from './monitor.schema';
 
 @Schema()
@@ -24,5 +24,6 @@ export class MonitorAddress {
 }
 export type MonitorAddressDocument = HydratedDocument<MonitorAddress>;
 
-export const MonitorAddressSchema = new mongoose.Schema(MonitorAddress);
+export const MonitorAddressSchema =
+  SchemaFactory.createForClass(MonitorAddress);
 MonitorAddressSchema.index({ monitorId: 1, address: 1 }, { unique: true });

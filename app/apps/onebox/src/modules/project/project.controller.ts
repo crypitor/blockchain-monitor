@@ -2,8 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -11,6 +11,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -24,28 +25,31 @@ import { ProjectService } from './project.service';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @ApiOperation({ summary: 'Get project by id' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Get('')
+  @Get('/:id')
   @ApiOkResponse({ type: ProjectResponseDto })
   async getProject(
     @Req() req: Request,
-    @Query('id') projectId: string,
+    @Param('id') projectId: string,
   ): Promise<ProjectResponseDto> {
     return await this.projectService.getProject(req.user as User, projectId);
   }
 
+  @ApiOperation({ summary: 'List projects' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Get('list')
+  @Get('')
   @ApiOkResponse({ type: [ProjectResponseDto] })
   async getProjects(@Req() req: Request): Promise<ProjectResponseDto[]> {
     return await this.projectService.listProjects(req.user as User);
   }
 
+  @ApiOperation({ summary: 'Create project' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Post('create')
+  @Post('')
   @ApiCreatedResponse({ type: ProjectResponseDto })
   async createProject(
     @Req() req: Request,

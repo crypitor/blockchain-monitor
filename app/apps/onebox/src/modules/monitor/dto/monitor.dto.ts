@@ -14,6 +14,23 @@ import { Builder } from 'builder-pattern';
 import { Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsUrl, ValidateNested } from 'class-validator';
 
+export class MonitorConditionDto {
+  @ApiProperty({ default: true })
+  native: boolean;
+  @ApiProperty({ default: true })
+  internal: boolean;
+  @ApiProperty({ default: true })
+  erc721: boolean;
+  @ApiProperty({ default: true })
+  erc20: boolean;
+  @ApiProperty({ default: false })
+  specific: boolean;
+  @ApiProperty()
+  cryptos: {
+    [key: string]: boolean;
+  };
+}
+
 export abstract class NotificationDto {
   @ApiProperty({ type: MonitorNotificationMethod })
   method: MonitorNotificationMethod;
@@ -75,7 +92,6 @@ export class CreateMonitorDto {
   network: MonitorNetwork;
 
   @ApiProperty({
-    type: Object,
     example: {
       native: true,
       internal: true,
@@ -85,16 +101,8 @@ export class CreateMonitorDto {
       cryptos: [],
     },
   })
-  condition: {
-    native: boolean;
-    internal: boolean;
-    erc721: boolean;
-    erc20: boolean;
-    specific: boolean;
-    cryptos: {
-      [key: string]: boolean;
-    };
-  };
+  @ValidateNested()
+  condition: MonitorConditionDto;
 
   @ApiProperty({
     example: {
@@ -199,4 +207,15 @@ export class MonitorResponseDto {
       .dateCreated(monitor.dateCreated)
       .build();
   }
+}
+
+export class DeleteMonitorDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  monitorId: string;
+}
+
+export class DeleteMonitorResponseDto {
+  @ApiResponseProperty()
+  success: boolean;
 }
