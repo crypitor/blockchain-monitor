@@ -111,7 +111,7 @@ export class PollingBlockService {
         this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
 
         // emit event detect block with blocknumber
-        this.workerClient.emit(TopicName.ETH_DETECTECTED_BLOCK, {
+        this.workerClient.emit(TopicName.ETH_DETECTED_BLOCK, {
           blockNumber: blockNumber,
         });
 
