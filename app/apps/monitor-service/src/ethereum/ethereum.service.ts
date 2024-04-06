@@ -6,7 +6,7 @@ import {
   MonitoringType,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
-import { chainName } from '@app/utils/chainNameUtils';
+import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ethers, Log, TransactionResponse } from 'ethers';
@@ -157,7 +157,7 @@ export class EthereumService {
 
       const body = WebhookDeliveryDto.fromTransactionToNative(
         transaction,
-        chainName.ETH,
+        SupportedChain.ETH.name,
         monitor.monitorId,
         type,
         confirm,
@@ -194,7 +194,7 @@ export class EthereumService {
       // @todo check condition on specific cryptos
       const body = WebhookDeliveryDto.fromLogToERC721(
         event,
-        chainName.ETH,
+        SupportedChain.ETH.name,
         monitor.monitorId,
         type,
         confirm,
@@ -234,7 +234,7 @@ export class EthereumService {
       // @todo check condition on specific cryptos
       const body = WebhookDeliveryDto.fromLogToERC20(
         event,
-        chainName.ETH,
+        SupportedChain.ETH.name,
         monitor.monitorId,
         type,
         confirm,
