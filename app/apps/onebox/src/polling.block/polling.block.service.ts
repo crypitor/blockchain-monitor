@@ -1,9 +1,16 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import {
+  Cron,
+  CronExpression,
+  Interval,
+  SchedulerRegistry,
+} from '@nestjs/schedule';
+import { CronJob } from 'cron';
 import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
+import { TopicName } from '@app/utils/topicUtils';
 
 @Injectable()
 export class PollingBlockService {
@@ -11,11 +18,13 @@ export class PollingBlockService {
   private detectInfo = { flag: false, blockNumber: 0 };
 
   private readonly logger = new Logger(EthereumWorker.name);
-  @Inject('POLLING_BLOCK_SERVICE')
-  private readonly workerClient: ClientKafka;
 
-  @Inject(BlockSyncService)
-  private readonly blockSyncService: BlockSyncService;
+  constructor(
+    private schedulerRegistry: SchedulerRegistry,
+    private readonly blockSyncService: BlockSyncService,
+    @Inject('WORKER_CLIENT_SERVICE')
+    private readonly workerClient: ClientKafka,
+  ) {}
 
   rpcUrl: string;
   provider: ethers.Provider;
@@ -60,6 +69,20 @@ export class PollingBlockService {
       this.detectInfo.blockNumber = blockSync.lastSync + this.confirmBlock;
     }
     this.detectInfo.flag = false;
+    this.addCronJob('ethPollingBlock', '10');
+  }
+
+  addCronJob(name: string, seconds: string) {
+    const job = new CronJob(CronExpression.EVERY_10_SECONDS, () =>
+      this.ethPollingBlock(),
+    );
+
+    this.schedulerRegistry.addCronJob(name, job);
+    job.start();
+
+    this.logger.warn(
+      `job ${name} added for each minute at ${seconds} seconds!`,
+    );
   }
 
   private async updateLastSyncBlock(blockNumber: number): Promise<void> {
@@ -67,9 +90,6 @@ export class PollingBlockService {
     await this.blockSyncService.updateLastSync(this.rpcUrl, blockNumber);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, {
-    disabled: process.env.EVM_DISABLE === 'true',
-  })
   async ethPollingBlock() {
     console.log('Start detect block');
     if (this.detectInfo.flag) {
@@ -91,12 +111,12 @@ export class PollingBlockService {
         this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
 
         // emit event detect block with blocknumber
-        this.workerClient.emit('eth-detect-block', {
+        this.workerClient.emit(TopicName.ETH_DETECTECTED_BLOCK, {
           blockNumber: blockNumber,
         });
 
         // emit event confirm block with block number - confirm block
-        this.workerClient.emit('eth-confirm-block', {
+        this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
           blockNumber: blockNumber - this.confirmBlock,
         });
 
