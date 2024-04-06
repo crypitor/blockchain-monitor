@@ -4,9 +4,11 @@ import {
 } from '@app/shared_modules/project/schemas/project.schema';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreateProjectDto {
   @ApiProperty()
+  @IsNotEmpty()
   name: string;
 }
 

@@ -1,12 +1,15 @@
+import { ServiceException } from '@app/global/global.exception';
 import { MonitorAddressRepository } from '@app/shared_modules/monitor/repositories/monitor.address.repository';
 import { MonitorRepository } from '@app/shared_modules/monitor/repositories/monitor.repository';
 import { MonitorAddress } from '@app/shared_modules/monitor/schemas/monitor.address.schema';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
 import { User } from '../users/schemas/user.schema';
 import {
   CreateMonitorAddressDto,
+  DeleteMonitorAddressDto,
+  DeleteMonitorAddressResponseDto,
   GetMonitorAddressRequestDto,
   GetMonitorAddressResponseDto,
   MonitorAddressResponseDto,
@@ -25,14 +28,14 @@ export class MonitorAddressService {
   ): Promise<MonitorAddressResponseDto[]> {
     const monitor = await this.monitorRepository.findById(request.monitorId);
     if (!monitor) {
-      throw new HttpException('monitor not found', 404);
+      throw new ServiceException('monitor not found', 404);
     }
     const member = this.projectMemberRepository.findByUserAndProject(
       user.userId,
       monitor.projectId,
     );
     if (!member) {
-      throw new HttpException('unauthorized', 401);
+      throw new ServiceException('unauthorized', 401);
     }
     const addresses = request.addresses.map((address) =>
       Builder<MonitorAddress>()
@@ -57,14 +60,14 @@ export class MonitorAddressService {
   ): Promise<GetMonitorAddressResponseDto> {
     const monitor = await this.monitorRepository.findById(request.monitorId);
     if (!monitor) {
-      throw new HttpException('monitor not found', 404);
+      throw new ServiceException('monitor not found', 404);
     }
     const member = this.projectMemberRepository.findByUserAndProject(
       user.userId,
       monitor.projectId,
     );
     if (!member) {
-      throw new HttpException('unauthorized', 401);
+      throw new ServiceException('unauthorized', 401);
     }
     return MonitorAddressRepository.getRepository(monitor.network)
       .getMonitorAddress(monitor.monitorId, request.limit, request.offset)
@@ -74,6 +77,28 @@ export class MonitorAddressService {
             addresses.map((address) => MonitorAddressResponseDto.from(address)),
           )
           .build(),
+      );
+  }
+
+  async deleteMonitorAddress(
+    user: User,
+    request: DeleteMonitorAddressDto,
+  ): Promise<DeleteMonitorAddressResponseDto> {
+    const monitor = await this.monitorRepository.findById(request.monitorId);
+    if (!monitor) {
+      throw new ServiceException('monitor not found', 404);
+    }
+    const member = this.projectMemberRepository.findByUserAndProject(
+      user.userId,
+      monitor.projectId,
+    );
+    if (!member) {
+      throw new ServiceException('unauthorized', 401);
+    }
+    return MonitorAddressRepository.getRepository(monitor.network)
+      .deleteMonitorAddress(monitor.monitorId, request.addresses)
+      .then(() =>
+        Builder<DeleteMonitorAddressResponseDto>().success(true).build(),
       );
   }
 }

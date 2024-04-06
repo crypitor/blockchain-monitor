@@ -9,22 +9,25 @@ export class ProjectRepository {
   ) {}
 
   async findById(id: string): Promise<Project> {
-    return await this.projectModel.findOne({ projectId: id });
+    return this.projectModel.findOne({ projectId: id });
   }
 
   async saveProject(project: Project): Promise<Project> {
-    return await new this.projectModel(project).save();
+    return new this.projectModel(project).save();
   }
 
   async listUserProjects(userId: string): Promise<Project[]> {
-    return await this.projectModel.find({ ownerId: userId });
+    return this.projectModel.find({ ownerId: userId });
   }
 
-  async increaseMonitorCount(projectId: string): Promise<Project> {
-    return await this.projectModel
+  async increaseMonitorCount(
+    projectId: string,
+    count: number,
+  ): Promise<Project> {
+    return this.projectModel
       .findOneAndUpdate(
         { projectId },
-        { $inc: { monitorCount: 1 } },
+        { $inc: { monitorCount: count } },
         { new: true },
       )
       .exec();
