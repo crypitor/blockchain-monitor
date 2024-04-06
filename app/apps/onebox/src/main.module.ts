@@ -24,7 +24,7 @@ import { PollingBlockService } from './polling.block/polling.block.service';
     }),
     ClientsModule.register([
       {
-        name: 'POLLING_BLOCK_SERVICE',
+        name: 'WORKER_CLIENT_SERVICE',
         transport: Transport.KAFKA,
         options: {
           client: {

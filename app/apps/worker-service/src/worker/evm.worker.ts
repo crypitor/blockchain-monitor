@@ -22,8 +22,8 @@ export class EthereumWorker {
   @Inject(BlockSyncService)
   private readonly blockSyncService: BlockSyncService;
 
-  @Inject('MONITOR_SERVICE')
-  private readonly monitorConsumer: ClientKafka;
+  @Inject('MONITOR_CLIENT_SERVICE')
+  private readonly monitorClient: ClientKafka;
 
   enable: boolean;
 
@@ -183,13 +183,13 @@ export class EthereumWorker {
     logs.forEach((event) => {
       if (event.topics.length === 3) {
         // this.ethMonitorService.handleErc20Transfer(event, confirm);
-        this.monitorConsumer.emit(TopicName.ETH_ERC20_TRANSFER, {
+        this.monitorClient.emit(TopicName.ETH_ERC20_TRANSFER, {
           event: event,
           confirm: confirm,
         });
       } else if (event.topics.length === 4) {
         // this.ethMonitorService.handleErc721Transfer(event, confirm);
-        this.monitorConsumer.emit(TopicName.ETH_ERC721_TRANSFER, {
+        this.monitorClient.emit(TopicName.ETH_ERC721_TRANSFER, {
           event: event,
           confirm: confirm,
         });
@@ -207,7 +207,7 @@ export class EthereumWorker {
     // handle extracted event for native
     block.prefetchedTransactions.forEach((transaction) => {
       // this.ethMonitorService.handleNativeTransfer(transaction, confirm);
-      this.monitorConsumer.emit(TopicName.ETH_NATIVE_TRANSFER, {
+      this.monitorClient.emit(TopicName.ETH_NATIVE_TRANSFER, {
         transaction: transaction,
         confirm: confirm,
       });

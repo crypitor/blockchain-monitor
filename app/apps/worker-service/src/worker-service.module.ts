@@ -18,7 +18,7 @@ import { EthereumWorker } from './worker/evm.worker';
     }),
     ClientsModule.register([
       {
-        name: 'MONITOR_SERVICE',
+        name: 'MONITOR_CLIENT_SERVICE',
         transport: Transport.KAFKA,
         options: {
           client: {
@@ -32,8 +32,6 @@ import { EthereumWorker } from './worker/evm.worker';
         },
       },
     ]),
-    DatabaseModule,
-    GlobalModule,
     BlockSyncModule,
     ScheduleModule.forRoot(),
   ],
