@@ -36,6 +36,6 @@ import { EthereumWorker } from './worker/evm.worker';
     ScheduleModule.forRoot(),
   ],
   controllers: [WorkerServiceController],
-  providers: [WorkerServiceService, EthereumWorker],
+  providers: [WorkerServiceService],
 })
 export class WorkerServiceModule {}
