@@ -93,6 +93,15 @@ services:
       crypitor-network:
         aliases:
           - kafka
+
+  kafka-ui:
+    extends:
+      file: docker-compose-deps.yml
+      service: kafka-ui
+    networks:
+      crypitor-network:
+        aliases:
+          - kafka-ui
 networks:
   crypitor-network:
 volumes:
