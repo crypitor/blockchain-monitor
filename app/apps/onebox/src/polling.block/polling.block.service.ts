@@ -1,16 +1,11 @@
+import { TopicName } from '@app/utils/topicUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import {
-  Cron,
-  CronExpression,
-  Interval,
-  SchedulerRegistry,
-} from '@nestjs/schedule';
-import { CronJob } from 'cron';
+import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
+import { CronJob } from 'cron';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
-import { TopicName } from '@app/utils/topicUtils';
 
 @Injectable()
 export class PollingBlockService {
@@ -57,15 +52,19 @@ export class PollingBlockService {
         'force running latest block from network ' + latestBlockNumber,
       );
       this.updateLastSyncBlock(latestBlockNumber);
+      // if start at latest block, we need to minus 1
+      // we suppose that we already scan at (latest block - 1)
       this.detectInfo.blockNumber = latestBlockNumber - 1;
     } else if (startBlockConfig === 'config') {
       this.logger.warn(
         'force running start block from config ' + process.env.EVM_START_BLOCK,
       );
       this.updateLastSyncBlock(parseInt(process.env.EVM_START_BLOCK));
+      // if we start at config block, we suppose that we already scan at (config block - 1)
       this.detectInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK) - 1;
     } else {
       this.logger.warn('running start block from db ' + blockSync.lastSync);
+      // if we start at db block, we suppose that we already scan at db block
       this.detectInfo.blockNumber = blockSync.lastSync + this.confirmBlock;
     }
     this.detectInfo.flag = false;
@@ -80,9 +79,7 @@ export class PollingBlockService {
     this.schedulerRegistry.addCronJob(name, job);
     job.start();
 
-    this.logger.warn(
-      `job ${name} added for each minute at ${seconds} seconds!`,
-    );
+    this.logger.warn(`job ${name} added for each ${seconds} seconds!`);
   }
 
   private async updateLastSyncBlock(blockNumber: number): Promise<void> {
@@ -108,17 +105,21 @@ export class PollingBlockService {
       blockNumber++
     ) {
       try {
-        this.logger.debug(['DETECT', `Scanning block ${blockNumber}`]);
+        this.logger.log(`start polling block ${blockNumber}`);
 
         // emit event detect block with blocknumber
+        this.logger.debug(['DETECT', `send block ${blockNumber}`]);
         this.workerClient.emit(TopicName.ETH_DETECTED_BLOCK, {
           blockNumber: blockNumber,
         });
 
+        this.logger.debug(['CONFIRM', `send block ${blockNumber}`]);
         // emit event confirm block with block number - confirm block
         this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
           blockNumber: blockNumber - this.confirmBlock,
         });
+
+        this.detectInfo.blockNumber = blockNumber;
 
         //only update last sync for confirm
         await this.updateLastSyncBlock(blockNumber - this.confirmBlock);
