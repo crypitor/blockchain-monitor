@@ -37,6 +37,10 @@ export class EthereumService {
   }
 
   async handleErc20Transfer(data: any): Promise<void> {
+    this.logger.debug([
+      'ERC20',
+      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
+    ]);
     const event = data.event as Log;
     const confirm = data.confirm as boolean;
     // Extract relevant information from the event
@@ -75,6 +79,10 @@ export class EthereumService {
   }
 
   async handleErc721Transfer(data: any) {
+    this.logger.debug([
+      'ERC721',
+      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
+    ]);
     const event = data.event as Log;
     const confirm = data.confirm as boolean;
 
@@ -108,6 +116,10 @@ export class EthereumService {
   }
 
   async handleNativeTransfer(data: any): Promise<void> {
+    this.logger.debug([
+      'NATIVE',
+      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
+    ]);
     const transaction = data.transaction as TransactionResponse;
     const confirm = data.confirm as boolean;
 
