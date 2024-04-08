@@ -21,6 +21,11 @@ export class WebhookServiceDto {
 @Injectable()
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
+  webhookUrl: string;
+
+  onModuleInit() {
+    this.webhookUrl = process.env.WEBHOOK_URL;
+  }
   /**
    * Create webhook for monitor
    * curl --location --request POST 'http://localhost:8000/v1/webhooks' \
@@ -62,7 +67,7 @@ export class WebhookService {
     };
 
     const response = await sendPost(
-      `${process.env.WEBHOOK_API_URL}/v1/webhooks`,
+      `${this.webhookUrl}/v1/webhooks`,
       createWebhookDto,
     );
 
@@ -87,7 +92,7 @@ export class WebhookService {
 
   async getWebhooks(webhookId: string): Promise<WebhookServiceDto> {
     const response = await sendGet(
-      `${process.env.WEBHOOK_API_URL}/v1/webhooks/${webhookId}`,
+      `${this.webhookUrl}/v1/webhooks/${webhookId}`,
     );
     if (!response.ok) {
       this.logger.error(
@@ -109,7 +114,7 @@ export class WebhookService {
 
   async deleteWebhook(webhookId: string) {
     const response = await sendDelete(
-      `${process.env.WEBHOOK_API_URL}/v1/webhooks/${webhookId}`,
+      `${this.webhookUrl}/v1/webhooks/${webhookId}`,
     );
     if (!response.ok) {
       this.logger.error(
@@ -135,7 +140,7 @@ export class WebhookService {
     secret_token: string,
   ) {
     const response = await sendPut(
-      `${process.env.WEBHOOK_API_URL}/v1/webhooks/${webhookId}`,
+      `${this.webhookUrl}/v1/webhooks/${webhookId}`,
       {
         url: webhookUrl,
         authorization: authorization,
