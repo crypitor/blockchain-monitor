@@ -85,28 +85,28 @@ up-prod:
 	# @echo "Init prod environment..."
 	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
-	docker compose -f docker compose-prod.yml up -d
+	docker compose -f docker-compose-prod.yml up -d
 
 .PHONY: down-prod
 down-prod:
 	@echo "Building application and starting container..."
-	docker compose -f docker compose-prod.yml down
+	docker compose -f docker-compose-prod.yml down
 
 .PHONY: build
 build-prod:
 	@echo "Re-building container and installing dependancies..."
-	docker compose -f docker compose-prod.yml down && docker compose -f docker compose-prod.yml build --no-cache && docker compose -f docker compose-prod.yml up
+	docker compose -f docker-compose-prod.yml down && docker compose -f docker-compose-prod.yml build --no-cache && docker compose -f docker-compose-prod.yml up
 
 
 .PHONY: up-deps
 up-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker compose-deps.yml --env-file .env up -d
+	docker compose -f docker/docker-compose-deps.yml --env-file .env up -d
 
 .PHONY: down-deps
 down-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker compose-deps.yml --env-file .env down -v
+	docker compose -f docker/docker-compose-deps.yml --env-file .env down -v
 # https://stackoverflow.com/a/6273809/1826109
 %:
 	@:
