@@ -67,8 +67,10 @@ export class WebhookDeliveryDto {
     instance.tokenId = '0';
     instance.tokenValue = tokenValue;
     instance.nativeAmount = '0';
-    instance.rawLog.topics = log.topics as string[];
-    instance.rawLog.data = log.data;
+    instance.rawLog = {
+      topics: log.topics as string[],
+      data: log.data,
+    };
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.ERC20;
@@ -100,8 +102,10 @@ export class WebhookDeliveryDto {
     instance.tokenId = tokenId;
     instance.tokenValue = '0';
     instance.nativeAmount = '0';
-    instance.rawLog.topics = log.topics as string[];
-    instance.rawLog.data = log.data;
+    instance.rawLog = {
+      topics: log.topics as string[],
+      data: log.data,
+    };
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.NFT;
