@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
@@ -16,6 +17,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Builder } from 'builder-pattern';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../users/schemas/user.schema';
@@ -24,6 +26,7 @@ import {
   DeleteMonitorDto,
   DeleteMonitorResponseDto,
   MonitorResponseDto,
+  UpdateMonitorDto,
 } from './dto/monitor.dto';
 import { MonitorService } from './monitor.service';
 
@@ -71,12 +74,29 @@ export class MonitorController {
   @ApiOperation({ summary: 'Delete monitor' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Delete('')
-  @ApiCreatedResponse({ type: MonitorResponseDto })
+  @Delete('/:id')
+  @ApiCreatedResponse({ type: DeleteMonitorResponseDto })
   async deleteMonitor(
     @Req() req: Request,
-    @Body() body: DeleteMonitorDto,
+    @Param('id') monitorId: string,
   ): Promise<DeleteMonitorResponseDto> {
-    return await this.monitorService.deleteMonitor(req.user as User, body);
+    return await this.monitorService.deleteMonitor(
+      req.user as User,
+      Builder<DeleteMonitorDto>().monitorId(monitorId).build(),
+    );
+  }
+
+  @ApiOperation({ summary: 'Update monitor' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Put('/:id')
+  @ApiOkResponse({ type: MonitorResponseDto })
+  async updateMonitor(
+    @Req() req: Request,
+    @Param('id') monitorId: string,
+    @Body() body: UpdateMonitorDto,
+  ): Promise<MonitorResponseDto> {
+    body.monitorId = monitorId;
+    return await this.monitorService.updateMonitor(req.user as User, body);
   }
 }
