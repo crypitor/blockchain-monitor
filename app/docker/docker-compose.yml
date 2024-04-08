@@ -20,7 +20,7 @@ services:
       - onebox
   onebox:
     container_name: crypitor-onebox
-    image: crypitor/onebox:0.2.0
+    image: crypitor/onebox:${VERSION:-master}
     env_file:
       - .env
     ports:
@@ -35,7 +35,7 @@ services:
       - kafka
   monitor:
     container_name: crypitor-monitor
-    image: crypitor/monitor:0.2.0
+    image: crypitor/monitor:${VERSION:-master}
     env_file:
       - .env
     networks:
@@ -48,7 +48,7 @@ services:
       - kafka
   worker:
     container_name: crypitor-worker
-    image: crypitor/worker:0.2.0
+    image: crypitor/worker:${VERSION:-master}
     env_file:
       - .env
     networks:
@@ -93,6 +93,15 @@ services:
       crypitor-network:
         aliases:
           - kafka
+
+  kafka-ui:
+    extends:
+      file: docker-compose-deps.yml
+      service: kafka-ui
+    networks:
+      crypitor-network:
+        aliases:
+          - kafka-ui
 networks:
   crypitor-network:
 volumes:

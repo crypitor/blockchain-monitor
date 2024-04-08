@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 export enum MonitorNetwork {
   Ethereum = 'Ethereum',
+  Sepolia = 'Sepolia',
   BSC = 'BSC',
   Polygon = 'Polygon',
   Avalanche = 'Avalanche',
@@ -80,13 +81,31 @@ export class Monitor {
   notification: MonitorNotification;
 
   @Prop()
+  type: MonitoringType;
+
+  @Prop()
   note: string;
 
   @Prop()
   tags: string[];
+
+  @Prop()
+  createdBy: string;
+
+  @Prop()
+  dateCreated: Date;
+
+  @Prop()
+  webhookId: string;
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);
+
+export enum MonitoringType {
+  IN = 'in',
+  OUT = 'out',
+  ALL = 'all',
+}
 
 export class SMSNotification extends MonitorNotification {
   constructor() {
@@ -110,6 +129,9 @@ export class WebhookNotification extends MonitorNotification {
   }
   @Prop()
   url: string;
+
+  @Prop()
+  secret_token: string;
 
   @Prop()
   authorization: string;

@@ -14,7 +14,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - 29092:9092
+      - 9092:9092
+      - 29092:29092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -28,8 +29,23 @@ services:
       timeout: 10s
       retries: 5
 
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
   redis:
     image: redis:7-alpine
+    ports:
+      - 6379:6379
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s

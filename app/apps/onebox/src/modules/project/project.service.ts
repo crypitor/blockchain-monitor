@@ -1,3 +1,4 @@
+import { ServiceException } from '@app/global/global.exception';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
 import {
@@ -7,7 +8,7 @@ import {
   ProjectStatus,
 } from '@app/shared_modules/project/schemas/project.schema';
 import { shortUUID } from '@app/utils/uuidUtils';
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
 import { User } from '../users/schemas/user.schema';
 import { CreateProjectDto, ProjectResponseDto } from './dto/project.dto';
@@ -22,11 +23,11 @@ export class ProjectService {
   async getProject(user: User, id: string): Promise<ProjectResponseDto> {
     const project = await this.projectRepository.findById(id);
     if (!project) {
-      throw new HttpException('Project not found', 404);
+      throw new ServiceException('Project not found', 404);
     }
 
     if (project.ownerId !== user.userId) {
-      throw new HttpException('Project not found', 404);
+      throw new ServiceException('Project not found', 404);
     }
 
     return ProjectResponseDto.from(project);

@@ -1,8 +1,5 @@
 import { Connection } from 'mongoose';
-import {
-  BscMonitorAddressSchema,
-  EthMonitorAddressSchema,
-} from './schemas/monitor.address.schema';
+import { MonitorAddressSchema } from './schemas/monitor.address.schema';
 import { MonitorSchema } from './schemas/monitor.schema';
 
 export const MonitorProviders = [
@@ -15,13 +12,21 @@ export const MonitorProviders = [
   {
     provide: 'ETH_MONITOR_ADDRESS_MODEL',
     useFactory: (connection: Connection) =>
-      connection.model('EthMonitorAddress', EthMonitorAddressSchema),
+      connection.model(
+        'EthMonitorAddress',
+        MonitorAddressSchema,
+        'eth_monitor_address',
+      ),
     inject: ['DATABASE_CONNECTION'],
   },
   {
     provide: 'BSC_MONITOR_ADDRESS_MODEL',
     useFactory: (connection: Connection) =>
-      connection.model('BscMonitorAddress', BscMonitorAddressSchema),
+      connection.model(
+        'BscMonitorAddress',
+        MonitorAddressSchema,
+        'bsc_monitor_address',
+      ),
     inject: ['DATABASE_CONNECTION'],
   },
 ];

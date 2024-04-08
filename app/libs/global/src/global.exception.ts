@@ -1,34 +1,36 @@
 import {
-  BadRequestException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  BadRequestException,
+  Catch,
+  ExceptionFilter,
   HttpException,
-  HttpStatus,
+  InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 import { MongoError, MongoServerError } from 'mongodb';
 
 export function handleException(exception): HttpException {
-  let error: HttpException;
-  if (exception instanceof MongoError) {
-    if (exception instanceof MongoServerError && exception.code === 11000) {
-      Object.keys(exception.keyValue).forEach((key) => {
-        error = new DuplicateKeyException(key);
-      });
+  Logger.error(exception);
+  try {
+    let error: HttpException;
+    if (exception instanceof MongoError) {
+      if (exception instanceof MongoServerError && exception.code === 11000) {
+        Object.keys(exception.keyValue).forEach((key) => {
+          error = new DuplicateKeyException(key);
+        });
+      } else {
+        error = new BadRequestException(exception);
+      }
+    } else if (exception instanceof HttpException) {
+      error = exception;
     } else {
-      error = new BadRequestException(exception);
+      error = new InternalServerErrorException(exception.message);
     }
-  } else if (exception instanceof HttpException) {
-    error = exception;
-  } else {
-    error = new InternalServerErrorException(exception.message);
+    return error;
+  } catch (e) {
+    return new InternalServerErrorException(exception.message);
   }
-
-  return error;
 }
 
 // @Catch(MongoError)
@@ -86,5 +88,18 @@ export class DuplicateKeyException extends BadRequestException {
         },
       },
     });
+  }
+}
+
+export class ServiceException extends HttpException {
+  constructor(error: string, code: number) {
+    super(error, code);
+  }
+
+  getResponse() {
+    return {
+      error: this.message,
+      statusCode: this.getStatus(),
+    };
   }
 }
