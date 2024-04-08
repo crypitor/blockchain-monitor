@@ -1,0 +1,40 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Build app
+      run: |
+        cd app
+        yarn && yarn build
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build and push Onebox Docker image
+      run: |
+        cd app
+        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:master .
+        docker push crypitor/onebox:master
+
+    - name: Build and push Monitor Docker image
+      run: |
+        cd app
+        docker build -f apps/monitor-service/Dockerfile --target production -t crypitor/monitor:master .
+        docker push crypitor/monitor:master
+
+    - name: Build and push Worker Docker image
+      run: |
+        cd app
+        docker build -f apps/worker-service/Dockerfile --target production -t crypitor/worker:master .
+        docker push crypitor/worker:master
