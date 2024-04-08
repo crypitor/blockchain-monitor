@@ -1,6 +1,19 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Model } from 'mongoose';
 
+import { comparePassword, hashPassword } from '@app/utils/bcrypt.util';
+import { sendEmail } from '@app/utils/email.sender';
+import { renderTemplate } from '@app/utils/file-template';
+import { hashMd5 } from '@app/utils/md5';
+import { generateUUID } from '@app/utils/uuidUtils';
+import { Builder } from 'builder-pattern';
+import { CreateProjectDto } from '../project/dto/project.dto';
+import { ProjectService } from '../project/project.service';
 import {
   ChangePasswordDto,
   ChangePasswordResponseDto,
@@ -12,16 +25,14 @@ import {
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from './dto/forgot-password.dto';
-import { generateUUID } from '@app/utils/uuidUtils';
-import { comparePassword, hashPassword } from '@app/utils/bcrypt.util';
-import { hashMd5 } from '@app/utils/md5';
-import { renderTemplate } from '@app/utils/file-template';
-import { sendEmail } from '@app/utils/email.sender';
 import { User } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('USER_MODEL') private readonly userModel: Model<User>) {}
+  constructor(
+    @Inject('USER_MODEL') private readonly userModel: Model<User>,
+    private readonly projectService: ProjectService,
+  ) {}
 
   /**
    * Create new user.
@@ -51,6 +62,14 @@ export class UsersService {
       },
     );
     sendEmail(user.email, 'Welcome', emailBody);
+    this.projectService
+      .createProject(
+        user,
+        Builder<CreateProjectDto>().name('My Project').build(),
+      )
+      .then((project) => {
+        Logger.log('Create project successfully: {}', project);
+      });
     return user;
   }
 
