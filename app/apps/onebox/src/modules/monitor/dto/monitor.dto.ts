@@ -8,7 +8,7 @@ import {
   SMSNotification,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
-import { shortUUID } from '@app/utils/uuidUtils';
+import { generateMonitorId } from '@app/utils/uuidUtils';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { Type } from 'class-transformer';
@@ -149,7 +149,7 @@ export class CreateMonitorDto {
   toMonitor(createdBy: string): Monitor {
     return Builder<Monitor>()
       .projectId(this.projectId)
-      .monitorId(shortUUID(16))
+      .monitorId(generateMonitorId())
       .network(this.network)
       .condition(
         Builder<MonitorCondition>()
