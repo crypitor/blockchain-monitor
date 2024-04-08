@@ -1,4 +1,4 @@
-import { generateUUID } from '@app/utils/uuidUtils';
+import { generateWebhookEventId } from '@app/utils/uuidUtils';
 import { Log, TransactionResponse, ethers } from 'ethers';
 
 export enum WebhookCategory {
@@ -15,7 +15,7 @@ export enum WebhookType {
 export class WebhookDeliveryDto {
   id: string;
   chain: string;
-  webhookId: string;
+  monitorId: string;
   hash: string;
   blockNum: number; // decimal string
   contract: {
@@ -46,15 +46,15 @@ export class WebhookDeliveryDto {
   public static fromLogToERC20(
     log: Log,
     chain: string,
-    webhookId: string,
+    monitorId: string,
     type: WebhookType,
     confirm: boolean,
     tokenValue: string,
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
-    instance.id = generateUUID();
+    instance.id = generateWebhookEventId();
     instance.chain = chain;
-    instance.webhookId = webhookId;
+    instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;
     instance.contract = {
@@ -67,8 +67,10 @@ export class WebhookDeliveryDto {
     instance.tokenId = '0';
     instance.tokenValue = tokenValue;
     instance.nativeAmount = '0';
-    instance.rawLog.topics = log.topics as string[];
-    instance.rawLog.data = log.data;
+    instance.rawLog = {
+      topics: log.topics as string[],
+      data: log.data,
+    };
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.ERC20;
@@ -79,15 +81,15 @@ export class WebhookDeliveryDto {
   public static fromLogToERC721(
     log: Log,
     chain: string,
-    webhookId: string,
+    monitorId: string,
     type: WebhookType,
     confirm: boolean,
     tokenId: string,
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
-    instance.id = generateUUID();
+    instance.id = generateWebhookEventId();
     instance.chain = chain;
-    instance.webhookId = webhookId;
+    instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
     instance.blockNum = log.blockNumber;
     instance.contract = {
@@ -100,8 +102,10 @@ export class WebhookDeliveryDto {
     instance.tokenId = tokenId;
     instance.tokenValue = '0';
     instance.nativeAmount = '0';
-    instance.rawLog.topics = log.topics as string[];
-    instance.rawLog.data = log.data;
+    instance.rawLog = {
+      topics: log.topics as string[],
+      data: log.data,
+    };
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.NFT;
@@ -112,18 +116,18 @@ export class WebhookDeliveryDto {
   public static fromTransactionToNative(
     transaction: TransactionResponse,
     chain: string,
-    webhookId: string,
+    monitorId: string,
     type: WebhookType,
     confirm: boolean,
   ): WebhookDeliveryDto {
     const instance = new WebhookDeliveryDto();
-    instance.id = generateUUID();
+    instance.id = generateWebhookEventId();
     instance.chain = chain;
-    instance.webhookId = webhookId;
+    instance.monitorId = monitorId;
     instance.hash = transaction.hash;
     instance.blockNum = transaction.blockNumber;
-    instance.fromAddress = transaction.from;
-    instance.toAddress = transaction.to;
+    instance.fromAddress = transaction.from.toLowerCase();
+    instance.toAddress = transaction.to.toLowerCase();
 
     instance.tokenId = '0';
     instance.tokenValue = '0';

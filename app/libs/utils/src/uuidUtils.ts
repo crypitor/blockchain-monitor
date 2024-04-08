@@ -9,3 +9,15 @@ export const generateUUID = () => {
 export const shortUUID = (length?: number) => {
   return shortId.rnd(length);
 };
+
+export const generateProjectId = () => {
+  return 'pr_' + shortUUID(16);
+};
+
+export const generateMonitorId = () => {
+  return 'mo_' + shortUUID(16);
+};
+
+export const generateWebhookEventId = () => {
+  return 'wh_' + shortUUID(16);
+};

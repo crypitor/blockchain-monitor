@@ -37,12 +37,12 @@ export class EthereumService {
   }
 
   async handleErc20Transfer(data: any): Promise<void> {
-    this.logger.debug([
-      'ERC20',
-      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
-    ]);
     const event = data.event as Log;
     const confirm = data.confirm as boolean;
+    this.logger.debug([
+      'ERC20',
+      `received transaction ${event.transactionHash} from block ${event.blockNumber}`,
+    ]);
     // Extract relevant information from the event
     // const contractAddress = ethers.getAddress(event.address).toLowerCase();
     const fromAddress = ethers
@@ -79,12 +79,13 @@ export class EthereumService {
   }
 
   async handleErc721Transfer(data: any) {
-    this.logger.debug([
-      'ERC721',
-      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
-    ]);
     const event = data.event as Log;
     const confirm = data.confirm as boolean;
+
+    this.logger.debug([
+      'ERC721',
+      `received transaction ${event.transactionHash} from block ${event.blockNumber}`,
+    ]);
 
     const fromAddress = ethers.getAddress(event.topics[1].substring(26));
     const toAddress = ethers.getAddress(event.topics[2].substring(26));
@@ -116,15 +117,21 @@ export class EthereumService {
   }
 
   async handleNativeTransfer(data: any): Promise<void> {
-    this.logger.debug([
-      'NATIVE',
-      `receive new native transaction ${data.hash} from block ${data.blockNumber}`,
-    ]);
     const transaction = data.transaction as TransactionResponse;
     const confirm = data.confirm as boolean;
 
+    this.logger.debug([
+      'NATIVE',
+      `receive new transaction ${transaction.hash} from block ${transaction.blockNumber}`,
+    ]);
+
+    // return if value is zero
+    if (transaction.value === 0n) {
+      return;
+    }
+
     const fromWallet_monitors = await this.findEthAddress(
-      ethers.getAddress(transaction.from).toLowerCase(),
+      transaction.from.toLowerCase(),
     );
     if (fromWallet_monitors) {
       this.handleMatchConditionNative(
@@ -136,7 +143,7 @@ export class EthereumService {
     }
 
     const toWallet_monitors = await this.findEthAddress(
-      ethers.getAddress(transaction.to).toLowerCase(),
+      transaction.to.toLowerCase(),
     );
     if (toWallet_monitors) {
       this.handleMatchConditionNative(
