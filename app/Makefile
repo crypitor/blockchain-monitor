@@ -47,6 +47,11 @@ up-silent:
 	@echo "Building application and starting container in background mode..."
 	docker compose -f docker-compose-dev.yml up -d
 
+.PHONY: log
+log:
+	@echo "Building application and starting container in background mode..."
+	docker compose -f docker-compose-dev.yml logs onebox monitor worker -f -n 10
+
 .PHONY: down
 down:
 	@echo "Shutting down and removing containers for onebox..."
