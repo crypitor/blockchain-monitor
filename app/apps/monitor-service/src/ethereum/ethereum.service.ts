@@ -268,6 +268,7 @@ export class EthereumService {
       return;
     }
     const webhook = monitor.notification as WebhookNotification;
+    body.tags = monitor.tags;
     try {
       const response = await fetch(webhook.url, {
         method: 'POST',
@@ -300,6 +301,7 @@ export class EthereumService {
     //       "webhook_id": "3b81e80e-3c4d-470d-be1f-e692c69d0b9d",
     //       "payload": "{\"success2\": true}"
     //   }'
+    body.tags = monitor.tags;
     this.webhookClient.emit('webhook-event', {
       webhook_id: monitor.webhookId,
       payload: body,
