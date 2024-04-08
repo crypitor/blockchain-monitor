@@ -7,10 +7,13 @@ services:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/onebox/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     env_file:
       - .env
     ports:
-      - 3000:3000
+      - ${SERVER_PORT:-3000}:${SERVER_PORT:-3000}
     networks:
       crypitor-network:
         aliases:
@@ -25,6 +28,9 @@ services:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/monitor-service/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     env_file:
       - .env
     networks:
@@ -41,6 +47,9 @@ services:
       context: .
       target: ${TARGET:-development}
       dockerfile: ./apps/worker-service/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     env_file:
       - .env
     networks:
@@ -85,6 +94,16 @@ services:
       crypitor-network:
         aliases:
           - kafka
+  kafka-ui:
+    extends:
+      file: ./docker/docker-compose-deps.yml
+      service: kafka-ui
+    depends_on:
+      - kafka
+    networks:
+      crypitor-network:
+        aliases:
+          - kafka-ui
 networks:
   crypitor-network:
 volumes:
