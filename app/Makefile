@@ -34,28 +34,28 @@ help : Makefile
 
 .PHONY: up
 up:
-	@echo "Building application and starting container $(app)..."
-	docker-compose up $(app)
+	@echo "Building application and starting container..."
+	docker compose -f docker-compose-dev.yml up
 
 .PHONY: build
 build:
-	@echo "Re-building container $(app) and installing dependancies..."
-	docker-compose down && TARGET=development docker-compose build --no-cache $(app) && docker-compose up $(app)
+	@echo "Re-building container and installing dependancies..."
+	docker compose -f docker-compose-dev.yml down && TARGET=development docker compose -f docker-compose-dev.yml build --no-cache && docker compose -f docker-compose-dev.yml up
 
 .PHONY: up-silent
 up-silent:
-	@echo "Building application and starting container $(app) in background mode..."
-	docker-compose up -d $(app)
+	@echo "Building application and starting container in background mode..."
+	docker compose -f docker-compose-dev.yml up -d
 
 .PHONY: down
 down:
 	@echo "Shutting down and removing containers for onebox..."
-	@docker-compose down
+	@docker compose -f docker-compose-dev.yml down
 
 .PHONY: stop
 stop:
 	@echo "Stopping containers for onebox..."
-	@docker-compose stop
+	@docker compose -f docker-compose-dev.yml stop
 
 .PHONY: shell
 shell:
@@ -80,28 +80,28 @@ up-prod:
 	# @echo "Init prod environment..."
 	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
-	docker-compose -f docker-compose-prod.yml up -d
+	docker compose -f docker compose-prod.yml up -d
 
 .PHONY: down-prod
 down-prod:
 	@echo "Building application and starting container..."
-	docker-compose -f docker-compose-prod.yml down
+	docker compose -f docker compose-prod.yml down
 
 .PHONY: build
 build-prod:
 	@echo "Re-building container and installing dependancies..."
-	docker-compose -f docker-compose-prod.yml down && docker-compose -f docker-compose-prod.yml build --no-cache && docker-compose -f docker-compose-prod.yml up
+	docker compose -f docker compose-prod.yml down && docker compose -f docker compose-prod.yml build --no-cache && docker compose -f docker compose-prod.yml up
 
 
 .PHONY: up-deps
 up-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker-compose-deps.yml --env-file .env up -d
+	docker compose -f docker/docker compose-deps.yml --env-file .env up -d
 
 .PHONY: down-deps
 down-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker-compose-deps.yml --env-file .env down -v
+	docker compose -f docker/docker compose-deps.yml --env-file .env down -v
 # https://stackoverflow.com/a/6273809/1826109
 %:
 	@:
