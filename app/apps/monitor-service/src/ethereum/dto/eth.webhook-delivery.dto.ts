@@ -37,6 +37,7 @@ export class WebhookDeliveryDto {
   };
   logIndex: number;
   txnIndex: number;
+  tags: string[];
 
   toString(): string {
     return JSON.stringify(this);
