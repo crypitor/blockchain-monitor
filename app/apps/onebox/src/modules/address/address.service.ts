@@ -41,7 +41,7 @@ export class MonitorAddressService {
       Builder<MonitorAddress>()
         .projectId(monitor.projectId)
         .monitorId(monitor.monitorId)
-        .address(address)
+        .address(address.toLocaleLowerCase())
         .network(monitor.network)
         .createdBy(user.userId)
         .dateCreated(new Date())
@@ -95,6 +95,10 @@ export class MonitorAddressService {
     if (!member) {
       throw new ServiceException('unauthorized', 401);
     }
+    // lower case request.addresses
+    request.addresses = request.addresses.map((address) =>
+      address.toLowerCase(),
+    );
     return MonitorAddressRepository.getRepository(monitor.network)
       .deleteMonitorAddress(monitor.monitorId, request.addresses)
       .then(() =>
