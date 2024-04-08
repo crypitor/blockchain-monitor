@@ -6,10 +6,10 @@ import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
 import { CronJob } from 'cron';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
+import { SupportedChain } from '@app/utils/supportedChain.util';
 
 @Injectable()
 export class PollingBlockService {
-  private readonly confirmBlock = 12;
   private detectInfo = { flag: false, blockNumber: 0 };
 
   private readonly logger = new Logger(EthereumWorker.name);
@@ -65,7 +65,8 @@ export class PollingBlockService {
     } else {
       this.logger.warn('running start block from db ' + blockSync.lastSync);
       // if we start at db block, we suppose that we already scan at db block
-      this.detectInfo.blockNumber = blockSync.lastSync + this.confirmBlock;
+      this.detectInfo.blockNumber =
+        blockSync.lastSync + SupportedChain.ETH.confirmationBlock;
     }
     this.detectInfo.flag = false;
     this.addCronJob('ethPollingBlock', '10');
@@ -113,16 +114,21 @@ export class PollingBlockService {
           blockNumber: blockNumber,
         });
 
-        this.logger.debug(['CONFIRM', `send block ${blockNumber}`]);
+        this.logger.debug([
+          'CONFIRM',
+          `send block ${blockNumber - SupportedChain.ETH.confirmationBlock}`,
+        ]);
         // emit event confirm block with block number - confirm block
         this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
-          blockNumber: blockNumber - this.confirmBlock,
+          blockNumber: blockNumber - SupportedChain.ETH.confirmationBlock,
         });
 
         this.detectInfo.blockNumber = blockNumber;
 
         //only update last sync for confirm
-        await this.updateLastSyncBlock(blockNumber - this.confirmBlock);
+        await this.updateLastSyncBlock(
+          blockNumber - SupportedChain.ETH.confirmationBlock,
+        );
       } catch (error) {
         this.logger.error([
           'DETECT',
