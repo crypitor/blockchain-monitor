@@ -228,3 +228,64 @@ export class DeleteMonitorResponseDto {
   @ApiResponseProperty()
   success: boolean;
 }
+
+export class UpdateMonitorDto {
+  monitorId: string;
+
+  @ApiProperty({
+    example: {
+      native: true,
+      internal: true,
+      erc721: true,
+      erc20: true,
+      specific: false,
+      cryptos: [],
+    },
+  })
+  @ValidateNested()
+  condition: MonitorConditionDto;
+
+  @ApiProperty({
+    example: {
+      method: MonitorNotificationMethod.Webhook,
+      url: 'https://example.com',
+      authorization: 'Basic dGVzdHVzZXJuYW1lOnRlc3RwYXNzd29yZA==',
+      secretToken: '',
+    },
+  })
+  @ValidateNested()
+  @Type(() => NotificationDto, {
+    keepDiscriminatorProperty: true,
+    discriminator: {
+      property: 'method',
+      subTypes: [
+        {
+          name: MonitorNotificationMethod.Webhook,
+          value: WebhookNotificationDto,
+        },
+        {
+          name: MonitorNotificationMethod.SMS,
+          value: SMSNotificationDto,
+        },
+        {
+          name: MonitorNotificationMethod.Email,
+          value: EmailNotificationDto,
+        },
+      ],
+    },
+  })
+  notification:
+    | NotificationDto
+    | WebhookNotificationDto
+    | SMSNotificationDto
+    | EmailNotificationDto;
+
+  @ApiProperty({ example: 'all' })
+  type: MonitoringType;
+
+  @ApiProperty()
+  note: string;
+
+  @ApiProperty()
+  tags: string[];
+}

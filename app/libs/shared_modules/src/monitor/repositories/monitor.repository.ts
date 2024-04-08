@@ -25,4 +25,23 @@ export class MonitorRepository {
       .deleteOne({ monitorId: monitorId })
       .then((result) => result.deletedCount > 0);
   }
+
+  async updateMonitor(
+    monitorId: string,
+    updateMonitor: Map<string, any>,
+  ): Promise<Monitor> {
+    return this.monitorModel
+      .findOneAndUpdate(
+        { monitorId: monitorId },
+        {
+          $set: {
+            ...updateMonitor,
+          },
+        },
+        {
+          new: true,
+        },
+      )
+      .exec();
+  }
 }
