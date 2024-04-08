@@ -9,7 +9,6 @@ export class EthereumController {
 
   @EventPattern(TopicName.ETH_NATIVE_TRANSFER)
   handleNativeTransfer(data: any): void {
-    console.log(data);
     this.ethereum.handleNativeTransfer(data);
   }
 
