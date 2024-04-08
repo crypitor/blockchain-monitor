@@ -4,13 +4,9 @@ WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
 
-RUN npm install -g @nestjs/cli
-
-RUN yarn install
+RUN yarn
 
 COPY . .
-
-RUN yarn build monitor-service
 
 CMD yarn start:dev monitor-service
 

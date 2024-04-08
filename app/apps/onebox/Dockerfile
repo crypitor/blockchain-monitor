@@ -4,15 +4,11 @@ WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
 
-RUN npm install -g @nestjs/cli
-
-RUN yarn install
+RUN yarn
 
 COPY . .
 
-RUN yarn build
-
-CMD yarn start:dev
+CMD ["yarn", "start:dev"]
 
 FROM node:18-alpine as production
 
