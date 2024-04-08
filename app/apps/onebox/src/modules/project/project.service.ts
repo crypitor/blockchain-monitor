@@ -7,7 +7,7 @@ import {
   ProjectRole,
   ProjectStatus,
 } from '@app/shared_modules/project/schemas/project.schema';
-import { shortUUID } from '@app/utils/uuidUtils';
+import { generateProjectId } from '@app/utils/uuidUtils';
 import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
 import { User } from '../users/schemas/user.schema';
@@ -38,7 +38,7 @@ export class ProjectService {
     createProjectDto: CreateProjectDto,
   ): Promise<ProjectResponseDto> {
     const project = Builder<Project>()
-      .projectId(shortUUID(16))
+      .projectId(generateProjectId())
       .ownerId(user.userId)
       .name(createProjectDto.name)
       .status(ProjectStatus.ACTIVE)
