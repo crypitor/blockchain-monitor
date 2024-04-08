@@ -2,6 +2,7 @@ import {
   EmailNotification,
   Monitor,
   MonitorCondition,
+  MonitoringType,
   MonitorNetwork,
   MonitorNotification,
   MonitorNotificationMethod,
@@ -139,6 +140,9 @@ export class CreateMonitorDto {
     | SMSNotificationDto
     | EmailNotificationDto;
 
+  @ApiProperty({ example: 'all' })
+  type: MonitoringType;
+
   @ApiProperty()
   @IsNotEmpty()
   note: string;
@@ -162,6 +166,7 @@ export class CreateMonitorDto {
           .build(),
       )
       .notification(this.notification.toMonitorNotification())
+      .type(this.type)
       .note(this.note)
       .tags(this.tags)
       .createdBy(createdBy)
@@ -190,6 +195,9 @@ export class MonitorResponseDto {
   note: string;
 
   @ApiResponseProperty()
+  type: MonitoringType;
+
+  @ApiResponseProperty()
   tags: string[];
 
   @ApiResponseProperty()
@@ -202,6 +210,7 @@ export class MonitorResponseDto {
       .network(monitor.network)
       .condition(monitor.condition)
       .notification(monitor.notification)
+      .type(monitor.type)
       .note(monitor.note)
       .tags(monitor.tags)
       .dateCreated(monitor.dateCreated)
