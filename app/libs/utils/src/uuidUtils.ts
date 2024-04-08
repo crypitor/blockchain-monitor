@@ -17,3 +17,7 @@ export const generateProjectId = () => {
 export const generateMonitorId = () => {
   return 'mo_' + shortUUID(16);
 };
+
+export const generateWebhookEventId = () => {
+  return 'wh_' + shortUUID(16);
+};
