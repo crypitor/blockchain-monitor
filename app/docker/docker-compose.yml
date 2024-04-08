@@ -11,6 +11,7 @@ services:
       - 443:443
     environment:
       API_DOMAIN: ${API_DOMAIN:-localhost}
+      SERVER_PORT: ${SERVER_PORT:-3000}
     volumes:
       - ../.config/nginx/:/etc/nginx/templates
       - /etc/letsencrypt:/etc/letsencrypt
@@ -95,6 +96,8 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: kafka
+    depends_on:
+      - zookeeper
     networks:
       crypitor-network:
         aliases:
@@ -104,6 +107,8 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: kafka-ui
+    depends_on:
+      - kafka
     networks:
       crypitor-network:
         aliases:
