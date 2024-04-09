@@ -6,6 +6,7 @@ import {
   MonitoringType,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
@@ -27,6 +28,9 @@ export class EthereumService {
 
   @Inject('WEBHOOK_SERVICE')
   private readonly webhookClient: ClientKafka;
+
+  @Inject()
+  private readonly webhookService: WebhookService;
 
   async findEthAddress(address: string): Promise<MonitorAddress[]> {
     return this.ethMonitorAddressRepository.findByAddress(address);
@@ -182,7 +186,7 @@ export class EthereumService {
         confirm,
       );
 
-      await this.sendMessage(monitor, body);
+      await this.dispathMessageToWebhook(monitor, body);
 
       this.logger.debug(
         `Confirmed: ${confirm} native transfer:\n${JSON.stringify(body)}`,
@@ -220,7 +224,7 @@ export class EthereumService {
         tokenId,
       );
 
-      await this.sendMessage(monitor, body);
+      await this.dispathMessageToWebhook(monitor, body);
 
       this.logger.debug(
         `Confirmed: ${confirm} ERC721 transfer ${type.toUpperCase()}:\n${JSON.stringify(
@@ -260,7 +264,7 @@ export class EthereumService {
         value,
       );
 
-      await this.sendMessage(monitor, body);
+      await this.dispathMessageToWebhook(monitor, body);
 
       this.logger.debug(
         `Confirmed: ${confirm} ERC20 transfer ${type.toUpperCase()}:\n${JSON.stringify(
@@ -299,19 +303,26 @@ export class EthereumService {
     }
   }
 
-  private async sendToWebhook(monitor: Monitor, body: WebhookDeliveryDto) {
-    // every monitor has a webhook id in webhook-service
-    // we need to send body payload to webhook service
-    // curl --location --request POST 'http://localhost:8000/v1/deliveries' \
-    //   --header 'Content-Type: application/json' \
-    //   --data-raw '{
-    //       "webhook_id": "3b81e80e-3c4d-470d-be1f-e692c69d0b9d",
-    //       "payload": "{\"success2\": true}"
-    //   }'
+  private async dispathMessageToWebhook(
+    monitor: Monitor,
+    body: WebhookDeliveryDto,
+  ) {
+    if (!monitor.notification) {
+      return;
+    }
+    const webhook = monitor.notification as WebhookNotification;
     body.tags = monitor.tags;
-    this.webhookClient.emit('webhook-event', {
-      webhook_id: monitor.webhookId,
-      payload: body,
-    });
+    try {
+      const respone = await this.webhookService.dispatchMessage(
+        monitor.webhookId,
+        body,
+      );
+      console.log(JSON.stringify(respone));
+    } catch (error) {
+      this.logger.error(
+        `Error while sending webhook request to: ${webhook.url}`,
+        error,
+      );
+    }
   }
 }
