@@ -31,9 +31,12 @@ services:
         aliases:
           - onebox
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   monitor:
@@ -46,9 +49,12 @@ services:
         aliases:
           - monitor
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   worker:
@@ -61,9 +67,12 @@ services:
         aliases:
           - worker
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   redis:
@@ -78,6 +87,7 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: mongo
+    restart: always
     networks:
       crypitor-network:
         aliases:
@@ -87,6 +97,7 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: zookeeper
+    restart: always
     networks:
       crypitor-network:
         aliases:
@@ -96,8 +107,10 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: kafka
+    restart: always
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     networks:
       crypitor-network:
         aliases:
@@ -107,8 +120,10 @@ services:
     extends:
       file: docker-compose-deps.yml
       service: kafka-ui
+    restart: always
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       crypitor-network:
         aliases:
