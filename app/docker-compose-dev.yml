@@ -19,9 +19,12 @@ services:
         aliases:
           - onebox
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
   monitor:
     container_name: monitor
     build:
@@ -38,9 +41,12 @@ services:
         aliases:
           - monitor
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
   worker:
     container_name: worker
     build:
@@ -57,9 +63,12 @@ services:
         aliases:
           - worker
     depends_on:
-      - redis
-      - mongo
-      - kafka
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
   redis:
     extends:
       file: ./docker/docker-compose-deps.yml
@@ -90,6 +99,9 @@ services:
     extends:
       file: ./docker/docker-compose-deps.yml
       service: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
     networks:
       crypitor-network:
         aliases:
@@ -99,7 +111,8 @@ services:
       file: ./docker/docker-compose-deps.yml
       service: kafka-ui
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       crypitor-network:
         aliases:
