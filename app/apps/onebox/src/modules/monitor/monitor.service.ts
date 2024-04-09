@@ -1,6 +1,10 @@
 import { ServiceException } from '@app/global/global.exception';
 import { MonitorAddressRepository } from '@app/shared_modules/monitor/repositories/monitor.address.repository';
 import { MonitorRepository } from '@app/shared_modules/monitor/repositories/monitor.repository';
+import {
+  MonitorNotificationMethod,
+  WebhookNotification,
+} from '@app/shared_modules/monitor/schemas/monitor.schema';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
 import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
@@ -70,16 +74,16 @@ export class MonitorService {
 
     const monitor = request.toMonitor(user.userId);
     // request create webhook in webhook microservice
-    // if (monitor.notification.method === MonitorNotificationMethod.Webhook) {
-    //   const method = monitor.notification as WebhookNotification;
-    //   const webhookId = await this.webhookService.createWebhook(
-    //     monitor.monitorId,
-    //     monitor.notification.method,
-    //     method.secret_token,
-    //     method.authorization,
-    //   );
-    //   monitor.webhookId = webhookId;
-    // }
+    if (monitor.notification.method === MonitorNotificationMethod.Webhook) {
+      const method = monitor.notification as WebhookNotification;
+      const webhookId = await this.webhookService.createWebhook(
+        monitor.monitorId,
+        method.url,
+        method.secret_token,
+        method.authorization,
+      );
+      monitor.webhookId = webhookId;
+    }
     await this.monitorRepository.saveMonitor(monitor);
     await this.projectRepository.increaseMonitorCount(monitor.projectId, 1);
     // todo: check max monitor
@@ -101,6 +105,7 @@ export class MonitorService {
     if (!member) {
       throw new ServiceException('not authorized', 401);
     }
+    await this.webhookService.deleteWebhook(monitor.webhookId);
     await this.monitorRepository.deleteMonitor(monitor.monitorId);
     await this.projectRepository.increaseMonitorCount(monitor.projectId, -1);
     await MonitorAddressRepository.getRepository(
