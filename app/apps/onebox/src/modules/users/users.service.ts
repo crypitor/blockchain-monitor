@@ -56,7 +56,7 @@ export class UsersService {
     }).save();
     const linkLogin = `https://${process.env.WEB_DOMAIN}/login`;
     const emailBody = await renderTemplate(
-      'apps/onebox/src/resources/email_template/welcome.html',
+      'resources/email_template/welcome.html',
       {
         linkLogin,
       },
@@ -161,7 +161,7 @@ export class UsersService {
     );
     const linkResetPassword = `https://${process.env.WEB_DOMAIN}/reset-password?token=${forgotPasswordToken}&email=${user.email}`;
     const emailBody = await renderTemplate(
-      'apps/onebox/src/resources/email_template/forgot_password.html',
+      'resources/email_template/forgot_password.html',
       {
         linkResetPassword,
         expire: new Date(forgotPasswordExpire).toUTCString(),
@@ -209,7 +209,7 @@ export class UsersService {
     );
     const linkLogin = `https://${process.env.WEB_DOMAIN}/login`;
     const emailBody = await renderTemplate(
-      'apps/onebox/src/resources/email_template/reset_password_success.html',
+      'resources/email_template/reset_password_success.html',
       {
         linkLogin,
       },

@@ -23,6 +23,6 @@ RUN yarn install --production
 
 COPY ./dist/apps/onebox ./dist/apps/onebox
 
-# COPY --from=development /usr/src/app/dist ./dist
+COPY ./resources ./resources
 
 CMD ["node", "dist/apps/onebox/main.js"]
