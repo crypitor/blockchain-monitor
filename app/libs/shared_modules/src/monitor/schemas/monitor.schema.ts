@@ -100,6 +100,9 @@ export class Monitor {
 
   @Prop()
   webhookId: string;
+
+  @Prop()
+  disabled: boolean;
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);
