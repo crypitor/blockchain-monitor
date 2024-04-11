@@ -82,6 +82,13 @@ export class MonitorAddressRepository {
       .deleteMany({ monitorId: monitorId })
       .then((result) => result.deletedCount);
   }
+
+  async findAddressByMonitorAndAddress(
+    monitorId: string,
+    address: string,
+  ): Promise<MonitorAddress[]> {
+    return this.model.find({ monitorId: monitorId, address: address });
+  }
 }
 
 @Injectable()
