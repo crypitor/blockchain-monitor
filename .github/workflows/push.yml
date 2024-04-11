@@ -19,22 +19,22 @@ jobs:
         yarn && yarn build
 
     - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.gitlab.com -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build and push Onebox Docker image
       run: |
         cd app
-        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:master .
-        docker push crypitor/onebox:master
+        docker build -f apps/onebox/Dockerfile --target production -t registry.gitlab.com/cauta/onebox:master .
+        docker push registry.gitlab.com/cauta/onebox:master
 
     - name: Build and push Monitor Docker image
       run: |
         cd app
-        docker build -f apps/monitor-service/Dockerfile --target production -t crypitor/monitor:master .
-        docker push crypitor/monitor:master
+        docker build -f apps/monitor-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-monitor:master .
+        docker push registry.gitlab.com/cauta/crypitor-monitor:master
 
     - name: Build and push Worker Docker image
       run: |
         cd app
-        docker build -f apps/worker-service/Dockerfile --target production -t crypitor/worker:master .
-        docker push crypitor/worker:master
+        docker build -f apps/worker-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-worker:master .
+        docker push registry.gitlab.com/cauta/crypitor-worker:master
