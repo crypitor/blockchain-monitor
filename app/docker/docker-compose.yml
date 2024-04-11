@@ -131,7 +131,7 @@ services:
 
   postgres:
     extends:
-      file: docker-compose-deps.yml
+      file: docker-compose-wh.yml
       service: postgres
 
     networks:
@@ -141,7 +141,7 @@ services:
 
   webhook-migrate:
     extends:
-      file: docker-compose-deps.yml
+      file: docker-compose-wh.yml
       service: webhook-migrate
     depends_on:
       postgres:
@@ -155,7 +155,7 @@ services:
 
   webhook-worker:
     extends:
-      file: docker-compose-deps.yml
+      file: docker-compose-wh.yml
       service: webhook-worker
     depends_on:
       postgres:
@@ -169,7 +169,7 @@ services:
 
   webhook-server:
     extends:
-      file: docker-compose-deps.yml
+      file: docker-compose-wh.yml
       service: webhook-server
     depends_on:
       postgres:
