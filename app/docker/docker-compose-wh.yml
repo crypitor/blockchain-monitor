@@ -63,7 +63,7 @@ services:
     # depends_on:
     #   postgres:
     #     condition: service_healthy
-    links:
-      - postgres
+    # links:
+    #   - postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
