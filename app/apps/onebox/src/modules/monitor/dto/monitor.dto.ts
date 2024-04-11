@@ -176,6 +176,7 @@ export class CreateMonitorDto {
       .tags(this.tags)
       .createdBy(createdBy)
       .dateCreated(new Date())
+      .disabled(false)
       .build();
   }
 }
@@ -211,6 +212,9 @@ export class MonitorResponseDto {
   @ApiResponseProperty()
   dateCreated: Date;
 
+  @ApiResponseProperty()
+  disabled: boolean;
+
   static from(monitor: Monitor) {
     return Builder<MonitorResponseDto>()
       .projectId(monitor.projectId)
@@ -223,6 +227,7 @@ export class MonitorResponseDto {
       .note(monitor.note)
       .tags(monitor.tags)
       .dateCreated(monitor.dateCreated)
+      .disabled(monitor.disabled || false)
       .build();
   }
 }
@@ -300,4 +305,7 @@ export class UpdateMonitorDto {
 
   @ApiProperty()
   tags: string[];
+
+  @ApiProperty()
+  disabled: boolean;
 }

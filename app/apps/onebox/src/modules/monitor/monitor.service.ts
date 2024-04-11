@@ -165,6 +165,9 @@ export class MonitorService {
     if (request.tags) {
       updateMonitor['tags'] = request.tags;
     }
+    if (request.disabled != undefined) {
+      updateMonitor['disabled'] = request.disabled;
+    }
     return this.monitorRepository
       .updateMonitor(monitor.monitorId, updateMonitor)
       .then((monitor) => MonitorResponseDto.from(monitor));
