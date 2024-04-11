@@ -128,6 +128,59 @@ services:
       crypitor-network:
         aliases:
           - kafka-ui
+
+  postgres:
+    extends:
+      file: docker-compose-deps.yml
+      service: postgres
+
+    networks:
+      crypitor-network:
+        aliases:
+          - postgres
+
+  webhook-migrate:
+    extends:
+      file: docker-compose-deps.yml
+      service: webhook-migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+      webhook-migrate:
+        condition: service_completed_successfully
+    networks:
+      crypitor-network:
+        aliases:
+          - webhook-migrate
+
+  webhook-worker:
+    extends:
+      file: docker-compose-deps.yml
+      service: webhook-worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      webhook-migrate:
+        condition: service_completed_successfully
+    networks:
+      crypitor-network:
+        aliases:
+          - webhook-worker
+
+  webhook-server:
+    extends:
+      file: docker-compose-deps.yml
+      service: webhook-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+      webhook-migrate:
+        condition: service_completed_successfully
+    networks:
+      crypitor-network:
+        aliases:
+          - webhook-server
+
 networks:
   crypitor-network:
 volumes:

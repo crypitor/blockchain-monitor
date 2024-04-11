@@ -26,6 +26,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      webhook-migrate:
+        condition: service_completed_successfully
     links:
       - postgres
     extra_hosts:
