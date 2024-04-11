@@ -74,6 +74,9 @@ export class Monitor {
   @Prop({ required: true })
   network: MonitorNetwork;
 
+  @Prop({ required: true })
+  name: string;
+
   @Prop()
   condition: MonitorCondition;
 

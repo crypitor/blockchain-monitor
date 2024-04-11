@@ -150,11 +150,16 @@ export class CreateMonitorDto {
   @ApiProperty()
   tags: string[];
 
+  @ApiProperty()
+  @IsNotEmpty()
+  name: string;
+
   toMonitor(createdBy: string): Monitor {
     return Builder<Monitor>()
       .projectId(this.projectId)
       .monitorId(generateMonitorId())
       .network(this.network)
+      .name(this.name)
       .condition(
         Builder<MonitorCondition>()
           .native(this.condition.native)
@@ -186,6 +191,9 @@ export class MonitorResponseDto {
   network: MonitorNetwork;
 
   @ApiResponseProperty()
+  name: string;
+
+  @ApiResponseProperty()
   condition: MonitorCondition;
 
   @ApiResponseProperty()
@@ -208,6 +216,7 @@ export class MonitorResponseDto {
       .projectId(monitor.projectId)
       .monitorId(monitor.monitorId)
       .network(monitor.network)
+      .name(monitor.name)
       .condition(monitor.condition)
       .notification(monitor.notification)
       .type(monitor.type)
@@ -231,6 +240,9 @@ export class DeleteMonitorResponseDto {
 
 export class UpdateMonitorDto {
   monitorId: string;
+
+  @ApiProperty()
+  name: string;
 
   @ApiProperty({
     example: {

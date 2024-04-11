@@ -130,6 +130,9 @@ export class MonitorService {
       throw new ServiceException('not authorized', 401);
     }
     const updateMonitor = new Map<string, any>();
+    if (request.name) {
+      updateMonitor['name'] = request.name;
+    }
     if (request.condition) {
       if (request.condition.native != undefined) {
         updateMonitor['condition.native'] = request.condition.native;
