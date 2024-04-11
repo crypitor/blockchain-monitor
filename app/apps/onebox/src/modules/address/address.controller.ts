@@ -26,6 +26,7 @@ import {
   GetMonitorAddressRequestDto,
   GetMonitorAddressResponseDto,
   MonitorAddressResponseDto,
+  SearchMonitorAddressRequestDto,
 } from './dto/address.dto';
 
 @ApiTags('Monitor Address')
@@ -71,6 +72,22 @@ export class MonitorAddressController {
     @Body() body: DeleteMonitorAddressDto,
   ): Promise<DeleteMonitorAddressResponseDto> {
     return this.monitorAddressService.deleteMonitorAddress(
+      req.user as User,
+      body,
+    );
+  }
+
+  @ApiOperation({ summary: 'Search Monitor Address' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Get('/search')
+  @ApiOkResponse({ type: GetMonitorAddressResponseDto })
+  async searchMonitorAddress(
+    @Req() req: Request,
+    @Query()
+    body: SearchMonitorAddressRequestDto,
+  ): Promise<GetMonitorAddressResponseDto> {
+    return this.monitorAddressService.searchAddressInMonitor(
       req.user as User,
       body,
     );

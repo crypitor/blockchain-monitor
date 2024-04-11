@@ -86,3 +86,13 @@ export class DeleteMonitorAddressResponseDto {
   @ApiResponseProperty()
   success: boolean;
 }
+
+export class SearchMonitorAddressRequestDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  monitorId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  address: string;
+}
