@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 
+import { ErrorCode } from '@app/global/global.error';
 import { comparePassword, hashPassword } from '@app/utils/bcrypt.util';
 import { sendEmail } from '@app/utils/email.sender';
 import { renderTemplate } from '@app/utils/file-template';
@@ -43,7 +39,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existedUser = await this.findOne(createUserDto.email);
     if (existedUser) {
-      throw new Error('User already exists');
+      throw ErrorCode.ACCOUNT_EXISTS.asException('Email already exists');
     }
     const userId = generateUUID();
     // store password as hash
@@ -114,7 +110,7 @@ export class UsersService {
   ): Promise<ChangePasswordResponseDto> {
     // check new password
     if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
-      throw new BadRequestException(
+      throw ErrorCode.PASSWORD_NOT_MATCH.asException(
         'New password and confirm password do not match',
       );
     }
@@ -123,7 +119,7 @@ export class UsersService {
     if (
       !(await comparePassword(changePasswordDto.oldPassword, user.password))
     ) {
-      throw new BadRequestException('Wrong old password');
+      throw ErrorCode.WRONG_PASSWORD.asException('Wrong old password');
     }
 
     // update password
@@ -146,7 +142,7 @@ export class UsersService {
   ): Promise<ForgotPasswordResponseDto> {
     const user = await this.findOne(forgotPasswordDto.email);
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorCode.ACCOUNT_NOT_FOUND.asException('Email not found');
     }
     const forgotPasswordToken = generateUUID();
     const forgotPasswordExpire = Date.now() + 24 * 60 * 60 * 1000;
@@ -181,19 +177,19 @@ export class UsersService {
   ): Promise<ResetPasswordResponseDto> {
     const user = await this.findOne(resetPasswordDto.email);
     if (!user) {
-      throw new BadRequestException('User not found');
+      throw ErrorCode.ACCOUNT_NOT_FOUND.asException();
     }
     if (
       !user.forgotPassword ||
       user.forgotPassword.token !== resetPasswordDto.token
     ) {
-      throw new BadRequestException('Invalid token');
+      throw ErrorCode.INVALID_TOKEN.asException();
     }
     if (user.forgotPassword.expire < Date.now()) {
-      throw new BadRequestException('Token expired');
+      throw ErrorCode.INVALID_TOKEN.asException('Token expired');
     }
     if (resetPasswordDto.password !== resetPasswordDto.confirmPassword) {
-      throw new BadRequestException(
+      throw ErrorCode.PASSWORD_NOT_MATCH.asException(
         'New password and confirm password do not match',
       );
     }

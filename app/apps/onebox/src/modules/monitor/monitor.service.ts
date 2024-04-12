@@ -1,7 +1,8 @@
-import { ServiceException } from '@app/global/global.exception';
+import { ErrorCode } from '@app/global/global.error';
 import { MonitorAddressRepository } from '@app/shared_modules/monitor/repositories/monitor.address.repository';
 import { MonitorRepository } from '@app/shared_modules/monitor/repositories/monitor.repository';
 import {
+  Monitor,
   MonitorNotificationMethod,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
@@ -10,6 +11,7 @@ import { ProjectRepository } from '@app/shared_modules/project/repositories/proj
 import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
 import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
+import { ProjectService } from '../project/project.service';
 import { User } from '../users/schemas/user.schema';
 import {
   CreateMonitorDto,
@@ -26,19 +28,23 @@ export class MonitorService {
     private readonly projectRepository: ProjectRepository,
     private readonly monitorRepository: MonitorRepository,
     private readonly webhookService: WebhookService,
+    private readonly projectService: ProjectService,
   ) {}
+
+  async findAndAuthMonitor(user: User, monitorId: string): Promise<Monitor> {
+    const monitor = await this.monitorRepository.findById(monitorId);
+    if (!monitor) {
+      throw ErrorCode.MONITOR_NOT_FOUND.asException();
+    }
+    await this.projectService.checkProjectPermission(user, monitor.projectId);
+    return monitor;
+  }
 
   async listMonitors(
     user: User,
     projectId: string,
   ): Promise<MonitorResponseDto[]> {
-    const member = await this.projectMemberRepository.findByUserAndProject(
-      user.userId,
-      projectId,
-    );
-    if (!member) {
-      throw new Error('not authorized');
-    }
+    this.projectService.checkProjectPermission(user, projectId);
     const monitors = await this.monitorRepository.listMonitorsByProject(
       projectId,
     );
@@ -46,17 +52,7 @@ export class MonitorService {
   }
 
   async getMonitor(user: User, monitorId: string): Promise<MonitorResponseDto> {
-    const monitor = await this.monitorRepository.findById(monitorId);
-    if (!monitor) {
-      throw new ServiceException('monitor not found', 404);
-    }
-    const member = await this.projectMemberRepository.findByUserAndProject(
-      user.userId,
-      monitor.projectId,
-    );
-    if (!member) {
-      throw new Error('not authorized');
-    }
+    const monitor = await this.findAndAuthMonitor(user, monitorId);
     return MonitorResponseDto.from(monitor);
   }
 
@@ -64,13 +60,7 @@ export class MonitorService {
     user: User,
     request: CreateMonitorDto,
   ): Promise<MonitorResponseDto> {
-    const member = await this.projectMemberRepository.findByUserAndProject(
-      user.userId,
-      request.projectId,
-    );
-    if (!member) {
-      throw new Error('not authorized');
-    }
+    this.projectService.checkProjectPermission(user, request.projectId);
 
     const monitor = request.toMonitor(user.userId);
     // request create webhook in webhook microservice
@@ -94,17 +84,7 @@ export class MonitorService {
     user: User,
     request: DeleteMonitorDto,
   ): Promise<DeleteMonitorResponseDto> {
-    const monitor = await this.monitorRepository.findById(request.monitorId);
-    if (!monitor) {
-      throw new ServiceException('monitor not found', 404);
-    }
-    const member = await this.projectMemberRepository.findByUserAndProject(
-      user.userId,
-      monitor.projectId,
-    );
-    if (!member) {
-      throw new ServiceException('not authorized', 401);
-    }
+    const monitor = await this.findAndAuthMonitor(user, request.monitorId);
     await this.webhookService.deleteWebhook(monitor.webhookId);
     await this.monitorRepository.deleteMonitor(monitor.monitorId);
     await this.projectRepository.increaseMonitorCount(monitor.projectId, -1);
@@ -118,17 +98,7 @@ export class MonitorService {
     user: User,
     request: UpdateMonitorDto,
   ): Promise<MonitorResponseDto> {
-    const monitor = await this.monitorRepository.findById(request.monitorId);
-    if (!monitor) {
-      throw new ServiceException('monitor not found', 404);
-    }
-    const member = await this.projectMemberRepository.findByUserAndProject(
-      user.userId,
-      monitor.projectId,
-    );
-    if (!member) {
-      throw new ServiceException('not authorized', 401);
-    }
+    const monitor = await this.findAndAuthMonitor(user, request.monitorId);
     const updateMonitor = new Map<string, any>();
     if (request.name) {
       updateMonitor['name'] = request.name;

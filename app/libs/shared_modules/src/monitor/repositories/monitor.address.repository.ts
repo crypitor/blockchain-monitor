@@ -1,4 +1,4 @@
-import { ServiceException } from '@app/global/global.exception';
+import { ErrorCode } from '@app/global/global.error';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MongoServerError } from 'mongodb';
 import { Model } from 'mongoose';
@@ -30,10 +30,12 @@ export class MonitorAddressRepository {
       .then((result) => result)
       .catch((err) => {
         if (err instanceof MongoServerError && err.code === 11000) {
-          throw new ServiceException('Address already exists', 400);
+          throw ErrorCode.ADDRESS_EXISTS.asException();
         } else {
           Logger.error(err);
-          throw new ServiceException('Internal Server Error', 500);
+          throw ErrorCode.INTERNAL_SERVER_ERROR.asException(null, {
+            error: err.message,
+          });
         }
       });
   }
