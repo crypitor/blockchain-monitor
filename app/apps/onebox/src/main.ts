@@ -1,4 +1,5 @@
 import { AllExceptionsFilter } from '@app/global/global.exception';
+import { ResponseInterceptor } from '@app/global/global.interceptor';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -46,6 +47,7 @@ async function bootstrap() {
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   await app.listen(process.env.SERVER_PORT);
 }

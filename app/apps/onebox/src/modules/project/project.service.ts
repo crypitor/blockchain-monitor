@@ -1,4 +1,4 @@
-import { ServiceException } from '@app/global/global.exception';
+import { ErrorCode } from '@app/global/global.error';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
 import {
@@ -20,15 +20,27 @@ export class ProjectService {
     private readonly projectMemberRepository: ProjectMemberRepository,
   ) {}
 
+  async checkProjectPermission(
+    user: User,
+    projectId: string,
+  ): Promise<ProjectMember> {
+    const member = await this.projectMemberRepository.findByUserAndProject(
+      user.userId,
+      projectId,
+    );
+    if (!member) {
+      throw ErrorCode.PROJECT_FORBIDDEN.asException();
+    }
+    return member;
+  }
+
   async getProject(user: User, id: string): Promise<ProjectResponseDto> {
     const project = await this.projectRepository.findById(id);
     if (!project) {
-      throw new ServiceException('Project not found', 404);
+      throw ErrorCode.PROJECT_NOT_FOUND.asException();
     }
 
-    if (project.ownerId !== user.userId) {
-      throw new ServiceException('Project not found', 404);
-    }
+    this.checkProjectPermission(user, project.projectId);
 
     return ProjectResponseDto.from(project);
   }

@@ -4,59 +4,39 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
-  InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { MongoError, MongoServerError } from 'mongodb';
+import { ErrorCode } from './global.error';
 
 export function handleException(exception): HttpException {
   Logger.error(exception);
   try {
-    let error: HttpException;
-    if (exception instanceof MongoError) {
-      if (exception instanceof MongoServerError && exception.code === 11000) {
-        Object.keys(exception.keyValue).forEach((key) => {
-          error = new DuplicateKeyException(key);
-        });
-      } else {
-        error = new BadRequestException(exception);
-      }
-    } else if (exception instanceof HttpException) {
-      error = exception;
-    } else {
-      error = new InternalServerErrorException(exception.message);
+    if (exception instanceof UnauthorizedException) {
+      return ErrorCode.UNAUTHORIZED.asException();
     }
-    return error;
+    if (exception instanceof BadRequestException) {
+      return ErrorCode.BAD_REQUEST.asException(null, exception.getResponse());
+    }
+    if (exception instanceof ServiceException) {
+      return exception;
+    }
+    if (exception instanceof HttpException) {
+      return ErrorCode.UNDEFINED_ERROR.asException(
+        exception.message || 'undefined error',
+        exception.getResponse(),
+      );
+    }
+    return ErrorCode.INTERNAL_SERVER_ERROR.asException(null, {
+      error: exception.message,
+    });
   } catch (e) {
-    return new InternalServerErrorException(exception.message);
+    return ErrorCode.INTERNAL_SERVER_ERROR.asException(null, {
+      error: exception.message,
+    });
   }
 }
-
-// @Catch(MongoError)
-// export class MongoExceptionFilter implements ExceptionFilter {
-//     constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
-//     catch(exception: MongoError, host: ArgumentsHost) {
-//         const { httpAdapter } = this.httpAdapterHost;
-//         switch (exception.code) {
-//             case 11000:
-//                 const { httpAdapter } = this.httpAdapterHost;
-
-//                 const error = new BadRequestException({
-//                     error: exception,
-//                 },
-//                     'Bad request',);
-
-//                 const ctx = host.switchToHttp();
-
-//                 const httpStatus = HttpStatus.BAD_REQUEST;
-
-//                 const responseBody = { ...error.getResponse() as object, message: error.message };
-
-//                 httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
-//         }
-//     }
-// }
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -79,27 +59,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
   }
 }
 
-export class DuplicateKeyException extends BadRequestException {
-  constructor(key: string) {
-    super({
-      error: {
-        key: {
-          notUnique: `'${key}' is already in use by a different id`,
-        },
-      },
-    });
-  }
-}
-
 export class ServiceException extends HttpException {
-  constructor(error: string, code: number) {
-    super(error, code);
-  }
-
-  getResponse() {
-    return {
-      error: this.message,
-      statusCode: this.getStatus(),
-    };
+  constructor(errorCode: ErrorCode, message?: string, data?: any) {
+    super(
+      {
+        code: errorCode.code,
+        message: message || errorCode.description,
+        data: data,
+      },
+      errorCode.code / 1000,
+    );
   }
 }

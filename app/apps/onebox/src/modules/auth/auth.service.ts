@@ -1,3 +1,4 @@
+import { ErrorCode } from '@app/global/global.error';
 import { comparePassword } from '@app/utils/bcrypt.util';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -17,7 +18,7 @@ export class AuthService {
     if (user && (await comparePassword(pass, user.password))) {
       return user;
     }
-    return null;
+    throw ErrorCode.WRONG_EMAIL_OR_PASSWORD.asException();
   }
 
   async login(user: User): Promise<LoginResponseDto> {
