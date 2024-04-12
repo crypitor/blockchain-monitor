@@ -54,7 +54,7 @@ export class UsersService {
       userId,
       passwordHash,
     }).save();
-    const linkLogin = `https://${process.env.WEB_DOMAIN}/login`;
+    const linkLogin = `https://${process.env.WEB_DOMAIN}/sign-in`;
     const emailBody = await renderTemplate(
       'resources/email_template/welcome.html',
       {
@@ -207,7 +207,7 @@ export class UsersService {
         forgotPassword: null,
       },
     );
-    const linkLogin = `https://${process.env.WEB_DOMAIN}/login`;
+    const linkLogin = `https://${process.env.WEB_DOMAIN}/sign-in`;
     const emailBody = await renderTemplate(
       'resources/email_template/reset_password_success.html',
       {
