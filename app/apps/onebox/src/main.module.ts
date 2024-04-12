@@ -8,6 +8,7 @@ import { MonitorAddressModule } from './modules/address/address.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BlockSyncModule } from './modules/blocksync/blocksync.module';
 import { MonitorModule } from './modules/monitor/monitor.module';
+import { NetworkModule } from './modules/network/network.module';
 import { ProjectModule } from './modules/project/project.module';
 import { UsersModule } from './modules/users/users.module';
 import { PollingBlockService } from './polling.block/polling.block.service';
@@ -44,6 +45,7 @@ import { PollingBlockService } from './polling.block/polling.block.service';
     BlockSyncModule,
     MonitorModule,
     MonitorAddressModule,
+    NetworkModule,
   ],
   providers: [GlobalService, PollingBlockService],
 })
