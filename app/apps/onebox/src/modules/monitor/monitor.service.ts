@@ -9,6 +9,7 @@ import {
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
 import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
+import { measureTime } from '@app/utils/time.utils';
 import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
 import { ProjectService } from '../project/project.service';
@@ -89,12 +90,17 @@ export class MonitorService {
       return Builder<DeleteMonitorResponseDto>().success(true).build();
     }
     await this.projectService.checkProjectPermission(user, monitor.projectId);
-    await this.webhookService.deleteWebhook(monitor.webhookId);
-    await this.monitorRepository.deleteMonitor(monitor.monitorId);
-    await this.projectRepository.increaseMonitorCount(monitor.projectId, -1);
-    await MonitorAddressRepository.getRepository(
-      monitor.network,
-    ).deleteAllMonitorAddress(monitor.monitorId);
+    await measureTime('delete_monitor_resource', async () => {
+      Promise.all([
+        this.webhookService.deleteWebhook(monitor.webhookId),
+        this.monitorRepository.deleteMonitor(monitor.monitorId),
+        this.projectRepository.increaseMonitorCount(monitor.projectId, -1),
+        MonitorAddressRepository.getRepository(
+          monitor.network,
+        ).deleteAllMonitorAddress(monitor.monitorId),
+      ]);
+    });
+
     return Builder<DeleteMonitorResponseDto>().success(true).build();
   }
 
