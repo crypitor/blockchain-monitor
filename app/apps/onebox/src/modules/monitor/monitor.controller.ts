@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   Query,
   Req,
   UseGuards,
@@ -75,7 +75,7 @@ export class MonitorController {
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  @ApiCreatedResponse({ type: DeleteMonitorResponseDto })
+  @ApiOkResponse({ type: DeleteMonitorResponseDto })
   async deleteMonitor(
     @Req() req: Request,
     @Param('id') monitorId: string,
@@ -89,7 +89,7 @@ export class MonitorController {
   @ApiOperation({ summary: 'Update monitor' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
-  @Put('/:id')
+  @Patch('/:id')
   @ApiOkResponse({ type: MonitorResponseDto })
   async updateMonitor(
     @Req() req: Request,

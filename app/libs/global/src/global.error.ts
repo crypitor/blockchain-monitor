@@ -1,9 +1,12 @@
+import { ApiResponseProperty } from '@nestjs/swagger';
 import { ServiceException } from './global.exception';
 
 export class ErrorCode {
   static ALL_ERRORS: ErrorCode[] = [];
 
+  @ApiResponseProperty()
   code: number;
+  @ApiResponseProperty()
   description: string;
   constructor(code: number, description: string) {
     this.code = code;
@@ -42,6 +45,10 @@ export class ErrorCode {
   static ACCOUNT_NOT_FOUND = new ErrorCode(404002, 'Account Not Exists');
   static PROJECT_NOT_FOUND = new ErrorCode(404003, 'Project Not Found');
   static MONITOR_NOT_FOUND = new ErrorCode(404004, 'Monitor Not Found');
+  static API_NOT_FOUND = new ErrorCode(404005, 'API Not Found');
+
+  // Method Not Allowed - Client send request with invalid method
+  static METHOD_NOT_ALLOWED = new ErrorCode(405001, 'Method Not Allowed');
 
   // Internal Server Error - Something went wrong
   static INTERNAL_SERVER_ERROR = new ErrorCode(500001, 'Internal Server Error');

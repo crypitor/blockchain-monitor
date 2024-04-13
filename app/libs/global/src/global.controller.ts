@@ -7,14 +7,14 @@ import { ErrorCode } from './global.error';
 @Controller('global')
 export class GlobalController {
   @ApiOperation({ summary: 'List all networks' })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: [MonitorNetwork] })
   @Get('/networks')
   async getNetworks(): Promise<MonitorNetwork[]> {
     return Object.values(MonitorNetwork);
   }
 
   @ApiOperation({ summary: 'List all error codes' })
-  @ApiOkResponse()
+  @ApiOkResponse({ type: [ErrorCode] })
   @Get('/error-codes')
   async getErrorCodes(): Promise<ErrorCode[]> {
     return ErrorCode.ALL_ERRORS;

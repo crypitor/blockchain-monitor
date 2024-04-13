@@ -84,7 +84,11 @@ export class MonitorService {
     user: User,
     request: DeleteMonitorDto,
   ): Promise<DeleteMonitorResponseDto> {
-    const monitor = await this.findAndAuthMonitor(user, request.monitorId);
+    const monitor = await this.monitorRepository.findById(request.monitorId);
+    if (!monitor) {
+      return Builder<DeleteMonitorResponseDto>().success(true).build();
+    }
+    await this.projectService.checkProjectPermission(user, monitor.projectId);
     await this.webhookService.deleteWebhook(monitor.webhookId);
     await this.monitorRepository.deleteMonitor(monitor.monitorId);
     await this.projectRepository.increaseMonitorCount(monitor.projectId, -1);

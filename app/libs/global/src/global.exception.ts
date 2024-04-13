@@ -5,6 +5,8 @@ import {
   ExceptionFilter,
   HttpException,
   Logger,
+  MethodNotAllowedException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -18,6 +20,18 @@ export function handleException(exception): HttpException {
     }
     if (exception instanceof BadRequestException) {
       return ErrorCode.BAD_REQUEST.asException(null, exception.getResponse());
+    }
+    if (exception instanceof NotFoundException) {
+      return ErrorCode.API_NOT_FOUND.asException(
+        exception.message,
+        exception.getResponse(),
+      );
+    }
+    if (exception instanceof MethodNotAllowedException) {
+      return ErrorCode.METHOD_NOT_ALLOWED.asException(
+        exception.message,
+        exception.getResponse(),
+      );
     }
     if (exception instanceof ServiceException) {
       return exception;
