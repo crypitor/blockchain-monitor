@@ -6,7 +6,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { User } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
@@ -19,6 +19,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @ApiOperation({ summary: 'Login' })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)

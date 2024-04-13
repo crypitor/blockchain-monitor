@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   Req,
   UseGuards,
@@ -11,6 +12,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -21,21 +23,22 @@ import {
   ChangePasswordResponseDto,
 } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserProfileDto } from './dto/user-profile.dto';
-import { CreateUserValidationPipe } from './users.pipe';
-import { UsersService } from './users.service';
 import {
   ForgotPasswordDto,
   ForgotPasswordResponseDto,
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from './dto/forgot-password.dto';
+import { UserProfileDto } from './dto/user-profile.dto';
+import { CreateUserValidationPipe } from './users.pipe';
+import { UsersService } from './users.service';
 
 @ApiTags('User')
 @Controller('user')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Register new account' })
   @Post('/register')
   @UsePipes(new CreateUserValidationPipe())
   @ApiCreatedResponse({ type: UserProfileDto })
@@ -46,6 +49,7 @@ export class UsersController {
     return UserProfileDto.from(result);
   }
 
+  @ApiOperation({ summary: 'Get user profile' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -55,10 +59,12 @@ export class UsersController {
     return UserProfileDto.from(req.user as User);
   }
 
+  @ApiOperation({ summary: 'Change user password' })
   @ApiBearerAuth('JWT')
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
-  @ApiCreatedResponse({ type: ChangePasswordResponseDto })
+  @HttpCode(200)
+  @ApiOkResponse({ type: ChangePasswordResponseDto })
   async changePassword(
     @Req() req: Request,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -69,16 +75,20 @@ export class UsersController {
     );
   }
 
+  @ApiOperation({ summary: 'Forgot password' })
   @Post('forgot-password')
-  @ApiCreatedResponse({ type: ForgotPasswordResponseDto })
+  @HttpCode(200)
+  @ApiOkResponse({ type: ForgotPasswordResponseDto })
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
   ): Promise<ForgotPasswordResponseDto> {
     return this.usersService.forgotPassword(forgotPasswordDto);
   }
 
+  @ApiOperation({ summary: 'Reset password' })
   @Post('reset-password')
-  @ApiCreatedResponse({ type: ResetPasswordResponseDto })
+  @HttpCode(200)
+  @ApiOkResponse({ type: ResetPasswordResponseDto })
   async resetPassword(
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<ResetPasswordResponseDto> {
