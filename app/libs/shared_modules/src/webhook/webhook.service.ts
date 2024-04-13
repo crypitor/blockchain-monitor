@@ -2,7 +2,7 @@ import { sendDelete, sendGet, sendPost, sendPut } from '@app/utils/http.util';
 import { Injectable, Logger } from '@nestjs/common';
 import { WebhookDeliveryDto } from 'apps/monitor-service/src/ethereum/dto/eth.webhook-delivery.dto';
 
-export class WebhookServiceDto {
+export class WebhookServiceResponseDto {
   active: true;
   content_type: string;
   created_at: string;
@@ -13,7 +13,7 @@ export class WebhookServiceDto {
   retry_max_backoff: 0;
   retry_min_backoff: 0;
   secret_token: string;
-  authorization: string;
+  authorization_token: string;
   updated_at: string;
   url: string;
   valid_status_codes: [];
@@ -51,6 +51,7 @@ export class WebhookService {
             201
         ],
         "secret_token": "my-secret-token", // this token use for sha256 hmac sign to payload
+        "authorization_token": "my-authorization-token",
         "active": true,
         "max_delivery_attempts": 5,
         "delivery_attempt_timeout": 1,
@@ -70,7 +71,7 @@ export class WebhookService {
       content_type: 'application/json',
       valid_status_codes: [200, 201],
       secret_token: secret_token,
-      authorization: authorization,
+      authorization_token: authorization,
       active: true,
       max_delivery_attempts: 5,
       delivery_attempt_timeout: 1,
@@ -104,7 +105,7 @@ export class WebhookService {
     }
   }
 
-  async getWebhooks(webhookId: string): Promise<WebhookServiceDto> {
+  async getWebhooks(webhookId: string): Promise<WebhookServiceResponseDto> {
     const response = await sendGet(
       `${this.webhookUrl}/v1/webhooks/${webhookId}`,
     );
@@ -118,7 +119,7 @@ export class WebhookService {
     }
     const webhook = await response.json();
     this.logger.debug(`get webhook success with webhookId: ${webhookId}`);
-    return webhook as WebhookServiceDto;
+    return webhook as WebhookServiceResponseDto;
   }
 
   async deleteWebhook(webhookId: string) {
@@ -155,7 +156,7 @@ export class WebhookService {
         `${this.webhookUrl}/v1/webhooks/${webhookId}`,
         {
           url: webhookUrl,
-          authorization: authorization,
+          authorization_token: authorization,
           secret_token: secret_token,
         },
       );
