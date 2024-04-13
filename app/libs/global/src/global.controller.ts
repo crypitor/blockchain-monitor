@@ -7,7 +7,7 @@ import { ErrorCode } from './global.error';
 @Controller('global')
 export class GlobalController {
   @ApiOperation({ summary: 'List all networks' })
-  @ApiOkResponse({ type: [MonitorNetwork] })
+  @ApiOkResponse({ type: [String], isArray: true })
   @Get('/networks')
   async getNetworks(): Promise<MonitorNetwork[]> {
     return Object.values(MonitorNetwork);
