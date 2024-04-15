@@ -22,7 +22,7 @@ export class EthereumWorker {
     const blockNumber = data.blockNumber;
 
     try {
-      this.logger.debug(['DETECT', `handle block ${blockNumber}`]);
+      this.logger.log(`DETECT handle block ${blockNumber}`);
       // handle native transfer
       this.handleNativeTransfer(blockNumber, false);
       // handle extracted event for erc20 and nft
@@ -44,7 +44,7 @@ export class EthereumWorker {
   async ethHandleConfirmedBlock(data: { blockNumber: number }) {
     const blockNumber = data.blockNumber;
     try {
-      this.logger.debug(['CONFIRM', `Scanning block ${blockNumber}`]);
+      this.logger.debug(`CONFIRM Scanning block ${blockNumber}`);
       // handle native transfer
       this.handleNativeTransfer(blockNumber, true);
       // handle extracted event for erc20 and nft

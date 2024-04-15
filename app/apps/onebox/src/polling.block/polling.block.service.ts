@@ -106,7 +106,7 @@ export class PollingBlockService {
       blockNumber++
     ) {
       try {
-        this.logger.log(`start polling block ${blockNumber}`);
+        this.logger.log(`last emitted block ${blockNumber}`);
 
         // emit event detect block with blocknumber
         this.logger.debug(['DETECT', `send block ${blockNumber}`]);
