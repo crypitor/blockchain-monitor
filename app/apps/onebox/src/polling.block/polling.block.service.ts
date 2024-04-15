@@ -89,8 +89,9 @@ export class PollingBlockService {
   }
 
   async ethPollingBlock() {
-    console.log('Start detect block');
+    this.logger.log('Start polling block number');
     if (this.detectInfo.flag) {
+      this.logger.log('conflict with last job. quit current job');
       return;
     }
     this.detectInfo.flag = true;
