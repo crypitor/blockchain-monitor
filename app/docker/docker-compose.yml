@@ -17,6 +17,8 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - crypitor-network
+    depends_on:
+      - onebox
   onebox:
     container_name: crypitor-onebox
     image: registry.gitlab.com/cauta/onebox:${VERSION:-master}
