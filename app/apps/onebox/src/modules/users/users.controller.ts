@@ -55,7 +55,6 @@ export class UsersController {
   @Get('profile')
   @ApiOkResponse({ type: UserProfileDto })
   async getProfile(@Req() req: Request): Promise<UserProfileDto> {
-    console.log(req);
     return UserProfileDto.from(req.user as User);
   }
 

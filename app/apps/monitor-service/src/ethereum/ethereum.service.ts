@@ -317,7 +317,9 @@ export class EthereumService {
         monitor.webhookId,
         body,
       );
-      console.log(JSON.stringify(respone));
+      this.logger.debug(
+        `Dispatch webhook successfully response: ${JSON.stringify(respone)}`,
+      );
     } catch (error) {
       this.logger.error(
         `Error while sending webhook request to: ${webhook.url}`,

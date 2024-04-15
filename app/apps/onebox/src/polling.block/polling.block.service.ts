@@ -25,7 +25,7 @@ export class PollingBlockService {
   provider: ethers.Provider;
 
   onModuleInit() {
-    console.log(`The module has been initialized.`);
+    this.logger.log(`The module has been initialized.`);
     if (process.env.EVM_DISABLE === 'true') {
       this.detectInfo.flag = true;
       return;
