@@ -84,7 +84,7 @@ export class EthereumWorker {
     disabled: process.env.EVM_DISABLE === 'true',
   })
   async detect() {
-    console.log('Start detect block');
+    this.logger.log('Start detect block');
     if (this.detectInfo.flag) {
       return;
     }
