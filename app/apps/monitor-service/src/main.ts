@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { MonitorServiceModule } from './monitor-service.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { LogLevel } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -15,6 +16,10 @@ async function bootstrap() {
           groupId: 'monitor-consumer',
         },
       },
+      logger:
+        process.env.LOGS !== undefined
+          ? (process.env.LOGS.split(',') as LogLevel[])
+          : ['error', 'warn', 'log', 'fatal', 'debug', 'verbose'],
     },
   );
   app.listen();
