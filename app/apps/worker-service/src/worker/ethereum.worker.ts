@@ -44,7 +44,7 @@ export class EthereumWorker {
   async ethHandleConfirmedBlock(data: { blockNumber: number }) {
     const blockNumber = data.blockNumber;
     try {
-      this.logger.debug(`CONFIRM Scanning block ${blockNumber}`);
+      this.logger.log(`CONFIRM Scanning block ${blockNumber}`);
       // handle native transfer
       this.handleNativeTransfer(blockNumber, true);
       // handle extracted event for erc20 and nft
@@ -75,13 +75,13 @@ export class EthereumWorker {
     // handle extracted event for erc20 and nft
     logs.forEach((event) => {
       if (event.topics.length === 3) {
-        // this.ethMonitorService.handleErc20Transfer(event, confirm);
+        this.logger.debug(`emit event on ERC20 ${JSON.stringify(event)}`);
         this.monitorClient.emit(TopicName.ETH_ERC20_TRANSFER, {
           event: event,
           confirm: confirm,
         });
       } else if (event.topics.length === 4) {
-        // this.ethMonitorService.handleErc721Transfer(event, confirm);
+        this.logger.debug(`emit event on ERC721 ${JSON.stringify(event)}`);
         this.monitorClient.emit(TopicName.ETH_ERC721_TRANSFER, {
           event: event,
           confirm: confirm,
@@ -99,7 +99,7 @@ export class EthereumWorker {
 
     // handle extracted event for native
     block.prefetchedTransactions.forEach((transaction) => {
-      // this.ethMonitorService.handleNativeTransfer(transaction, confirm);
+      this.logger.debug(`emit event on NATIVE ${JSON.stringify(event)}`);
       this.monitorClient.emit(TopicName.ETH_NATIVE_TRANSFER, {
         transaction: transaction,
         confirm: confirm,
