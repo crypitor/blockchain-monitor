@@ -2,7 +2,6 @@ import { TopicName } from '@app/utils/topicUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { EthereumWorker } from 'apps/worker-service/src/worker/evm.worker';
 import { CronJob } from 'cron';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
@@ -12,7 +11,7 @@ import { SupportedChain } from '@app/utils/supportedChain.util';
 export class PollingBlockService {
   private detectInfo = { flag: false, blockNumber: 0 };
 
-  private readonly logger = new Logger(EthereumWorker.name);
+  private readonly logger = new Logger(PollingBlockService.name);
 
   constructor(
     private schedulerRegistry: SchedulerRegistry,
