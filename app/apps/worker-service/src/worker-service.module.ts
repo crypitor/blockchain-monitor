@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
-import { BlockSyncModule } from './blocksync/blocksync.module';
 import { WorkerServiceController } from './worker-service.controller';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { WorkerServiceService } from './worker-service.service';
@@ -30,7 +29,6 @@ import { WorkerServiceService } from './worker-service.service';
         },
       },
     ]),
-    BlockSyncModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [WorkerServiceController],
