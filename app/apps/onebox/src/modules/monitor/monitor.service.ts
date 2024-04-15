@@ -18,6 +18,7 @@ import {
   CreateMonitorDto,
   DeleteMonitorDto,
   DeleteMonitorResponseDto,
+  ListMonitorDto,
   MonitorResponseDto,
   UpdateMonitorDto,
 } from './dto/monitor.dto';
@@ -43,12 +44,10 @@ export class MonitorService {
 
   async listMonitors(
     user: User,
-    projectId: string,
+    request: ListMonitorDto,
   ): Promise<MonitorResponseDto[]> {
-    this.projectService.checkProjectPermission(user, projectId);
-    const monitors = await this.monitorRepository.listMonitorsByProject(
-      projectId,
-    );
+    this.projectService.checkProjectPermission(user, request.projectId);
+    const monitors = await this.monitorRepository.listMonitors(request);
     return monitors.map((monitor) => MonitorResponseDto.from(monitor));
   }
 

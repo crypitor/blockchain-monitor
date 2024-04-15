@@ -12,8 +12,16 @@ import {
 import { generateMonitorId } from '@app/utils/uuidUtils';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
-import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsUrl, ValidateNested } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsUrl,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 export class MonitorConditionDto {
   @ApiProperty({ default: true })
@@ -308,4 +316,29 @@ export class UpdateMonitorDto {
 
   @ApiProperty()
   disabled: boolean;
+}
+
+export class ListMonitorDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  projectId: string;
+
+  @ApiProperty({ default: 10 })
+  @IsNumber()
+  @Max(10)
+  @Min(1)
+  @Transform(({ value }) => Number.parseInt(value))
+  limit: number;
+
+  @ApiProperty({ default: 0 })
+  @IsNumber()
+  @Min(0)
+  @Transform(({ value }) => Number.parseInt(value))
+  offset: number;
+
+  @ApiProperty({ enum: MonitorNetwork, required: false })
+  network: MonitorNetwork;
+
+  @ApiProperty({ required: false })
+  search: string;
 }

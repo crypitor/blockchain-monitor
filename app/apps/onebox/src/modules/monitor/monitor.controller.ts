@@ -25,6 +25,7 @@ import {
   CreateMonitorDto,
   DeleteMonitorDto,
   DeleteMonitorResponseDto,
+  ListMonitorDto,
   MonitorResponseDto,
   UpdateMonitorDto,
 } from './dto/monitor.dto';
@@ -54,9 +55,9 @@ export class MonitorController {
   @ApiOkResponse({ type: [MonitorResponseDto] })
   async listMonitor(
     @Req() req: Request,
-    @Query('projectId') projectId: string,
+    @Query() body: ListMonitorDto,
   ): Promise<MonitorResponseDto[]> {
-    return await this.monitorService.listMonitors(req.user as User, projectId);
+    return await this.monitorService.listMonitors(req.user as User, body);
   }
 
   @ApiOperation({ summary: 'Create monitor' })
