@@ -1,6 +1,6 @@
 import { AllExceptionsFilter } from '@app/global/global.exception';
 import { ResponseInterceptor } from '@app/global/global.interceptor';
-import { ValidationPipe } from '@nestjs/common';
+import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
@@ -8,7 +8,12 @@ import { MainModule } from './main.module';
 
 async function bootstrap() {
   // setting up nestjs
-  const app = await NestFactory.create(MainModule);
+  const app = await NestFactory.create(MainModule, {
+    logger:
+      process.env.LOGS !== undefined
+        ? (process.env.LOGS.split(',') as LogLevel[])
+        : ['error', 'warn', 'log', 'fatal', 'debug', 'verbose'],
+  });
 
   if (process.env.CORS && process.env.CORS != '') {
     // setting up cors
