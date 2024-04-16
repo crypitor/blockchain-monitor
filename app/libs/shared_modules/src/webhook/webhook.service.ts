@@ -249,7 +249,7 @@ export class WebhookService {
     offset?: number,
     status?: 'succeeded' | 'pending' | 'failed',
   ): string {
-    let url = `${this.webhookUrl}/v1/deliveries?`;
+    let url = `${this.webhookUrl}/v1/deliveries?webhook_id=${webhookId}`;
 
     if (limit !== undefined) {
       url += `&limit=${limit}`;
