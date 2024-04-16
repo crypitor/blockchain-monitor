@@ -88,9 +88,9 @@ export class PollingBlockService {
   }
 
   async ethPollingBlock() {
-    this.logger.log('Start polling block number');
+    this.logger.debug('Start polling block number');
     if (this.detectInfo.flag) {
-      this.logger.log('conflict with last job. quit current job');
+      this.logger.error('conflict with last job. quit current job');
       return;
     }
     this.detectInfo.flag = true;
@@ -146,6 +146,7 @@ export class PollingBlockService {
   private async getBlockNumber(): Promise<number> {
     try {
       const blockNumber = await this.provider.getBlockNumber();
+      this.logger.log('got latest block from network: ' + blockNumber);
       return blockNumber;
     } catch (error) {
       this.logger.error('error while getting block number', error);
