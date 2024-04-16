@@ -81,7 +81,7 @@ export class ServiceException extends HttpException {
         message: message || errorCode.description,
         data: data,
       },
-      errorCode.code / 1000,
+      Math.floor(errorCode.code / 1000),
     );
   }
 }
