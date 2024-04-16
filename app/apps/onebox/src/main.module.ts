@@ -11,6 +11,7 @@ import { MonitorModule } from './modules/monitor/monitor.module';
 import { ProjectModule } from './modules/project/project.module';
 import { UsersModule } from './modules/users/users.module';
 import { PollingBlockService } from './polling.block/polling.block.service';
+import { DeliveryModule } from './modules/delivery/delivery.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PollingBlockService } from './polling.block/polling.block.service';
     BlockSyncModule,
     MonitorModule,
     MonitorAddressModule,
+    DeliveryModule,
   ],
   providers: [GlobalService, PollingBlockService],
 })
