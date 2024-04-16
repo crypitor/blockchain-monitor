@@ -351,7 +351,7 @@ class UpdateWebhookRequestDto {
   active?: boolean;
 }
 
-interface DeliveryAttemptDto {
+export class DeliveryAttemptDto {
   id: string;
   // webhook_id: string;
   delivery_id: string;
@@ -364,7 +364,7 @@ interface DeliveryAttemptDto {
   created_at: string;
 }
 
-interface DeliveryAttemptsResponseDto {
+export class DeliveryAttemptsResponseDto {
   delivery_attempts: DeliveryAttemptDto[];
   limit: number;
   offset: number;

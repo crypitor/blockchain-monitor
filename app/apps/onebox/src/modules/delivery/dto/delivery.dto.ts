@@ -1,4 +1,7 @@
-import { DeliveryDto } from '@app/shared_modules/webhook/webhook.service';
+import {
+  DeliveryAttemptDto,
+  DeliveryDto,
+} from '@app/shared_modules/webhook/webhook.service';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
 import { Transform } from 'class-transformer';
@@ -55,6 +58,49 @@ export class MonitorDeliveryResponseDto {
       .dateScheduled(dto.scheduled_at)
       .dateCreated(dto.created_at)
       .dateUpdated(dto.updated_at)
+      .build();
+  }
+}
+
+export class DeliveryAttemptResponseDto {
+  @ApiResponseProperty()
+  id: string;
+
+  @ApiResponseProperty()
+  deliveryId: string;
+
+  @ApiResponseProperty()
+  request: string;
+
+  @ApiResponseProperty()
+  response: string;
+
+  @ApiResponseProperty()
+  responseStatusCode: number;
+
+  @ApiResponseProperty()
+  executionDuration: number;
+
+  @ApiResponseProperty()
+  success: boolean;
+
+  @ApiResponseProperty()
+  error: string;
+
+  @ApiResponseProperty()
+  dateCreated: string;
+
+  static from(dto: DeliveryAttemptDto): DeliveryAttemptResponseDto {
+    return Builder<DeliveryAttemptResponseDto>()
+      .id(dto.id)
+      .deliveryId(dto.delivery_id)
+      .request(dto.raw_request)
+      .response(dto.raw_response)
+      .responseStatusCode(dto.response_status_code)
+      .executionDuration(dto.execution_duration)
+      .success(dto.success)
+      .error(dto.error)
+      .dateCreated(dto.created_at)
       .build();
   }
 }

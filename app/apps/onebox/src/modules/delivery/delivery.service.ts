@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { MonitorService } from '../monitor/monitor.service';
 import { User } from '../users/schemas/user.schema';
 import {
+  DeliveryAttemptResponseDto,
   GetMonitorDeliveryDto,
   MonitorDeliveryResponseDto,
 } from './dto/delivery.dto';
@@ -33,6 +34,19 @@ export class DeliveryService {
       .then((response) => {
         return response.deliveries.map((delivery) =>
           MonitorDeliveryResponseDto.from(delivery),
+        );
+      });
+  }
+
+  async getDeliveryAttempt(
+    user: User,
+    deliveryId: string,
+  ): Promise<DeliveryAttemptResponseDto[]> {
+    return this.webhookService
+      .getDeliveryAttempts(deliveryId)
+      .then((response) => {
+        return response.delivery_attempts.map((attempt) =>
+          DeliveryAttemptResponseDto.from(attempt),
         );
       });
   }
