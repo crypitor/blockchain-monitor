@@ -2,34 +2,6 @@ import { sendDelete, sendGet, sendPost, sendPut } from '@app/utils/http.util';
 import { Injectable, Logger } from '@nestjs/common';
 import { WebhookDeliveryDto } from 'apps/monitor-service/src/ethereum/dto/eth.webhook-delivery.dto';
 
-export class WebhookServiceResponseDto {
-  active: true;
-  content_type: string;
-  created_at: string;
-  delivery_attempt_timeout: 0;
-  id: string;
-  max_delivery_attempts: 0;
-  name: string;
-  retry_max_backoff: 0;
-  retry_min_backoff: 0;
-  secret_token: string;
-  authorization_token: string;
-  updated_at: string;
-  url: string;
-  valid_status_codes: [];
-}
-
-interface DispatchWebhookResponse {
-  id: string;
-  webhook_id: string;
-  payload: string;
-  scheduled_at: string;
-  delivery_attempts: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
-
 @Injectable()
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
@@ -147,18 +119,21 @@ export class WebhookService {
 
   async updateWebhook(
     webhookId: string,
-    webhookUrl: string,
-    authorization: string,
-    secret_token: string,
+    webhookUrl?: string,
+    authorization?: string,
+    secret_token?: string,
+    active?: boolean,
   ) {
     try {
+      const request = this.buildUpdateWebhookRequest(
+        webhookUrl,
+        authorization,
+        secret_token,
+        active,
+      );
       const response = await sendPut(
         `${this.webhookUrl}/v1/webhooks/${webhookId}`,
-        {
-          url: webhookUrl,
-          authorization_token: authorization,
-          secret_token: secret_token,
-        },
+        request,
       );
       if (!response.ok) {
         this.logger.error(
@@ -211,4 +186,186 @@ export class WebhookService {
       throw new Error('send webhook failed');
     }
   }
+
+  /**
+   * curl --location --request GET 'http://localhost:8000/v1/deliveries?webhook_id=a6e9a525-ac5a-488c-b118-bd7327ce6d8d'
+   */
+  async getDeliveries(
+    webhookId: string,
+    limit?: number,
+    offset?: number,
+    status?: 'succeeded' | 'pending' | 'failed',
+  ): Promise<DeliveriesResponseDto> {
+    try {
+      const url = this.buildDeliveryUrl(webhookId, limit, offset, status);
+      const response = await sendGet(url);
+      if (!response.ok) {
+        this.logger.error(
+          `respone not ok, get deliveries with response: ${await response.text()}`,
+        );
+        throw new Error('get deliveries');
+      }
+      this.logger.debug(`send webhook success with webhookId: ${webhookId}`);
+      return (await response.json()) as DeliveriesResponseDto;
+    } catch (e) {
+      this.logger.error(
+        'error connection with webhook service, get deliveries with webhookId: ' +
+          webhookId,
+      );
+      throw new Error('get deliveries');
+    }
+  }
+
+  /**
+   * curl "http://localhost:8000/v1/delivery-attempts?delivery_id=22bff8ff-64e7-4117-af04-f43401802a82"
+   * @param deliveryId string
+   */
+  async getDeliveryAttempts(
+    deliveryId: string,
+  ): Promise<DeliveryAttemptsResponseDto> {
+    try {
+      const url = this.buildDeliveryAttemptsUrl(deliveryId);
+      const response = await sendGet(url);
+      if (!response.ok) {
+        this.logger.error(
+          `respone not ok, get deliveries with response: ${await response.text()}`,
+        );
+        throw new Error('get deliveries Attempts');
+      }
+      this.logger.debug(`send webhook success with deliveryId: ${deliveryId}`);
+      return (await response.json()) as DeliveryAttemptsResponseDto;
+    } catch (e) {
+      this.logger.error(
+        'error connection with webhook service, get deliveries with deliveryId: ' +
+          deliveryId,
+      );
+      throw new Error('get deliveries attempts');
+    }
+  }
+
+  private buildDeliveryUrl(
+    webhookId: string,
+    limit?: number,
+    offset?: number,
+    status?: 'succeeded' | 'pending' | 'failed',
+  ): string {
+    let url = `${this.webhookUrl}/v1/deliveries?`;
+
+    if (limit !== undefined) {
+      url += `&limit=${limit}`;
+    }
+
+    if (offset !== undefined) {
+      url += `&offset=${offset}`;
+    }
+
+    if (status !== undefined) {
+      url += `&status=${status}`;
+    }
+
+    return url;
+  }
+
+  private buildDeliveryAttemptsUrl(deliveryId: string): string {
+    return `${this.webhookUrl}/v1/delivery-attempts?delivery_id=${deliveryId}`;
+  }
+
+  private buildUpdateWebhookRequest(
+    webhookUrl?: string,
+    authorization?: string,
+    secret_token?: string,
+    active?: boolean,
+  ): UpdateWebhookRequestDto {
+    const options: UpdateWebhookRequestDto = {};
+
+    // Check each input and add it to the options object only if it's defined
+    if (webhookUrl !== undefined) {
+      options.url = webhookUrl;
+    }
+
+    if (authorization !== undefined) {
+      options.authorization_token = authorization;
+    }
+
+    if (secret_token !== undefined) {
+      options.secret_token = secret_token;
+    }
+
+    if (active !== undefined) {
+      options.active = active;
+    }
+
+    return options;
+  }
+}
+
+export class WebhookServiceResponseDto {
+  active: true;
+  content_type: string;
+  created_at: string;
+  delivery_attempt_timeout: 0;
+  id: string;
+  max_delivery_attempts: 0;
+  name: string;
+  retry_max_backoff: 0;
+  retry_min_backoff: 0;
+  secret_token: string;
+  authorization_token: string;
+  updated_at: string;
+  url: string;
+  valid_status_codes: [];
+}
+
+interface DispatchWebhookResponse {
+  id: string;
+  webhook_id: string;
+  payload: string;
+  scheduled_at: string;
+  delivery_attempts: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export class DeliveryDto {
+  created_at: string;
+  delivery_attempts: number;
+  id: string;
+  payload: string;
+  scheduled_at: string;
+  status: string;
+  updated_at: string;
+  // webhook_id: string;
+}
+
+export class DeliveriesResponseDto {
+  deliveries: DeliveryDto[];
+  limit: number;
+  offset: number;
+}
+
+class UpdateWebhookRequestDto {
+  url?: string;
+  authorization_token?: string;
+  secret_token?: string;
+  active?: boolean;
+}
+
+interface DeliveryAttemptDto {
+  id: string;
+  // webhook_id: string;
+  delivery_id: string;
+  raw_request: string;
+  raw_response: string;
+  response_status_code: number;
+  execution_duration: number;
+  success: boolean;
+  error: string;
+  created_at: string;
+}
+
+interface DeliveryAttemptsResponseDto {
+  delivery_attempts: DeliveryAttemptDto[];
+  limit: number;
+  offset: number;
 }
