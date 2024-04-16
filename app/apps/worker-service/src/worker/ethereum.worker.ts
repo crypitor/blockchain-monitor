@@ -99,7 +99,7 @@ export class EthereumWorker {
 
     // handle extracted event for native
     block.prefetchedTransactions.forEach((transaction) => {
-      this.logger.debug(`emit event on NATIVE ${JSON.stringify(event)}`);
+      this.logger.debug(`emit event on NATIVE ${JSON.stringify(transaction)}`);
       this.monitorClient.emit(TopicName.ETH_NATIVE_TRANSFER, {
         transaction: transaction,
         confirm: confirm,
