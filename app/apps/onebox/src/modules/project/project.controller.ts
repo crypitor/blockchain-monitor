@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +18,11 @@ import {
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from '../users/schemas/user.schema';
-import { CreateProjectDto, ProjectResponseDto } from './dto/project.dto';
+import {
+  CreateProjectDto,
+  ProjectQuotaResponseDto,
+  ProjectResponseDto,
+} from './dto/project.dto';
 import { ProjectService } from './project.service';
 
 @ApiTags('Project')
@@ -56,5 +61,20 @@ export class ProjectController {
     @Body() body: CreateProjectDto,
   ): Promise<ProjectResponseDto> {
     return await this.projectService.createProject(req.user as User, body);
+  }
+
+  @ApiOperation({ summary: 'Get project current month quota' })
+  @ApiBearerAuth('JWT')
+  @UseGuards(JwtAuthGuard)
+  @Get('/quota/current')
+  @ApiOkResponse({ type: ProjectQuotaResponseDto })
+  async getProjectQuotaCurrentMonth(
+    @Req() req: Request,
+    @Query('projectId') projectId: string,
+  ): Promise<ProjectQuotaResponseDto> {
+    return await this.projectService.getProjectCurrentQuora(
+      req.user as User,
+      projectId,
+    );
   }
 }

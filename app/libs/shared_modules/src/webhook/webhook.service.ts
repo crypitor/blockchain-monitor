@@ -316,7 +316,7 @@ export class WebhookServiceResponseDto {
   valid_status_codes: [];
 }
 
-interface DispatchWebhookResponse {
+export class DispatchWebhookResponse {
   id: string;
   webhook_id: string;
   payload: string;
