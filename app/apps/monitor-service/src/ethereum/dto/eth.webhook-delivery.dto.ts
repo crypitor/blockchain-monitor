@@ -2,7 +2,7 @@ import { generateWebhookEventId } from '@app/utils/uuidUtils';
 import { Log, TransactionResponse, ethers } from 'ethers';
 
 export enum WebhookCategory {
-  NFT = 'NFT',
+  ERC721 = 'ERC721',
   Native = 'Native',
   ERC20 = 'ERC20',
   INTERNAL = 'INTERNAL',
@@ -108,7 +108,7 @@ export class WebhookDeliveryDto {
     };
     instance.type = type;
     instance.confirm = confirm;
-    instance.category = WebhookCategory.NFT;
+    instance.category = WebhookCategory.ERC721;
 
     return instance;
   }
