@@ -40,6 +40,9 @@ export class Project {
 
   @Prop()
   dateCreated: Date;
+
+  @Prop()
+  currentQuota: number;
 }
 export type ProjectDocument = HydratedDocument<Project>;
 export const ProjectSchema = SchemaFactory.createForClass(Project);
