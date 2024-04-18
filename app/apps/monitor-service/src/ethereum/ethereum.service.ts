@@ -130,7 +130,7 @@ export class EthereumService {
     ]);
 
     // return if value is zero
-    if (transaction.value === 0n) {
+    if (transaction.value.toString() === '0') {
       return;
     }
 
@@ -145,7 +145,10 @@ export class EthereumService {
         WebhookType.out,
       );
     }
-
+    // return on to address is null. this is transaction create contract
+    if (!transaction.to) {
+      return;
+    }
     const toWallet_monitors = await this.findEthAddress(
       transaction.to.toLowerCase(),
     );
