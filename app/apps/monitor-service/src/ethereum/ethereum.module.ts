@@ -5,6 +5,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EthereumController } from './ethereum.controller';
 import { EthereumService } from './ethereum.service';
 import { ProjectModule } from '@app/shared_modules/project/project.module';
+import { TransactionHistoryModule } from '@app/shared_modules/transaction_history/transaction_history.module';
 
 @Module({
   providers: [EthereumService],
@@ -31,6 +32,7 @@ import { ProjectModule } from '@app/shared_modules/project/project.module';
     WebhookModule,
     MonitorModule,
     ProjectModule,
+    TransactionHistoryModule,
   ],
 })
 export class EthereumModule {}

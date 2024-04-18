@@ -7,15 +7,20 @@ import {
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
 import { ProjectQuotaService } from '@app/shared_modules/project/services/project.quota.service';
-import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
+import {
+  DispatchWebhookResponse,
+  WebhookService,
+} from '@app/shared_modules/webhook/webhook.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ethers, Log, TransactionResponse } from 'ethers';
+import { EthTransactionHistoryRepository } from '@app/shared_modules/transaction_history/repositories/transaction_history.repository';
 import {
-  WebhookDeliveryDto,
+  TransactionHistory,
   WebhookType,
-} from './dto/eth.webhook-delivery.dto';
+} from '@app/shared_modules/transaction_history/schemas/transaction_history.schema';
+import { response } from 'express';
 
 @Injectable()
 export class EthereumService {
@@ -35,6 +40,9 @@ export class EthereumService {
 
   @Inject()
   private readonly projectQuotaService: ProjectQuotaService;
+
+  @Inject()
+  private readonly transactionHistoryRepository: EthTransactionHistoryRepository;
 
   async findEthAddress(address: string): Promise<MonitorAddress[]> {
     return this.ethMonitorAddressRepository.findByAddress(address);
@@ -134,7 +142,7 @@ export class EthereumService {
     ]);
 
     // return if value is zero
-    if (transaction.value.toString() === '0') {
+    if (transaction.value == 0n) {
       return;
     }
 
@@ -185,7 +193,7 @@ export class EthereumService {
         continue;
       }
 
-      const body = WebhookDeliveryDto.fromTransactionToNative(
+      const txnHistory = TransactionHistory.fromTransactionToNative(
         transaction,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -193,10 +201,11 @@ export class EthereumService {
         confirm,
       );
 
-      await this.dispathMessageToWebhook(monitor, body);
+      const response = await this.dispathMessageToWebhook(monitor, txnHistory);
+      this.saveHistory(txnHistory, response);
 
       this.logger.debug(
-        `Confirmed: ${confirm} native transfer:\n${JSON.stringify(body)}`,
+        `Confirmed: ${confirm} native transfer:\n${JSON.stringify(txnHistory)}`,
       );
     }
   }
@@ -222,7 +231,7 @@ export class EthereumService {
         continue;
       }
       // @todo check condition on specific cryptos
-      const body = WebhookDeliveryDto.fromLogToERC721(
+      const transaction = TransactionHistory.fromLogToERC721(
         event,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -231,11 +240,12 @@ export class EthereumService {
         tokenId,
       );
 
-      await this.dispathMessageToWebhook(monitor, body);
+      const response = await this.dispathMessageToWebhook(monitor, transaction);
+      this.saveHistory(transaction, response);
 
       this.logger.debug(
         `Confirmed: ${confirm} ERC721 transfer ${type.toUpperCase()}:\n${JSON.stringify(
-          body,
+          transaction,
         )}`,
       );
     }
@@ -262,7 +272,7 @@ export class EthereumService {
         continue;
       }
       // @todo check condition on specific cryptos
-      const body = WebhookDeliveryDto.fromLogToERC20(
+      const txnHistory = TransactionHistory.fromLogToERC20(
         event,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -271,17 +281,35 @@ export class EthereumService {
         value,
       );
 
-      await this.dispathMessageToWebhook(monitor, body);
+      const response = await this.dispathMessageToWebhook(monitor, txnHistory);
+      this.saveHistory(txnHistory, response);
 
       this.logger.debug(
         `Confirmed: ${confirm} ERC20 transfer ${type.toUpperCase()}:\n${JSON.stringify(
-          body,
+          txnHistory,
         )}`,
       );
     }
   }
 
-  private async sendMessage(monitor: Monitor, body: WebhookDeliveryDto) {
+  private async saveHistory(
+    transaction: TransactionHistory,
+    delivery: DispatchWebhookResponse,
+  ) {
+    if (!transaction.confirm) {
+      transaction.deliveryIds = [delivery.id];
+      await this.transactionHistoryRepository.saveTransactionHistory(
+        transaction,
+      );
+    } else {
+      this.transactionHistoryRepository.pushDeliveryId(
+        transaction.uniqueId,
+        delivery.id,
+      );
+    }
+  }
+
+  private async sendMessage(monitor: Monitor, body: TransactionHistory) {
     if (!monitor.notification) {
       return;
     }
@@ -312,8 +340,8 @@ export class EthereumService {
 
   private async dispathMessageToWebhook(
     monitor: Monitor,
-    body: WebhookDeliveryDto,
-  ) {
+    body: TransactionHistory,
+  ): Promise<DispatchWebhookResponse> {
     if (!monitor.notification) {
       return;
     }
@@ -328,6 +356,7 @@ export class EthereumService {
         `Dispatch webhook successfully response: ${JSON.stringify(respone)}`,
       );
       this.projectQuotaService.increaseUsed(monitor.projectId);
+      return respone;
     } catch (error) {
       this.logger.error(
         `Error while sending webhook request to: ${webhook.url}`,
