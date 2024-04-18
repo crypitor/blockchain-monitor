@@ -18,6 +18,7 @@ export class WebhookDeliveryDto {
   monitorId: string;
   hash: string;
   blockNum: number; // decimal string
+  associatedAddress: string;
   contract: {
     address: string;
     name: string;
