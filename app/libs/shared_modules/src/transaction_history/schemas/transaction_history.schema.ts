@@ -1,3 +1,4 @@
+import { hashMd5 } from '@app/utils/md5';
 import { generateWebhookEventId } from '@app/utils/uuidUtils';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Log, TransactionResponse, ethers } from 'ethers';
@@ -16,9 +17,6 @@ export enum WebhookType {
 }
 @Schema()
 export class TransactionHistory {
-  @Prop({ index: 1 })
-  id: string;
-
   @Prop({ index: 1, unique: true })
   uniqueId: string; // md5 of message exclude timestamp and confirm
 
@@ -27,6 +25,9 @@ export class TransactionHistory {
 
   @Prop({ index: 1 })
   monitorId: string;
+
+  @Prop()
+  associatedAddress: string;
 
   @Prop()
   hash: string;
@@ -80,105 +81,35 @@ export class TransactionHistory {
   @Prop()
   tags: string[];
 
+  @Prop({ required: true, index: -1 })
+  dateCreated: Date;
+
   toString(): string {
     return JSON.stringify(this);
   }
 
-  public static fromLogToERC20(
-    log: Log,
-    chain: string,
-    monitorId: string,
-    type: WebhookType,
-    confirm: boolean,
-    tokenValue: string,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
-    instance.id = generateWebhookEventId();
-    instance.chain = chain;
-    instance.monitorId = monitorId;
-    instance.hash = log.transactionHash;
-    instance.blockNum = log.blockNumber;
-    instance.contract = {
-      address: ethers.getAddress(log.address).toLowerCase(),
-      name: null,
-      symbol: null,
+  generateUniqueId(): string {
+    const data = {
+      chain: this.chain,
+      monitorId: this.monitorId,
+      associatedAddress: this.associatedAddress,
+      hash: this.hash,
+      blockNum: this.blockNum,
+      contract: this.contract,
+      fromAddress: this.fromAddress,
+      toAddress: this.toAddress,
+      tokenId: this.tokenId,
+      tokenValue: this.tokenValue,
+      nativeAmount: this.nativeAmount,
+      type: this.type,
+      category: this.category,
+      rawLog: this.rawLog,
+      logIndex: this.logIndex,
+      txnIndex: this.txnIndex,
     };
-    instance.fromAddress = log.topics[1].substring(26);
-    instance.toAddress = log.topics[2].substring(26);
-    instance.tokenId = '0';
-    instance.tokenValue = tokenValue;
-    instance.nativeAmount = '0';
-    instance.rawLog = {
-      topics: log.topics as string[],
-      data: log.data,
-    };
-    instance.type = type;
-    instance.confirm = confirm;
-    instance.category = WebhookCategory.ERC20;
-
-    return instance;
-  }
-
-  public static fromLogToERC721(
-    log: Log,
-    chain: string,
-    monitorId: string,
-    type: WebhookType,
-    confirm: boolean,
-    tokenId: string,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
-    instance.id = generateWebhookEventId();
-    instance.chain = chain;
-    instance.monitorId = monitorId;
-    instance.hash = log.transactionHash;
-    instance.blockNum = log.blockNumber;
-    instance.contract = {
-      address: ethers.getAddress(log.address).toLowerCase(),
-      name: null,
-      symbol: null,
-    };
-    instance.fromAddress = log.topics[1].substring(26);
-    instance.toAddress = log.topics[2].substring(26);
-    instance.tokenId = tokenId;
-    instance.tokenValue = '0';
-    instance.nativeAmount = '0';
-    instance.rawLog = {
-      topics: log.topics as string[],
-      data: log.data,
-    };
-    instance.type = type;
-    instance.confirm = confirm;
-    instance.category = WebhookCategory.ERC721;
-
-    return instance;
-  }
-
-  public static fromTransactionToNative(
-    transaction: TransactionResponse,
-    chain: string,
-    monitorId: string,
-    type: WebhookType,
-    confirm: boolean,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
-    instance.id = generateWebhookEventId();
-    instance.chain = chain;
-    instance.monitorId = monitorId;
-    instance.hash = transaction.hash;
-    instance.blockNum = transaction.blockNumber;
-    instance.fromAddress = transaction.from.toLowerCase();
-    instance.toAddress = transaction.to.toLowerCase();
-
-    instance.tokenId = '0';
-    instance.tokenValue = '0';
-    instance.nativeAmount = transaction.value.toString();
-    instance.type = type;
-    instance.confirm = confirm;
-    instance.category = WebhookCategory.Native;
-    return instance;
+    return hashMd5(JSON.stringify(data));
   }
 }
 export type TransactionHistoryDocument = HydratedDocument<TransactionHistory>;
-export const WebhookDeliverySchema =
+export const TransactionHistorySchema =
   SchemaFactory.createForClass(TransactionHistory);
