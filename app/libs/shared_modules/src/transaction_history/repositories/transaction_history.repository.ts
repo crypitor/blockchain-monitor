@@ -38,10 +38,6 @@ export class TransactionHistoryRepository {
     });
   }
 
-  async findByMonitorId(monitorId: string): Promise<TransactionHistory[]> {
-    return this.model.find({ monitorId: monitorId });
-  }
-
   async getTransactionHistory(
     monitorId: string,
     limit: number,
@@ -59,6 +55,17 @@ export class TransactionHistoryRepository {
     hash: string,
   ): Promise<TransactionHistory[]> {
     return this.model.find({ monitorId: monitorId, hash: hash });
+  }
+
+  async pushDeliveryId(id: string, deliveryId: string) {
+    return this.model.updateOne(
+      { uniqueId: id },
+      {
+        $push: {
+          deliveryIds: deliveryId,
+        },
+      },
+    );
   }
 }
 

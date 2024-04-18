@@ -12,4 +12,14 @@ export const TransactionHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'BSC_TRANSACTION_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'BscTransactionHistory',
+        TransactionHistorySchema,
+        'bsc_transaction_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];
