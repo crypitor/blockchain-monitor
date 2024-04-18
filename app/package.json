@@ -46,6 +46,7 @@
     "express-basic-auth": "^1.2.1",
     "kafkajs": "^2.2.4",
     "mongoose": "^8.2.2",
+    "node-cache": "^5.1.2",
     "nodemailer": "^6.9.12",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
