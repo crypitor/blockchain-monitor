@@ -6,6 +6,7 @@ import {
   MonitoringType,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { ProjectQuotaService } from '@app/shared_modules/project/services/project.quota.service';
 import { WebhookService } from '@app/shared_modules/webhook/webhook.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Inject, Injectable, Logger } from '@nestjs/common';
@@ -31,6 +32,9 @@ export class EthereumService {
 
   @Inject()
   private readonly webhookService: WebhookService;
+
+  @Inject()
+  private readonly projectQuotaService: ProjectQuotaService;
 
   async findEthAddress(address: string): Promise<MonitorAddress[]> {
     return this.ethMonitorAddressRepository.findByAddress(address);
@@ -323,6 +327,7 @@ export class EthereumService {
       this.logger.debug(
         `Dispatch webhook successfully response: ${JSON.stringify(respone)}`,
       );
+      this.projectQuotaService.increaseUsed(monitor.projectId);
     } catch (error) {
       this.logger.error(
         `Error while sending webhook request to: ${webhook.url}`,
