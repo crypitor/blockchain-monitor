@@ -163,7 +163,7 @@ export class WebhookService {
    */
   async dispatchMessage(
     webhookId: string,
-    body: WebhookDeliveryDto,
+    body: any,
   ): Promise<DispatchWebhookResponse> {
     try {
       const response = await sendPost(`${this.webhookUrl}/v1/deliveries`, {
