@@ -15,9 +15,9 @@ export enum WebhookType {
   out = 'out',
 }
 @Schema()
-export class TransactionHistory {
+export class EventHistory {
   @Prop({ required: true, unique: true })
-  uniqueId: string; // md5 of message exclude timestamp and confirm
+  eventId: string; // md5 of message exclude timestamp and confirm
 
   @Prop()
   chain: string;
@@ -119,8 +119,8 @@ export class TransactionHistory {
     type: WebhookType,
     confirm: boolean,
     tokenValue: string,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
+  ): EventHistory {
+    const instance = new EventHistory();
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
@@ -149,7 +149,7 @@ export class TransactionHistory {
     if (type === WebhookType.in) {
       instance.associatedAddress = instance.toAddress;
     }
-    instance.uniqueId = instance.generateId();
+    instance.eventId = instance.generateId();
     return instance;
   }
 
@@ -160,8 +160,8 @@ export class TransactionHistory {
     type: WebhookType,
     confirm: boolean,
     tokenId: string,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
+  ): EventHistory {
+    const instance = new EventHistory();
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
@@ -190,7 +190,7 @@ export class TransactionHistory {
     if (type === WebhookType.in) {
       instance.associatedAddress = instance.toAddress;
     }
-    instance.uniqueId = instance.generateId();
+    instance.eventId = instance.generateId();
     return instance;
   }
 
@@ -200,8 +200,8 @@ export class TransactionHistory {
     monitorId: string,
     type: WebhookType,
     confirm: boolean,
-  ): TransactionHistory {
-    const instance = new TransactionHistory();
+  ): EventHistory {
+    const instance = new EventHistory();
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = transaction.hash;
@@ -223,10 +223,9 @@ export class TransactionHistory {
     if (type === WebhookType.in) {
       instance.associatedAddress = instance.toAddress;
     }
-    instance.uniqueId = instance.generateId();
+    instance.eventId = instance.generateId();
     return instance;
   }
 }
-export type TransactionHistoryDocument = HydratedDocument<TransactionHistory>;
-export const TransactionHistorySchema =
-  SchemaFactory.createForClass(TransactionHistory);
+export type EventHistoryDocument = HydratedDocument<EventHistory>;
+export const EventHistorySchema = SchemaFactory.createForClass(EventHistory);

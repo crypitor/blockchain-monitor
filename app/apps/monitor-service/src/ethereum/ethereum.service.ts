@@ -1,3 +1,8 @@
+import { EthEventHistoryRepository } from '@app/shared_modules/event_history/repositories/event_history.repository';
+import {
+  EventHistory,
+  WebhookType,
+} from '@app/shared_modules/event_history/schemas/event_history.schema';
 import { EthMonitorAddressRepository } from '@app/shared_modules/monitor/repositories/monitor.address.repository';
 import { MonitorRepository } from '@app/shared_modules/monitor/repositories/monitor.repository';
 import { MonitorAddress } from '@app/shared_modules/monitor/schemas/monitor.address.schema';
@@ -15,12 +20,6 @@ import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ethers, Log, TransactionResponse } from 'ethers';
-import { EthTransactionHistoryRepository } from '@app/shared_modules/transaction_history/repositories/transaction_history.repository';
-import {
-  TransactionHistory,
-  WebhookType,
-} from '@app/shared_modules/transaction_history/schemas/transaction_history.schema';
-import { response } from 'express';
 
 @Injectable()
 export class EthereumService {
@@ -42,7 +41,7 @@ export class EthereumService {
   private readonly projectQuotaService: ProjectQuotaService;
 
   @Inject()
-  private readonly transactionHistoryRepository: EthTransactionHistoryRepository;
+  private readonly eventHistoryRepository: EthEventHistoryRepository;
 
   async findEthAddress(address: string): Promise<MonitorAddress[]> {
     return this.ethMonitorAddressRepository.findByAddress(address);
@@ -193,7 +192,7 @@ export class EthereumService {
         continue;
       }
 
-      const txnHistory = TransactionHistory.fromTransactionToNative(
+      const txnHistory = EventHistory.fromTransactionToNative(
         transaction,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -231,7 +230,7 @@ export class EthereumService {
         continue;
       }
       // @todo check condition on specific cryptos
-      const transaction = TransactionHistory.fromLogToERC721(
+      const transaction = EventHistory.fromLogToERC721(
         event,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -272,7 +271,7 @@ export class EthereumService {
         continue;
       }
       // @todo check condition on specific cryptos
-      const txnHistory = TransactionHistory.fromLogToERC20(
+      const txnHistory = EventHistory.fromLogToERC20(
         event,
         SupportedChain.ETH.name,
         monitor.monitorId,
@@ -293,23 +292,22 @@ export class EthereumService {
   }
 
   private async saveHistory(
-    transaction: TransactionHistory,
+    transaction: EventHistory,
     delivery: DispatchWebhookResponse,
   ) {
+    // @todo handle when dispatch message to webhook service
     if (!transaction.confirm) {
       transaction.deliveryIds = [delivery.id];
-      await this.transactionHistoryRepository.saveTransactionHistory(
-        transaction,
-      );
+      await this.eventHistoryRepository.saveEventHistory(transaction);
     } else {
-      this.transactionHistoryRepository.pushDeliveryId(
-        transaction.uniqueId,
+      this.eventHistoryRepository.pushDeliveryId(
+        transaction.eventId,
         delivery.id,
       );
     }
   }
 
-  private async sendMessage(monitor: Monitor, body: TransactionHistory) {
+  private async sendMessage(monitor: Monitor, body: EventHistory) {
     if (!monitor.notification) {
       return;
     }
@@ -340,7 +338,7 @@ export class EthereumService {
 
   private async dispathMessageToWebhook(
     monitor: Monitor,
-    body: TransactionHistory,
+    body: EventHistory,
   ): Promise<DispatchWebhookResponse> {
     if (!monitor.notification) {
       return;

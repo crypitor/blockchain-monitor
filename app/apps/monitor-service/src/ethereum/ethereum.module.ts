@@ -1,11 +1,11 @@
+import { EventHistoryModule } from '@app/shared_modules/event_history/event_history.module';
 import { MonitorModule } from '@app/shared_modules/monitor/monitor.module';
+import { ProjectModule } from '@app/shared_modules/project/project.module';
 import { WebhookModule } from '@app/shared_modules/webhook/webhook.module';
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EthereumController } from './ethereum.controller';
 import { EthereumService } from './ethereum.service';
-import { ProjectModule } from '@app/shared_modules/project/project.module';
-import { TransactionHistoryModule } from '@app/shared_modules/transaction_history/transaction_history.module';
 
 @Module({
   providers: [EthereumService],
@@ -32,7 +32,7 @@ import { TransactionHistoryModule } from '@app/shared_modules/transaction_histor
     WebhookModule,
     MonitorModule,
     ProjectModule,
-    TransactionHistoryModule,
+    EventHistoryModule,
   ],
 })
 export class EthereumModule {}
