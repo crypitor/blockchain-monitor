@@ -145,7 +145,13 @@ export class PollingBlockService {
 
   private async getBlockNumber(): Promise<number> {
     try {
-      const blockNumber = await this.provider.getBlockNumber();
+      // Perform an asynchronous operation (e.g., fetching data)
+      const blockNumber = await Promise.race([
+        this.provider.getBlockNumber(), // Your asynchronous operation
+        delay(5000).then(() => {
+          throw new Error('Get block number Timeout');
+        }), // Timeout promise
+      ]);
       this.logger.log('got latest block from network: ' + blockNumber);
       return blockNumber;
     } catch (error) {
@@ -153,4 +159,10 @@ export class PollingBlockService {
     }
     return 0;
   }
+}
+
+function delay(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
