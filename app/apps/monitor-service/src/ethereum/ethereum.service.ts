@@ -216,7 +216,6 @@ export class EthereumService {
     tokenId: string,
     type: WebhookType,
   ) {
-    // @todo check condition of monitor and event log if it match
     for (const address of addresses) {
       const monitor = await this.findMonitor(address.monitorId);
       // ignore monitor condition on erc721
@@ -239,7 +238,10 @@ export class EthereumService {
         tokenId,
       );
 
-      const response = await this.dispatchMessageToWebhook(monitor, transaction);
+      const response = await this.dispatchMessageToWebhook(
+        monitor,
+        transaction,
+      );
       this.saveHistory(transaction, response);
 
       this.logger.debug(
@@ -257,7 +259,6 @@ export class EthereumService {
     value: string,
     type: WebhookType,
   ) {
-    // @todo check condition of monitor and event log if it match
     for (const address of addresses) {
       const monitor = await this.findMonitor(address.monitorId);
       // ignore monitor condition on erc20
@@ -281,7 +282,7 @@ export class EthereumService {
       );
 
       const response = await this.dispatchMessageToWebhook(monitor, txnHistory);
-      this.saveHistory(txnHistory, response);
+      await this.saveHistory(txnHistory, response);
 
       this.logger.debug(
         `Confirmed: ${confirm} ERC20 transfer ${type.toUpperCase()}:\n${JSON.stringify(
@@ -292,17 +293,28 @@ export class EthereumService {
   }
 
   private async saveHistory(
-    transaction: EventHistory,
+    event: EventHistory,
     delivery: DispatchWebhookResponse,
   ) {
-    // @todo handle when dispatch message to webhook service
-    if (!transaction.confirm) {
-      transaction.deliveryIds = [delivery.id];
-      await this.eventHistoryRepository.saveEventHistory(transaction);
+    let deliveryId: string;
+    if (!delivery) {
+      this.logger.error(
+        `Save event ${event.confirm ? 'CONFIRMED' : 'DETECT'} ${
+          event.eventId
+        } with error can not dispatch this event`,
+      );
+      deliveryId = 'ERROR';
     } else {
-      this.eventHistoryRepository.pushDeliveryId(
-        transaction.eventId,
-        delivery.id,
+      deliveryId = delivery.id;
+    }
+
+    if (!event.confirm) {
+      event.deliveryIds = [deliveryId];
+      await this.eventHistoryRepository.saveEventHistory(event);
+    } else {
+      await this.eventHistoryRepository.pushConfirmDeliveryId(
+        event.eventId,
+        deliveryId,
       );
     }
   }
@@ -353,7 +365,7 @@ export class EthereumService {
       this.logger.debug(
         `Dispatch webhook successfully response: ${JSON.stringify(respone)}`,
       );
-      this.projectQuotaService.increaseUsed(monitor.projectId);
+      await this.projectQuotaService.increaseUsed(monitor.projectId);
       return respone;
     } catch (error) {
       this.logger.error(

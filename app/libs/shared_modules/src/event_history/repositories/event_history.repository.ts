@@ -54,12 +54,15 @@ export class EventHistoryRepository {
     return this.model.find({ monitorId: monitorId, hash: hash });
   }
 
-  async pushDeliveryId(eventId: string, deliveryId: string) {
+  async pushConfirmDeliveryId(eventId: string, deliveryId: string) {
     return this.model.updateOne(
       { eventId: eventId },
       {
         $push: {
           deliveryIds: deliveryId,
+        },
+        $set: {
+          confirm: true,
         },
       },
     );
