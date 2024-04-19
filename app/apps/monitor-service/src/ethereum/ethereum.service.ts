@@ -200,7 +200,7 @@ export class EthereumService {
         confirm,
       );
 
-      const response = await this.dispathMessageToWebhook(monitor, txnHistory);
+      const response = await this.dispatchMessageToWebhook(monitor, txnHistory);
       this.saveHistory(txnHistory, response);
 
       this.logger.debug(
@@ -239,7 +239,7 @@ export class EthereumService {
         tokenId,
       );
 
-      const response = await this.dispathMessageToWebhook(monitor, transaction);
+      const response = await this.dispatchMessageToWebhook(monitor, transaction);
       this.saveHistory(transaction, response);
 
       this.logger.debug(
@@ -280,7 +280,7 @@ export class EthereumService {
         value,
       );
 
-      const response = await this.dispathMessageToWebhook(monitor, txnHistory);
+      const response = await this.dispatchMessageToWebhook(monitor, txnHistory);
       this.saveHistory(txnHistory, response);
 
       this.logger.debug(
@@ -336,7 +336,7 @@ export class EthereumService {
     }
   }
 
-  private async dispathMessageToWebhook(
+  private async dispatchMessageToWebhook(
     monitor: Monitor,
     body: EventHistory,
   ): Promise<DispatchWebhookResponse> {
