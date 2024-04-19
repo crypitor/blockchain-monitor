@@ -132,9 +132,9 @@ export class EventHistory {
     };
     instance.fromAddress = log.topics[1].substring(26);
     instance.toAddress = log.topics[2].substring(26);
-    instance.tokenId = '0';
+    // instance.tokenId = '0';
     instance.tokenValue = tokenValue;
-    instance.nativeAmount = '0';
+    // instance.nativeAmount = '0';
     instance.rawLog = {
       topics: log.topics as string[],
       data: log.data,
@@ -143,6 +143,8 @@ export class EventHistory {
     instance.confirm = confirm;
     instance.category = WebhookCategory.ERC20;
     instance.dateCreated = new Date();
+    instance.logIndex = log.index;
+    instance.txnIndex = log.transactionIndex;
     if (type === WebhookType.out) {
       instance.associatedAddress = instance.fromAddress;
     }
@@ -174,8 +176,8 @@ export class EventHistory {
     instance.fromAddress = log.topics[1].substring(26);
     instance.toAddress = log.topics[2].substring(26);
     instance.tokenId = tokenId;
-    instance.tokenValue = '0';
-    instance.nativeAmount = '0';
+    // instance.tokenValue = '0';
+    // instance.nativeAmount = '0';
     instance.rawLog = {
       topics: log.topics as string[],
       data: log.data,
@@ -184,6 +186,8 @@ export class EventHistory {
     instance.confirm = confirm;
     instance.category = WebhookCategory.ERC721;
     instance.dateCreated = new Date();
+    instance.logIndex = log.index;
+    instance.txnIndex = log.transactionIndex;
     if (type === WebhookType.out) {
       instance.associatedAddress = instance.fromAddress;
     }
@@ -209,13 +213,14 @@ export class EventHistory {
     instance.fromAddress = transaction.from.toLowerCase();
     instance.toAddress = transaction.to.toLowerCase();
 
-    instance.tokenId = '0';
-    instance.tokenValue = '0';
+    // instance.tokenId = '0';
+    // instance.tokenValue = '0';
     instance.nativeAmount = transaction.value.toString();
     instance.type = type;
     instance.confirm = confirm;
     instance.category = WebhookCategory.Native;
     instance.dateCreated = new Date();
+    instance.txnIndex = transaction.index;
     // @todo assign data from transaction data
     if (type === WebhookType.out) {
       instance.associatedAddress = instance.fromAddress;
