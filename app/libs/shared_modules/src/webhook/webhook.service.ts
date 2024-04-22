@@ -119,17 +119,21 @@ export class WebhookService {
 
   async updateWebhook(
     webhookId: string,
-    webhookUrl?: string,
-    authorization?: string,
-    secret_token?: string,
-    active?: boolean,
+    options: {
+      name: string;
+      webhookUrl: string;
+      authorization: string;
+      secret_token: string;
+      active: boolean;
+    },
   ) {
     try {
       const request = this.buildUpdateWebhookRequest(
-        webhookUrl,
-        authorization,
-        secret_token,
-        active,
+        options.name,
+        options.webhookUrl,
+        options.authorization,
+        options.secret_token,
+        options.active,
       );
       const response = await sendPut(
         `${this.webhookUrl}/v1/webhooks/${webhookId}`,
@@ -271,31 +275,27 @@ export class WebhookService {
   }
 
   private buildUpdateWebhookRequest(
-    webhookUrl?: string,
-    authorization?: string,
-    secret_token?: string,
-    active?: boolean,
+    name: string,
+    webhookUrl: string,
+    authorization: string,
+    secret_token: string,
+    active: boolean,
   ): UpdateWebhookRequestDto {
-    const options: UpdateWebhookRequestDto = {};
+    const updateWebhookDto = {
+      name: name,
+      url: webhookUrl,
+      content_type: 'application/json',
+      valid_status_codes: [200, 201],
+      secret_token: secret_token,
+      authorization_token: authorization,
+      active: active,
+      max_delivery_attempts: 5,
+      delivery_attempt_timeout: 1,
+      retry_min_backoff: 10,
+      retry_max_backoff: 60,
+    };
 
-    // Check each input and add it to the options object only if it's defined
-    if (webhookUrl !== undefined) {
-      options.url = webhookUrl;
-    }
-
-    if (authorization !== undefined) {
-      options.authorization_token = authorization;
-    }
-
-    if (secret_token !== undefined) {
-      options.secret_token = secret_token;
-    }
-
-    if (active !== undefined) {
-      options.active = active;
-    }
-
-    return options;
+    return updateWebhookDto;
   }
 }
 
