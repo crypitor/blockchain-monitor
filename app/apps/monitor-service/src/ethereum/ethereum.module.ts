@@ -1,4 +1,4 @@
-import { EventHistoryModule } from '@app/shared_modules/event_history/event_history.module';
+import { EventHistoryModelModule } from '@app/shared_modules/event_history/event_history.module';
 import { MonitorModule } from '@app/shared_modules/monitor/monitor.module';
 import { ProjectModule } from '@app/shared_modules/project/project.module';
 import { WebhookModule } from '@app/shared_modules/webhook/webhook.module';
@@ -32,7 +32,7 @@ import { EthereumService } from './ethereum.service';
     WebhookModule,
     MonitorModule,
     ProjectModule,
-    EventHistoryModule,
+    EventHistoryModelModule,
   ],
 })
 export class EthereumModule {}
