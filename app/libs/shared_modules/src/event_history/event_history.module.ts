@@ -19,4 +19,4 @@ import { EventHistoryProviders } from './event_history.provider';
     BscEventHistoryRepository,
   ],
 })
-export class EventHistoryModule {}
+export class EventHistoryModelModule {}

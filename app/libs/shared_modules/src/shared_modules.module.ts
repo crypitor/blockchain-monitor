@@ -3,11 +3,22 @@ import { SharedModulesService } from './shared_modules.service';
 import { MonitorModule } from './monitor/monitor.module';
 import { ProjectModule } from './project/project.module';
 import { WebhookModule } from './webhook/webhook.module';
-import { EventHistoryModule } from './event_history/event_history.module';
+import { EventHistoryModelModule } from './event_history/event_history.module';
 
 @Module({
-  imports: [MonitorModule, ProjectModule, WebhookModule, EventHistoryModule],
+  imports: [
+    MonitorModule,
+    ProjectModule,
+    WebhookModule,
+    EventHistoryModelModule,
+  ],
   providers: [SharedModulesService],
-  exports: [SharedModulesService, MonitorModule, ProjectModule, WebhookModule],
+  exports: [
+    SharedModulesService,
+    MonitorModule,
+    ProjectModule,
+    WebhookModule,
+    EventHistoryModelModule,
+  ],
 })
 export class SharedModulesModule {}
