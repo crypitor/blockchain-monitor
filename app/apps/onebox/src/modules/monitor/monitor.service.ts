@@ -100,6 +100,17 @@ export class MonitorService {
       ]);
     });
 
+    if (monitor.notification.method === MonitorNotificationMethod.Webhook) {
+      const method = monitor.notification as WebhookNotification;
+      await this.webhookService.updateWebhook(monitor.webhookId, {
+        name: monitor.monitorId,
+        webhookUrl: method.url,
+        secret_token: method.secret_token,
+        authorization: method.authorization,
+        active: false,
+      });
+    }
+
     return Builder<DeleteMonitorResponseDto>().success(true).build();
   }
 
@@ -147,8 +158,26 @@ export class MonitorService {
     if (request.disabled != undefined) {
       updateMonitor['disabled'] = request.disabled;
     }
-    return this.monitorRepository
+
+    return await this.monitorRepository
       .updateMonitor(monitor.monitorId, updateMonitor)
-      .then((monitor) => MonitorResponseDto.from(monitor));
+      .then(async (monitor) => {
+        // @todo handle error on update webhook service
+        if (monitor.notification) {
+          if (
+            request.notification.method === MonitorNotificationMethod.Webhook
+          ) {
+            const method = monitor.notification as WebhookNotification;
+            await this.webhookService.updateWebhook(monitor.webhookId, {
+              name: monitor.monitorId,
+              webhookUrl: method.url,
+              secret_token: method.secret_token,
+              authorization: method.authorization,
+              active: true,
+            });
+          }
+        }
+        return MonitorResponseDto.from(monitor);
+      });
   }
 }
