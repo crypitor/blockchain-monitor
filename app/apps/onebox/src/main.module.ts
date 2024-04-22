@@ -12,6 +12,7 @@ import { ProjectModule } from './modules/project/project.module';
 import { UsersModule } from './modules/users/users.module';
 import { PollingBlockService } from './polling.block/polling.block.service';
 import { DeliveryModule } from './modules/delivery/delivery.module';
+import { EventHistoryModule } from './modules/event_history/event_history.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { DeliveryModule } from './modules/delivery/delivery.module';
     MonitorModule,
     MonitorAddressModule,
     DeliveryModule,
+    EventHistoryModule,
   ],
   providers: [GlobalService, PollingBlockService],
 })
