@@ -130,8 +130,12 @@ export class EventHistory {
       name: null,
       symbol: null,
     };
-    instance.fromAddress = log.topics[1].substring(26);
-    instance.toAddress = log.topics[2].substring(26);
+    instance.fromAddress = ethers
+      .getAddress(`0x${log.topics[1].substring(26)}`)
+      .toLowerCase();
+    instance.toAddress = ethers
+      .getAddress(`0x${log.topics[2].substring(26)}`)
+      .toLowerCase();
     // instance.tokenId = '0';
     instance.tokenValue = tokenValue;
     // instance.nativeAmount = '0';
@@ -173,8 +177,12 @@ export class EventHistory {
       name: null,
       symbol: null,
     };
-    instance.fromAddress = log.topics[1].substring(26);
-    instance.toAddress = log.topics[2].substring(26);
+    instance.fromAddress = ethers
+      .getAddress(`0x${log.topics[1].substring(26)}`)
+      .toLowerCase();
+    instance.toAddress = ethers
+      .getAddress(`0x${log.topics[2].substring(26)}`)
+      .toLowerCase();
     instance.tokenId = tokenId;
     // instance.tokenValue = '0';
     // instance.nativeAmount = '0';
