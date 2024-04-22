@@ -91,7 +91,6 @@ export class MonitorService {
     await this.projectService.checkProjectPermission(user, monitor.projectId);
     await measureTime('delete_monitor_resource', async () => {
       Promise.all([
-        this.webhookService.deleteWebhook(monitor.webhookId),
         this.monitorRepository.deleteMonitor(monitor.monitorId),
         this.projectRepository.increaseMonitorCount(monitor.projectId, -1),
         MonitorAddressRepository.getRepository(
