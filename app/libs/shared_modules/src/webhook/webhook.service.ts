@@ -1,7 +1,7 @@
 import { sendDelete, sendGet, sendPost, sendPut } from '@app/utils/http.util';
 import { Injectable, Logger } from '@nestjs/common';
-import { WebhookDeliveryDto } from 'apps/monitor-service/src/ethereum/dto/eth.webhook-delivery.dto';
-
+const MAX_ATTEMPT = 3;
+const MAX_TIMEOUT = 5;
 @Injectable()
 export class WebhookService {
   private readonly logger = new Logger(WebhookService.name);
@@ -26,7 +26,7 @@ export class WebhookService {
         "authorization_token": "my-authorization-token",
         "active": true,
         "max_delivery_attempts": 5,
-        "delivery_attempt_timeout": 1,
+        "delivery_attempt_timeout": 5,
         "retry_min_backoff": 10,
         "retry_max_backoff": 60
     }'
@@ -45,8 +45,8 @@ export class WebhookService {
       secret_token: secret_token,
       authorization_token: authorization,
       active: true,
-      max_delivery_attempts: 5,
-      delivery_attempt_timeout: 1,
+      max_delivery_attempts: MAX_ATTEMPT,
+      delivery_attempt_timeout: MAX_TIMEOUT,
       retry_min_backoff: 10,
       retry_max_backoff: 60,
     };
@@ -289,8 +289,8 @@ export class WebhookService {
       secret_token: secret_token,
       authorization_token: authorization,
       active: active,
-      max_delivery_attempts: 5,
-      delivery_attempt_timeout: 1,
+      max_delivery_attempts: MAX_ATTEMPT,
+      delivery_attempt_timeout: MAX_TIMEOUT,
       retry_min_backoff: 10,
       retry_max_backoff: 60,
     };
@@ -303,12 +303,12 @@ export class WebhookServiceResponseDto {
   active: true;
   content_type: string;
   created_at: string;
-  delivery_attempt_timeout: 0;
+  delivery_attempt_timeout: number;
   id: string;
-  max_delivery_attempts: 0;
+  max_delivery_attempts: number;
   name: string;
-  retry_max_backoff: 0;
-  retry_min_backoff: 0;
+  retry_max_backoff: number;
+  retry_min_backoff: number;
   secret_token: string;
   authorization_token: string;
   updated_at: string;
