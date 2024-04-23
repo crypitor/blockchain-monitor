@@ -375,7 +375,7 @@ export class EthereumService {
       );
       await Promise.all([
         this.projectQuotaService.increaseUsed(monitor.projectId),
-        this.monitorWebhookService.increaseWebhookCount(monitor.webhookId),
+        this.monitorWebhookService.increaseWebhookCount(monitor.monitorId),
       ]);
       return respone;
     } catch (error) {
