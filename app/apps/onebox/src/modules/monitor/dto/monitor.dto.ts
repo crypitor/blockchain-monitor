@@ -185,6 +185,8 @@ export class CreateMonitorDto {
       .createdBy(createdBy)
       .dateCreated(new Date())
       .disabled(false)
+      .addressCount(0)
+      .webhookCount(0)
       .build();
   }
 }
@@ -223,6 +225,12 @@ export class MonitorResponseDto {
   @ApiResponseProperty()
   disabled: boolean;
 
+  @ApiResponseProperty()
+  addressCount: number;
+
+  @ApiResponseProperty()
+  webhookCount: number;
+
   static from(monitor: Monitor) {
     return Builder<MonitorResponseDto>()
       .projectId(monitor.projectId)
@@ -236,6 +244,8 @@ export class MonitorResponseDto {
       .tags(monitor.tags)
       .dateCreated(monitor.dateCreated)
       .disabled(monitor.disabled || false)
+      .addressCount(monitor.addressCount)
+      .webhookCount(monitor.webhookCount)
       .build();
   }
 }

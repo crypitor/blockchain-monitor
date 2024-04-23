@@ -103,6 +103,12 @@ export class Monitor {
 
   @Prop()
   disabled: boolean;
+
+  @Prop()
+  addressCount: number;
+
+  @Prop()
+  webhookCount: number;
 }
 export type MonitorDocument = HydratedDocument<Monitor>;
 export const MonitorSchema = SchemaFactory.createForClass(Monitor);

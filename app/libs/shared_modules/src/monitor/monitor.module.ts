@@ -6,17 +6,20 @@ import {
   EthMonitorAddressRepository,
 } from './repositories/monitor.address.repository';
 import { MonitorRepository } from './repositories/monitor.repository';
+import { MonitorWebhookService } from './services/monitor.webhook.service';
 
 @Module({
   imports: [DatabaseModule],
   providers: [
     ...MonitorProviders,
+    MonitorWebhookService,
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
   ],
   exports: [
     ...MonitorProviders,
+    MonitorWebhookService,
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
