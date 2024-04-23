@@ -4,6 +4,7 @@ import { MonitorProviders } from './monitor.provider';
 import {
   BscMonitorAddressRepository,
   EthMonitorAddressRepository,
+  PolygonMonitorAddressRepository,
 } from './repositories/monitor.address.repository';
 import { MonitorRepository } from './repositories/monitor.repository';
 
@@ -14,12 +15,14 @@ import { MonitorRepository } from './repositories/monitor.repository';
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
+    PolygonMonitorAddressRepository,
   ],
   exports: [
     ...MonitorProviders,
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
+    PolygonMonitorAddressRepository,
   ],
 })
 export class MonitorModule {}
