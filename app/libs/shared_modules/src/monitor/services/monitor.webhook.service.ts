@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import NodeCache from 'node-cache';
 import { MonitorRepository } from '../repositories/monitor.repository';
+import NodeCache = require('node-cache');
 
 @Injectable()
 export class MonitorWebhookService {
