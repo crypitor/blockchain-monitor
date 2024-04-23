@@ -29,4 +29,14 @@ export const MonitorProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'POLYGON_MONITOR_ADDRESS_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'PolygonMonitorAddress',
+        MonitorAddressSchema,
+        'polygons_monitor_address',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];
