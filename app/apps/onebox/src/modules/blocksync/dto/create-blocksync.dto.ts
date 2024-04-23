@@ -13,6 +13,8 @@ export class CreateBlockSyncDto {
   @IsLowercase()
   rpcUrl: string;
 
+  chain: string;
+
   @IsString()
   @IsNotEmpty()
   lastSync: number;

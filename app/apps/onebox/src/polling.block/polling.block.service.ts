@@ -40,6 +40,7 @@ export class PollingBlockService {
     if (!blockSync) {
       blockSync = await this.blockSyncService.create({
         rpcUrl: this.rpcUrl,
+        chain: SupportedChain.ETH.name,
         lastSync: parseInt(process.env.EVM_START_BLOCK),
       });
     }

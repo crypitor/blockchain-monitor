@@ -42,6 +42,7 @@ export class PolygonPollingBlockService {
     if (!blockSync) {
       blockSync = await this.blockSyncService.create({
         rpcUrl: this.rpcUrl,
+        chain: SupportedChain.POLYGON.name,
         lastSync: parseInt(process.env.POLYGON_START_BLOCK),
       });
     }
