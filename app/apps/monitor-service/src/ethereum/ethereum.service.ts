@@ -102,8 +102,12 @@ export class EthereumService {
       `received transaction ${event.transactionHash} from block ${event.blockNumber}`,
     ]);
 
-    const fromAddress = ethers.getAddress(event.topics[1].substring(26));
-    const toAddress = ethers.getAddress(event.topics[2].substring(26));
+    const fromAddress = ethers
+      .getAddress(event.topics[1].substring(26))
+      .toLowerCase();
+    const toAddress = ethers
+      .getAddress(event.topics[2].substring(26))
+      .toLowerCase();
     const tokenId = ethers.toBigInt(event.topics[3]).toString();
 
     // handle from wallet
