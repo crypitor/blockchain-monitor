@@ -69,4 +69,36 @@ export class MonitorRepository {
       )
       .exec();
   }
+
+  async increaseAddressCount(
+    monitorId: string,
+    addressCount: number,
+  ): Promise<boolean> {
+    return this.monitorModel
+      .updateOne(
+        { monitorId: monitorId },
+        {
+          $inc: {
+            addressCount: addressCount,
+          },
+        },
+      )
+      .then((result) => result.modifiedCount > 0);
+  }
+
+  async increaseWebhookCount(
+    monitorId: string,
+    webhookCount: number,
+  ): Promise<boolean> {
+    return this.monitorModel
+      .updateOne(
+        { monitorId: monitorId },
+        {
+          $inc: {
+            webhookCount: webhookCount,
+          },
+        },
+      )
+      .then((result) => result.modifiedCount > 0);
+  }
 }

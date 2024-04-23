@@ -42,11 +42,16 @@ export class MonitorAddressService {
         .dateCreated(new Date())
         .build(),
     );
-    return MonitorAddressRepository.getRepository(monitor.network)
-      .saveAll(addresses)
-      .then((addresses) =>
-        addresses.map((address) => MonitorAddressResponseDto.from(address)),
-      );
+    const savedAddresses = await MonitorAddressRepository.getRepository(
+      monitor.network,
+    ).saveAll(addresses);
+    await this.monitorRepository.increaseAddressCount(
+      monitor.monitorId,
+      savedAddresses.length,
+    );
+    return savedAddresses.map((address) =>
+      MonitorAddressResponseDto.from(address),
+    );
   }
 
   async getMonitorAddress(
@@ -80,11 +85,15 @@ export class MonitorAddressService {
     request.addresses = request.addresses.map((address) =>
       address.toLowerCase(),
     );
-    return MonitorAddressRepository.getRepository(monitor.network)
-      .deleteMonitorAddress(monitor.monitorId, request.addresses)
-      .then(() =>
-        Builder<DeleteMonitorAddressResponseDto>().success(true).build(),
-      );
+    const deletedCount = await MonitorAddressRepository.getRepository(
+      monitor.network,
+    ).deleteMonitorAddress(monitor.monitorId, request.addresses);
+
+    await this.monitorRepository.increaseAddressCount(
+      monitor.monitorId,
+      -deletedCount,
+    );
+    return Builder<DeleteMonitorAddressResponseDto>().success(true).build();
   }
 
   async searchAddressInMonitor(
