@@ -35,7 +35,7 @@ export const MonitorProviders = [
       connection.model(
         'PolygonMonitorAddress',
         MonitorAddressSchema,
-        'polygons_monitor_address',
+        'polygon_monitor_address',
       ),
     inject: ['DATABASE_CONNECTION'],
   },
