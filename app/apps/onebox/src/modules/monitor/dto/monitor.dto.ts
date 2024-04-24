@@ -42,6 +42,7 @@ export class MonitorConditionDto {
 
 export abstract class NotificationDto {
   @ApiProperty({ type: MonitorNotificationMethod })
+  @IsNotEmpty()
   method: MonitorNotificationMethod;
 
   abstract toMonitorNotification(): MonitorNotification;
@@ -122,6 +123,7 @@ export class CreateMonitorDto {
     },
   })
   @ValidateNested()
+  @IsNotEmpty()
   @Type(() => NotificationDto, {
     keepDiscriminatorProperty: true,
     discriminator: {
