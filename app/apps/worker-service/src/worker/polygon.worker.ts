@@ -38,9 +38,9 @@ export class PolygonWorker {
       });
 
       // handle native transfer
-      this.emitNativeTransaction(block, false);
+      await this.emitNativeTransaction(block, false);
       // handle extracted event for erc20 and nft
-      this.emitLog(logs, false);
+      await this.emitLog(logs, false);
       //only update last sync for confirm
       // await this.updateLastSyncBlock(blockNumber);
     } catch (error) {
