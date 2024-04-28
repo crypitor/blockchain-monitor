@@ -26,7 +26,7 @@ export class EventHistoryService {
       request.monitorId,
     );
 
-    if (monitor.network === MonitorNetwork.Ethereum) {
+    if (monitor !== undefined) {
       return this.ethEventHistoryRepository
         .getEventHistory(monitor.monitorId, request.limit, request.offset)
         .then((response) => {
@@ -36,7 +36,7 @@ export class EventHistoryService {
         });
     }
 
-    this.logger.error(`network ${monitor.network} not supported`);
-    throw ErrorCode.INTERNAL_SERVER_ERROR.asException();
+    this.logger.error(`monitor not found`);
+    throw ErrorCode.MONITOR_NOT_FOUND.asException();
   }
 }
