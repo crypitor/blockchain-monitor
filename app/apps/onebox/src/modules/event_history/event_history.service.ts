@@ -1,4 +1,7 @@
-import { EthEventHistoryRepository } from '@app/shared_modules/event_history/repositories/event_history.repository';
+import {
+  EthEventHistoryRepository,
+  PolygonEventHistoryRepository,
+} from '@app/shared_modules/event_history/repositories/event_history.repository';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MonitorService } from '../monitor/monitor.service';
 import { User } from '../users/schemas/user.schema';
@@ -14,6 +17,7 @@ export class EventHistoryService {
   private readonly logger = new Logger(EventHistoryService.name);
   constructor(
     private readonly ethEventHistoryRepository: EthEventHistoryRepository,
+    private readonly polygonEventHistoryRepository: PolygonEventHistoryRepository,
     private readonly monitorService: MonitorService,
   ) {}
 
@@ -26,7 +30,11 @@ export class EventHistoryService {
       request.monitorId,
     );
 
-    if (monitor !== undefined) {
+    if (!monitor) {
+      throw ErrorCode.MONITOR_NOT_FOUND.asException();
+    }
+
+    if (monitor.network === MonitorNetwork.Ethereum) {
       return this.ethEventHistoryRepository
         .getEventHistory(monitor.monitorId, request.limit, request.offset)
         .then((response) => {
@@ -36,7 +44,17 @@ export class EventHistoryService {
         });
     }
 
-    this.logger.error(`monitor not found`);
-    throw ErrorCode.MONITOR_NOT_FOUND.asException();
+    if (monitor.network === MonitorNetwork.Polygon) {
+      return this.polygonEventHistoryRepository
+        .getEventHistory(monitor.monitorId, request.limit, request.offset)
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
+    this.logger.error(`network ${monitor.network} not supported`);
+    throw ErrorCode.INTERNAL_SERVER_ERROR.asException();
   }
 }
