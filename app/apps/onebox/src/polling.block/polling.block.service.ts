@@ -69,13 +69,11 @@ export class PollingBlockService {
         blockSync.lastSync + SupportedChain.ETH.confirmationBlock;
     }
     this.detectInfo.flag = false;
-    this.addCronJob('ethPollingBlock', '10');
+    this.addCronJob('ethPollingBlock', CronExpression.EVERY_10_SECONDS);
   }
 
   addCronJob(name: string, seconds: string) {
-    const job = new CronJob(CronExpression.EVERY_10_SECONDS, () =>
-      this.ethPollingBlock(),
-    );
+    const job = new CronJob(seconds, () => this.ethPollingBlock());
 
     this.schedulerRegistry.addCronJob(name, job);
     job.start();

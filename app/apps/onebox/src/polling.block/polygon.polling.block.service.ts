@@ -73,13 +73,11 @@ export class PolygonPollingBlockService {
         blockSync.lastSync + SupportedChain.POLYGON.confirmationBlock;
     }
     this.detectInfo.flag = false;
-    this.addCronJob('polygonPollingBlock', '5');
+    this.addCronJob('polygonPollingBlock', CronExpression.EVERY_5_SECONDS);
   }
 
   addCronJob(name: string, seconds: string) {
-    const job = new CronJob(CronExpression.EVERY_10_SECONDS, () =>
-      this.polygonPollingBlock(),
-    );
+    const job = new CronJob(seconds, () => this.polygonPollingBlock());
 
     this.schedulerRegistry.addCronJob(name, job);
     job.start();
