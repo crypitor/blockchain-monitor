@@ -4,6 +4,7 @@ import { MonitorProviders } from './monitor.provider';
 import {
   BscMonitorAddressRepository,
   EthMonitorAddressRepository,
+  PolygonMonitorAddressRepository,
 } from './repositories/monitor.address.repository';
 import { MonitorRepository } from './repositories/monitor.repository';
 import { MonitorWebhookService } from './services/monitor.webhook.service';
@@ -16,6 +17,7 @@ import { MonitorWebhookService } from './services/monitor.webhook.service';
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
+    PolygonMonitorAddressRepository,
   ],
   exports: [
     ...MonitorProviders,
@@ -23,6 +25,7 @@ import { MonitorWebhookService } from './services/monitor.webhook.service';
     MonitorRepository,
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
+    PolygonMonitorAddressRepository,
   ],
 })
 export class MonitorModule {}

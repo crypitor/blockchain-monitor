@@ -13,6 +13,7 @@ import { UsersModule } from './modules/users/users.module';
 import { PollingBlockService } from './polling.block/polling.block.service';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { EventHistoryModule } from './modules/event_history/event_history.module';
+import { PolygonPollingBlockService } from './polling.block/polygon.polling.block.service';
 
 @Module({
   imports: [
@@ -49,6 +50,6 @@ import { EventHistoryModule } from './modules/event_history/event_history.module
     DeliveryModule,
     EventHistoryModule,
   ],
-  providers: [GlobalService, PollingBlockService],
+  providers: [GlobalService, PollingBlockService, PolygonPollingBlockService],
 })
 export class MainModule {}

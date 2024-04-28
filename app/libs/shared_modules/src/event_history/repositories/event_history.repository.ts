@@ -82,3 +82,12 @@ export class BscEventHistoryRepository extends EventHistoryRepository {
     super(MonitorNetwork.BSC, model);
   }
 }
+
+@Injectable()
+export class PolygonEventHistoryRepository extends EventHistoryRepository {
+  constructor(
+    @Inject('POLYGON_EVENT_HISTORY_MODEL') model: Model<EventHistory>,
+  ) {
+    super(MonitorNetwork.Polygon, model);
+  }
+}

@@ -8,10 +8,10 @@ import { BlockSyncService } from '../modules/blocksync/blocksync.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
 
 @Injectable()
-export class PollingBlockService {
+export class PolygonPollingBlockService {
   private detectInfo = { flag: false, blockNumber: 0 };
 
-  private readonly logger = new Logger(PollingBlockService.name);
+  private readonly logger = new Logger(PolygonPollingBlockService.name);
 
   constructor(
     private schedulerRegistry: SchedulerRegistry,
@@ -25,12 +25,14 @@ export class PollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.EVM_DISABLE === 'true') {
+    if (process.env.POLYGON_DISABLE === 'true') {
       this.detectInfo.flag = true;
       return;
     }
-    this.rpcUrl = process.env.ETH_PROVIDER_URL;
-    this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
+    this.rpcUrl = process.env.POLYGON_PROVIDER_URL;
+    this.provider = new ethers.JsonRpcProvider(
+      process.env.POLYGON_PROVIDER_URL,
+    );
     this.init();
   }
 
@@ -40,12 +42,12 @@ export class PollingBlockService {
     if (!blockSync) {
       blockSync = await this.blockSyncService.create({
         rpcUrl: this.rpcUrl,
-        chain: SupportedChain.ETH.name,
-        lastSync: parseInt(process.env.EVM_START_BLOCK),
+        chain: SupportedChain.POLYGON.name,
+        lastSync: parseInt(process.env.POLYGON_START_BLOCK),
       });
     }
     // checking force latest block config
-    const startBlockConfig = process.env.EVM_START_BLOCK_CONFIG;
+    const startBlockConfig = process.env.POLYGON_START_BLOCK_CONFIG;
     if (startBlockConfig === 'latest') {
       const latestBlockNumber = await this.provider.getBlockNumber();
       this.logger.warn(
@@ -57,24 +59,26 @@ export class PollingBlockService {
       this.detectInfo.blockNumber = latestBlockNumber - 1;
     } else if (startBlockConfig === 'config') {
       this.logger.warn(
-        'force running start block from config ' + process.env.EVM_START_BLOCK,
+        'force running start block from config ' +
+          process.env.POLYGON_START_BLOCK,
       );
-      this.updateLastSyncBlock(parseInt(process.env.EVM_START_BLOCK));
+      this.updateLastSyncBlock(parseInt(process.env.POLYGON_START_BLOCK));
       // if we start at config block, we suppose that we already scan at (config block - 1)
-      this.detectInfo.blockNumber = parseInt(process.env.EVM_START_BLOCK) - 1;
+      this.detectInfo.blockNumber =
+        parseInt(process.env.POLYGON_START_BLOCK) - 1;
     } else {
       this.logger.warn('running start block from db ' + blockSync.lastSync);
       // if we start at db block, we suppose that we already scan at db block
       this.detectInfo.blockNumber =
-        blockSync.lastSync + SupportedChain.ETH.confirmationBlock;
+        blockSync.lastSync + SupportedChain.POLYGON.confirmationBlock;
     }
     this.detectInfo.flag = false;
-    this.addCronJob('ethPollingBlock', '10');
+    this.addCronJob('polygonPollingBlock', '5');
   }
 
   addCronJob(name: string, seconds: string) {
     const job = new CronJob(CronExpression.EVERY_10_SECONDS, () =>
-      this.ethPollingBlock(),
+      this.polygonPollingBlock(),
     );
 
     this.schedulerRegistry.addCronJob(name, job);
@@ -88,8 +92,8 @@ export class PollingBlockService {
     await this.blockSyncService.updateLastSync(this.rpcUrl, blockNumber);
   }
 
-  async ethPollingBlock() {
-    this.logger.debug('Start polling block number');
+  async polygonPollingBlock() {
+    this.logger.debug('Polygon Start polling block number');
     if (this.detectInfo.flag) {
       this.logger.error('conflict with last job. quit current job');
       return;
@@ -111,24 +115,26 @@ export class PollingBlockService {
 
         // emit event detect block with blocknumber
         this.logger.debug(['DETECT', `send block ${blockNumber}`]);
-        this.workerClient.emit(TopicName.ETH_DETECTED_BLOCK, {
+        this.workerClient.emit(TopicName.POLYGON_DETECTED_BLOCK, {
           blockNumber: blockNumber,
         });
 
         this.logger.debug([
           'CONFIRM',
-          `send block ${blockNumber - SupportedChain.ETH.confirmationBlock}`,
+          `send block ${
+            blockNumber - SupportedChain.POLYGON.confirmationBlock
+          }`,
         ]);
         // emit event confirm block with block number - confirm block
-        this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
-          blockNumber: blockNumber - SupportedChain.ETH.confirmationBlock,
+        this.workerClient.emit(TopicName.POLYGON_CONFIRMED_BLOCK, {
+          blockNumber: blockNumber - SupportedChain.POLYGON.confirmationBlock,
         });
 
         this.detectInfo.blockNumber = blockNumber;
 
         //only update last sync for confirm
         await this.updateLastSyncBlock(
-          blockNumber - SupportedChain.ETH.confirmationBlock,
+          blockNumber - SupportedChain.POLYGON.confirmationBlock,
         );
       } catch (error) {
         this.logger.error([

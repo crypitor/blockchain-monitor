@@ -209,7 +209,9 @@ export class WebhookService {
         );
         throw new Error('get deliveries');
       }
-      this.logger.debug(`send webhook success with webhookId: ${webhookId}`);
+      this.logger.debug(
+        `Retrieve webhook deliveries with webhookId: ${webhookId}`,
+      );
       return (await response.json()) as DeliveriesResponseDto;
     } catch (e) {
       this.logger.error(

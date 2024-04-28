@@ -4,17 +4,19 @@ import { Block, ethers, Log } from 'ethers';
 import { TopicName } from '@app/utils/topicUtils';
 
 @Injectable()
-export class EthereumWorker {
-  private readonly logger = new Logger(EthereumWorker.name);
+export class PolygonWorker {
+  private readonly logger = new Logger(PolygonWorker.name);
   rpcUrl: string;
   provider: ethers.Provider;
 
   constructor(
     @Inject('MONITOR_CLIENT_SERVICE') private monitorClient: ClientKafka,
   ) {
-    if (process.env.ETH_PROVIDER_URL) {
-      this.rpcUrl = process.env.ETH_PROVIDER_URL;
-      this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
+    if (process.env.POLYGON_PROVIDER_URL) {
+      this.rpcUrl = process.env.POLYGON_PROVIDER_URL;
+      this.provider = new ethers.JsonRpcProvider(
+        process.env.POLYGON_PROVIDER_URL,
+      );
     }
   }
 
@@ -86,13 +88,13 @@ export class EthereumWorker {
     logs.forEach((event) => {
       if (event.topics.length === 3) {
         this.logger.debug(`emit event on ERC20 ${JSON.stringify(event)}`);
-        this.monitorClient.emit(TopicName.ETH_ERC20_TRANSFER, {
+        this.monitorClient.emit(TopicName.POLYGON_ERC20_TRANSFER, {
           event: event,
           confirm: confirm,
         });
       } else if (event.topics.length === 4) {
         this.logger.debug(`emit event on ERC721 ${JSON.stringify(event)}`);
-        this.monitorClient.emit(TopicName.ETH_ERC721_TRANSFER, {
+        this.monitorClient.emit(TopicName.POLYGON_ERC721_TRANSFER, {
           event: event,
           confirm: confirm,
         });
@@ -107,7 +109,7 @@ export class EthereumWorker {
     // handle extracted event for native
     block.prefetchedTransactions.forEach((transaction) => {
       this.logger.debug(`emit event on NATIVE ${JSON.stringify(transaction)}`);
-      this.monitorClient.emit(TopicName.ETH_NATIVE_TRANSFER, {
+      this.monitorClient.emit(TopicName.POLYGON_NATIVE_TRANSFER, {
         transaction: transaction,
         confirm: confirm,
       });

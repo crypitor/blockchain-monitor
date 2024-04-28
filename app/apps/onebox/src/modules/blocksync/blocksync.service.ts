@@ -37,6 +37,10 @@ export class BlockSyncService {
     return this.blockSync.findOne({ rpcUrl: rpcUrl });
   }
 
+  async findByChain(chain: string): Promise<BlockSync[]> {
+    return this.blockSync.find({ chain: chain });
+  }
+
   async deleteOne(rpcUrl: string): Promise<void> {
     try {
       await this.blockSync.deleteOne({ rpcUrl: rpcUrl });

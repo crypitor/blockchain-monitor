@@ -22,4 +22,14 @@ export const EventHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'POLYGON_EVENT_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'PolygonEventHistory',
+        EventHistorySchema,
+        'polygon_event_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];

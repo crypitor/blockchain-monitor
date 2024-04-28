@@ -110,3 +110,12 @@ export class BscMonitorAddressRepository extends MonitorAddressRepository {
     super(MonitorNetwork.BSC, model);
   }
 }
+
+@Injectable()
+export class PolygonMonitorAddressRepository extends MonitorAddressRepository {
+  constructor(
+    @Inject('POLYGON_MONITOR_ADDRESS_MODEL') model: Model<MonitorAddress>,
+  ) {
+    super(MonitorNetwork.Polygon, model);
+  }
+}

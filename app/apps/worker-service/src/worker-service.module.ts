@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { WorkerServiceController } from './worker-service.controller';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { WorkerServiceService } from './worker-service.service';
+import { PolygonWorker } from './worker/polygon.worker';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { WorkerServiceService } from './worker-service.service';
     ScheduleModule.forRoot(),
   ],
   controllers: [WorkerServiceController],
-  providers: [WorkerServiceService, EthereumWorker],
+  providers: [WorkerServiceService, EthereumWorker, PolygonWorker],
 })
 export class WorkerServiceModule {}
