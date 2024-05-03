@@ -25,7 +25,7 @@ export class WorkerServiceController {
 
   @EventPattern(TopicName.ETH_CONFIRMED_BLOCK)
   async ethConfirmBlock(data: any) {
-    this.polygonWorker.ethHandleConfirmedBlock(data);
+    this.ethereumWorker.ethHandleConfirmedBlock(data);
   }
 
   @EventPattern(TopicName.POLYGON_DETECTED_BLOCK)
