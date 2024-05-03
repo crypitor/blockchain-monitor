@@ -10,7 +10,17 @@ async function bootstrap() {
       transport: Transport.KAFKA,
       options: {
         client: {
+          clientId: 'monitor-server',
           brokers: process.env.KAFKA_BROKERS.split(','),
+          ssl: process.env.KAFKA_SSL === 'true',
+          sasl:
+            process.env.KAFKA_AUTH_ENABLE === 'true'
+              ? {
+                  mechanism: 'plain',
+                  username: process.env.KAFKA_USERNAME || '',
+                  password: process.env.KAFKA_PASSWORD || '',
+                }
+              : null,
         },
         consumer: {
           groupId: 'monitor-consumer',
