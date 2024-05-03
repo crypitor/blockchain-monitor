@@ -30,6 +30,15 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
           client: {
             clientId: 'worker',
             brokers: process.env.KAFKA_BROKERS.split(','),
+            ssl: process.env.KAFKA_SSL === 'true',
+            sasl:
+              process.env.KAFKA_AUTH_ENABLE === 'true'
+                ? {
+                    mechanism: 'plain',
+                    username: process.env.KAFKA_USERNAME || '',
+                    password: process.env.KAFKA_PASSWORD || '',
+                  }
+                : null,
           },
           producer: {},
           consumer: {

@@ -21,6 +21,15 @@ import { PolygonService } from './polygon.service';
             client: {
               clientId: 'webhook',
               brokers: process.env.KAFKA_BROKERS.split(','),
+              ssl: process.env.KAFKA_SSL === 'true',
+              sasl:
+                process.env.KAFKA_AUTH_ENABLE === 'true'
+                  ? {
+                      mechanism: 'plain',
+                      username: process.env.KAFKA_USERNAME || '',
+                      password: process.env.KAFKA_PASSWORD || '',
+                    }
+                  : null,
             },
             consumer: {
               groupId: 'webhook-consumer',

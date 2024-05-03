@@ -22,6 +22,15 @@ import { PolygonWorker } from './worker/polygon.worker';
           client: {
             clientId: 'monitor',
             brokers: process.env.KAFKA_BROKERS.split(','),
+            ssl: process.env.KAFKA_SSL === 'true',
+            sasl:
+              process.env.KAFKA_AUTH_ENABLE === 'true'
+                ? {
+                    mechanism: 'plain',
+                    username: process.env.KAFKA_USERNAME || '',
+                    password: process.env.KAFKA_PASSWORD || '',
+                  }
+                : null,
           },
           producer: {},
           consumer: {
