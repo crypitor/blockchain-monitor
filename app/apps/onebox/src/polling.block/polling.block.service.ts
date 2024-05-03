@@ -41,7 +41,7 @@ export class PollingBlockService {
       blockSync = await this.blockSyncService.create({
         rpcUrl: this.rpcUrl,
         chain: SupportedChain.ETH.name,
-        lastSync: parseInt(process.env.EVM_START_BLOCK),
+        lastSync: await this.getBlockNumber(),
       });
     }
     // checking force latest block config
