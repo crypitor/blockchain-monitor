@@ -21,6 +21,14 @@ async function bootstrap() {
                   password: process.env.KAFKA_PASSWORD || '',
                 }
               : null,
+
+          retry: {
+            restartOnFailure: async (e) => {
+              console.log('RESTART ON FAILURE monitor server');
+              console.log(e);
+              return true;
+            },
+          },
         },
         consumer: {
           groupId: 'monitor-consumer',

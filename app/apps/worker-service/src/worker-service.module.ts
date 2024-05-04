@@ -31,6 +31,13 @@ import { PolygonWorker } from './worker/polygon.worker';
                     password: process.env.KAFKA_PASSWORD || '',
                   }
                 : null,
+            retry: {
+              restartOnFailure: async (e): Promise<boolean> => {
+                console.log('RESTART ON FAILURE worker module');
+                console.log(e);
+                return true;
+              },
+            },
           },
           producer: {},
           consumer: {

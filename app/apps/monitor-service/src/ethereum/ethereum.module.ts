@@ -34,6 +34,13 @@ import { EthereumService } from './ethereum.service';
             consumer: {
               groupId: 'webhook-consumer',
             },
+            retry: {
+              restartOnFailure: async (e) => {
+                console.log('RESTART ON FAILURE ethereum module');
+                console.log(e);
+                return true;
+              },
+            },
           },
         }),
       },

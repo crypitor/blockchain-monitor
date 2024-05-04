@@ -39,6 +39,13 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
                     password: process.env.KAFKA_PASSWORD || '',
                   }
                 : null,
+            retry: {
+              restartOnFailure: async (e) => {
+                console.log('RESTART ON FAILURE onebox module');
+                console.log(e);
+                return true;
+              },
+            },
           },
           producer: {},
           consumer: {

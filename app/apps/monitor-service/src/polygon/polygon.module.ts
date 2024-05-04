@@ -30,6 +30,13 @@ import { PolygonService } from './polygon.service';
                       password: process.env.KAFKA_PASSWORD || '',
                     }
                   : null,
+              retry: {
+                restartOnFailure: async (e) => {
+                  console.log('RESTART ON FAILURE polygon module');
+                  console.log(e);
+                  return true;
+                },
+              },
             },
             consumer: {
               groupId: 'webhook-consumer',
