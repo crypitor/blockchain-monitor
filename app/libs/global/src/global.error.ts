@@ -32,6 +32,7 @@ export class ErrorCode {
     401002,
     'Wrong email or password',
   );
+  static WRONG_EMAIL_OR_TOKEN = new ErrorCode(401003, 'Wrong email or token');
 
   // Forbidden - Client is authorized but doesn't have permission to perform action
   static FORBIDDEN = new ErrorCode(403001, 'Forbidden');
