@@ -10,8 +10,11 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { User } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { LoginResponseDto } from './dto/login.reponse.dto';
+import { LoginEmailDto, LoginWithTokenDto } from './dto/login.dto';
+import {
+  LoginEmailResponseDto,
+  LoginResponseDto,
+} from './dto/login.reponse.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('Auth')
@@ -24,10 +27,29 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   @ApiOkResponse({ type: LoginResponseDto })
-  async login(
-    @Req() req: Request,
-    @Body() body: LoginDto,
-  ): Promise<LoginResponseDto> {
+  async login(@Req() req: Request): Promise<LoginResponseDto> {
     return this.authService.login(req.user as User);
+  }
+
+  @ApiOperation({ summary: 'Login Using Email only' })
+  @Post('login-email')
+  @HttpCode(200)
+  @ApiOkResponse({ type: LoginEmailResponseDto })
+  async loginWithEmail(
+    @Req() req: Request,
+    @Body() body: LoginEmailDto,
+  ): Promise<LoginEmailResponseDto> {
+    return this.authService.loginWithEmail(body);
+  }
+
+  @ApiOperation({ summary: 'Login Using Token' })
+  @Post('login-token')
+  @HttpCode(200)
+  @ApiOkResponse({ type: LoginResponseDto })
+  async loginWithToken(
+    @Req() req: Request,
+    @Body() body: LoginWithTokenDto,
+  ): Promise<LoginResponseDto> {
+    return this.authService.loginWithToken(body);
   }
 }

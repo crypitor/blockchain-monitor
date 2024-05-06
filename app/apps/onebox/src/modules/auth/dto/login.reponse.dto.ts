@@ -7,3 +7,8 @@ export class LoginResponseDto {
     this.accessToken = accessToken;
   }
 }
+
+export class LoginEmailResponseDto {
+  @ApiResponseProperty()
+  success: boolean;
+}
