@@ -1,10 +1,14 @@
+import {
+  EthBlockHistoryRepository,
+  PolygonBlockHistoryRepository,
+} from '@app/shared_modules/block_history/repositories/block_history.repository';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { WorkerServiceController } from './worker-service.controller';
-import { EthereumWorker } from './worker/ethereum.worker';
 import { WorkerServiceService } from './worker-service.service';
+import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 
 @Module({
@@ -47,6 +51,8 @@ import { PolygonWorker } from './worker/polygon.worker';
       },
     ]),
     ScheduleModule.forRoot(),
+    EthBlockHistoryRepository,
+    PolygonBlockHistoryRepository,
   ],
   controllers: [WorkerServiceController],
   providers: [WorkerServiceService, EthereumWorker, PolygonWorker],
