@@ -4,6 +4,7 @@ import { MonitorModule } from './monitor/monitor.module';
 import { ProjectModule } from './project/project.module';
 import { WebhookModule } from './webhook/webhook.module';
 import { EventHistoryModelModule } from './event_history/event_history.module';
+import { BlockHistoryModelModule } from './block_history/block_history.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { EventHistoryModelModule } from './event_history/event_history.module';
     ProjectModule,
     WebhookModule,
     EventHistoryModelModule,
+    BlockHistoryModelModule,
   ],
   providers: [SharedModulesService],
   exports: [
@@ -19,6 +21,7 @@ import { EventHistoryModelModule } from './event_history/event_history.module';
     ProjectModule,
     WebhookModule,
     EventHistoryModelModule,
+    BlockHistoryModelModule,
   ],
 })
 export class SharedModulesModule {}
