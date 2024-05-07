@@ -37,6 +37,12 @@ export class User {
     token: string;
     expire: number;
   };
+
+  @Prop({ type: Object })
+  emailLogin: {
+    token: string;
+    expire: number;
+  };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
