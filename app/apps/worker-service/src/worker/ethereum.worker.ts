@@ -2,6 +2,10 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { Block, ethers, Log } from 'ethers';
 import { TopicName } from '@app/utils/topicUtils';
+import { BlockHistory } from '@app/shared_modules/block_history/schemas/block_history.schema';
+import { EthBlockHistoryRepository } from '@app/shared_modules/block_history/repositories/block_history.repository';
+import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { now } from 'mongoose';
 
 @Injectable()
 export class EthereumWorker {
@@ -11,6 +15,8 @@ export class EthereumWorker {
 
   constructor(
     @Inject('MONITOR_CLIENT_SERVICE') private monitorClient: ClientKafka,
+    @Inject()
+    private readonly blockHistoryRepository: EthBlockHistoryRepository,
   ) {
     if (process.env.ETH_PROVIDER_URL) {
       this.rpcUrl = process.env.ETH_PROVIDER_URL;
@@ -44,7 +50,7 @@ export class EthereumWorker {
       // handle extracted event for erc20 and nft
       await this.emitLog(logs, false);
       //only update last sync for confirm
-      // await this.updateLastSyncBlock(blockNumber);
+      await this.saveBlockHistory(blockNumber, false);
     } catch (error) {
       // @todo re-add error block into kafka, and save in db
       this.logger.error([
@@ -52,6 +58,7 @@ export class EthereumWorker {
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
+      await this.saveBlockHistory(blockNumber, false, true, error);
     }
 
     return;
@@ -75,12 +82,15 @@ export class EthereumWorker {
       this.emitNativeTransaction(block, true);
       // handle extracted event for erc20 and nft
       this.emitLog(logs, true);
+
+      await this.saveBlockHistory(blockNumber, true);
     } catch (error) {
       this.logger.error([
         'CONFIRM',
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
+      await this.saveBlockHistory(blockNumber, true, true, error);
     }
     return;
   }
@@ -115,6 +125,26 @@ export class EthereumWorker {
         transaction: transaction,
         confirm: confirm,
       });
+    });
+  }
+
+  private async saveBlockHistory(
+    blockNum: number,
+    confirm: boolean,
+    isError?: boolean,
+    error?: any,
+  ): Promise<void> {
+    if (isError) {
+      this.logger.error(`error handle block ${JSON.stringify(error)}`);
+    }
+    this.logger.debug(`save block history $(blockNum)}`);
+    await this.blockHistoryRepository.saveBlockHistory({
+      blockNum: blockNum,
+      chain: MonitorNetwork.Ethereum,
+      confirmed: confirm,
+      isError: isError || false,
+      errorDetail: error !== undefined ? JSON.stringify(error) : '',
+      dateCreated: new Date(),
     });
   }
 }
