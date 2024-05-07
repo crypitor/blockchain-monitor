@@ -14,7 +14,11 @@ export class EthereumWorker {
   ) {
     if (process.env.ETH_PROVIDER_URL) {
       this.rpcUrl = process.env.ETH_PROVIDER_URL;
-      this.provider = new ethers.JsonRpcProvider(process.env.ETH_PROVIDER_URL);
+      this.provider = new ethers.JsonRpcProvider(
+        process.env.ETH_PROVIDER_URL,
+        null,
+        { staticNetwork: true },
+      );
     }
   }
 

@@ -16,6 +16,8 @@ export class PolygonWorker {
       this.rpcUrl = process.env.POLYGON_PROVIDER_URL;
       this.provider = new ethers.JsonRpcProvider(
         process.env.POLYGON_PROVIDER_URL,
+        null,
+        { staticNetwork: true },
       );
     }
   }
