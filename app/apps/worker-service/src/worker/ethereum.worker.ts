@@ -1,11 +1,9 @@
+import { EthBlockHistoryRepository } from '@app/shared_modules/block_history/repositories/block_history.repository';
+import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { TopicName } from '@app/utils/topicUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { Block, ethers, Log } from 'ethers';
-import { TopicName } from '@app/utils/topicUtils';
-import { BlockHistory } from '@app/shared_modules/block_history/schemas/block_history.schema';
-import { EthBlockHistoryRepository } from '@app/shared_modules/block_history/repositories/block_history.repository';
-import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
-import { now } from 'mongoose';
 
 @Injectable()
 export class EthereumWorker {
@@ -13,11 +11,13 @@ export class EthereumWorker {
   rpcUrl: string;
   provider: ethers.Provider;
 
-  constructor(
-    @Inject('MONITOR_CLIENT_SERVICE') private monitorClient: ClientKafka,
-    @Inject()
-    private readonly blockHistoryRepository: EthBlockHistoryRepository,
-  ) {
+  @Inject('MONITOR_CLIENT_SERVICE')
+  private readonly monitorClient: ClientKafka;
+
+  @Inject()
+  private readonly blockHistoryRepository: EthBlockHistoryRepository;
+
+  constructor() {
     if (process.env.ETH_PROVIDER_URL) {
       this.rpcUrl = process.env.ETH_PROVIDER_URL;
       this.provider = new ethers.JsonRpcProvider(
@@ -79,9 +79,9 @@ export class EthereumWorker {
         ],
       });
       // handle native transfer
-      this.emitNativeTransaction(block, true);
+      await this.emitNativeTransaction(block, true);
       // handle extracted event for erc20 and nft
-      this.emitLog(logs, true);
+      await this.emitLog(logs, true);
 
       await this.saveBlockHistory(blockNumber, true);
     } catch (error) {
@@ -118,6 +118,10 @@ export class EthereumWorker {
     block: Block,
     confirm: boolean,
   ): Promise<void> {
+    if (block === null) {
+      this.logger.error('get block from network return null');
+      throw new Error('get block from network return null');
+    }
     // handle extracted event for native
     block.prefetchedTransactions.forEach((transaction) => {
       this.logger.debug(`emit event on NATIVE ${JSON.stringify(transaction)}`);
@@ -135,9 +139,11 @@ export class EthereumWorker {
     error?: any,
   ): Promise<void> {
     if (isError) {
-      this.logger.error(`error handle block ${JSON.stringify(error)}`);
+      this.logger.error(
+        `error handle block ${blockNum} with detail ${JSON.stringify(error)}`,
+      );
     }
-    this.logger.debug(`save block history $(blockNum)}`);
+    this.logger.debug(`save block history ${blockNum}`);
     await this.blockHistoryRepository.saveBlockHistory({
       blockNum: blockNum,
       chain: MonitorNetwork.Ethereum,
