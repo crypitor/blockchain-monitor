@@ -53,6 +53,10 @@ export class AuthService {
       throw ErrorCode.ACCOUNT_NOT_FOUND.asException();
     }
 
+    if (user.status && user.status !== UserStatus.Active) {
+      throw ErrorCode.ACCOUNT_NOT_ACTIVE.asException();
+    }
+
     const loginToken = generateUUID();
     const tokenExpire = Date.now() + 5 * 60 * 1000; // 5 minutes
     await this.userModel.updateOne(
