@@ -154,7 +154,6 @@ export class CreateMonitorDto {
   type: MonitoringType;
 
   @ApiProperty()
-  @IsNotEmpty()
   note: string;
 
   @ApiProperty()
