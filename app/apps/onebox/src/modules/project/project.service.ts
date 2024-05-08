@@ -1,4 +1,5 @@
 import { ErrorCode } from '@app/global/global.error';
+import { ApiKeyUser } from '@app/shared_modules/apikey/schemas/apikey.schema';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectQuotaRepository } from '@app/shared_modules/project/repositories/project.quota.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
@@ -31,6 +32,11 @@ export class ProjectService {
     user: User,
     projectId: string,
   ): Promise<ProjectMember> {
+    if (user instanceof ApiKeyUser) {
+      if (user.projectId !== projectId) {
+        throw ErrorCode.PROJECT_FORBIDDEN.asException();
+      }
+    }
     const member = await this.projectMemberRepository.findByUserAndProject(
       user.userId,
       projectId,
@@ -47,7 +53,7 @@ export class ProjectService {
       throw ErrorCode.PROJECT_NOT_FOUND.asException();
     }
 
-    this.checkProjectPermission(user, project.projectId);
+    await this.checkProjectPermission(user, project.projectId);
 
     return ProjectResponseDto.from(project);
   }
@@ -95,7 +101,7 @@ export class ProjectService {
       throw ErrorCode.PROJECT_NOT_FOUND.asException();
     }
 
-    this.checkProjectPermission(user, project.projectId);
+    await this.checkProjectPermission(user, project.projectId);
     return this.projectQuotaRepository
       .getCurrentMonthQuota(projectId)
       .then((quota) => {

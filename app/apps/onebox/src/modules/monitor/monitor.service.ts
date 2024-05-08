@@ -46,7 +46,7 @@ export class MonitorService {
     user: User,
     request: ListMonitorDto,
   ): Promise<MonitorResponseDto[]> {
-    this.projectService.checkProjectPermission(user, request.projectId);
+    await this.projectService.checkProjectPermission(user, request.projectId);
     const monitors = await this.monitorRepository.listMonitors(request);
     return monitors.map((monitor) => MonitorResponseDto.from(monitor));
   }
@@ -60,7 +60,7 @@ export class MonitorService {
     user: User,
     request: CreateMonitorDto,
   ): Promise<MonitorResponseDto> {
-    this.projectService.checkProjectPermission(user, request.projectId);
+    await this.projectService.checkProjectPermission(user, request.projectId);
 
     const monitor = request.toMonitor(user.userId);
     // request create webhook in webhook microservice

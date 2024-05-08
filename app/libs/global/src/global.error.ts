@@ -48,6 +48,7 @@ export class ErrorCode {
   static PROJECT_NOT_FOUND = new ErrorCode(404003, 'Project Not Found');
   static MONITOR_NOT_FOUND = new ErrorCode(404004, 'Monitor Not Found');
   static API_NOT_FOUND = new ErrorCode(404005, 'API Not Found');
+  static APIKEY_NOT_FOUND = new ErrorCode(404006, 'Apikey Not Found');
 
   // Method Not Allowed - Client send request with invalid method
   static METHOD_NOT_ALLOWED = new ErrorCode(405001, 'Method Not Allowed');

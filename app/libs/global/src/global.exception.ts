@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  ForbiddenException,
   HttpException,
   Logger,
   MethodNotAllowedException,
@@ -29,6 +30,12 @@ export function handleException(exception): HttpException {
     }
     if (exception instanceof MethodNotAllowedException) {
       return ErrorCode.METHOD_NOT_ALLOWED.asException(
+        exception.message,
+        exception.getResponse(),
+      );
+    }
+    if (exception instanceof ForbiddenException) {
+      return ErrorCode.FORBIDDEN.asException(
         exception.message,
         exception.getResponse(),
       );
