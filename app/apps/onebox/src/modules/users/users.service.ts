@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Model } from 'mongoose';
 
 import { ErrorCode } from '@app/global/global.error';
+import { MonitorRepository } from '@app/shared_modules/monitor/repositories/monitor.repository';
 import { comparePassword, hashPassword } from '@app/utils/bcrypt.util';
 import { sendEmail } from '@app/utils/email.sender';
 import { renderTemplate } from '@app/utils/file-template';
@@ -21,13 +22,14 @@ import {
   ResetPasswordDto,
   ResetPasswordResponseDto,
 } from './dto/forgot-password.dto';
-import { User } from './schemas/user.schema';
+import { User, UserStatus } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject('USER_MODEL') private readonly userModel: Model<User>,
     private readonly projectService: ProjectService,
+    private readonly monitorRepository: MonitorRepository,
   ) {}
 
   /**
@@ -49,6 +51,8 @@ export class UsersService {
       ...createUserDto,
       userId,
       passwordHash,
+      status: UserStatus.Active,
+      dateCreated: new Date(),
     }).save();
     const linkLogin = `https://${process.env.WEB_DOMAIN}/sign-in`;
     const emailBody = await renderTemplate(
@@ -212,5 +216,37 @@ export class UsersService {
     );
     sendEmail(user.email, 'Password Reset Successfully', emailBody);
     return new ResetPasswordResponseDto(true);
+  }
+
+  async activateAccount(token: string): Promise<User> {
+    const decodedToken = Buffer.from(token, 'base64').toString();
+    const [email, activateToken] = decodedToken.split(':');
+    const user = await this.findOne(email);
+    if (!user || !user.emailActivation) {
+      throw ErrorCode.WRONG_EMAIL_OR_TOKEN.asException();
+    }
+    if (user.emailActivation.token !== activateToken) {
+      throw ErrorCode.WRONG_EMAIL_OR_TOKEN.asException();
+    }
+    if (user.emailActivation.expire < Date.now()) {
+      throw ErrorCode.WRONG_EMAIL_OR_TOKEN.asException();
+    }
+    const updatedUser = await this.userModel.findOneAndUpdate(
+      { userId: user.userId },
+      {
+        $set: {
+          status: UserStatus.Active,
+        },
+        $unset: { emailLogin: '' },
+      },
+      { new: true },
+    );
+    const updateMonitor = new Map<string, any>();
+    updateMonitor['disabled'] = false;
+    await this.monitorRepository.updateMonitor(
+      user.emailActivation.monitorId,
+      updateMonitor,
+    );
+    return updatedUser;
   }
 }

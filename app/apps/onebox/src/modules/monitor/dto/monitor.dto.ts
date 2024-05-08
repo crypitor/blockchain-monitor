@@ -163,6 +163,8 @@ export class CreateMonitorDto {
   @IsNotEmpty()
   name: string;
 
+  disabled: boolean;
+
   toMonitor(createdBy: string): Monitor {
     return Builder<Monitor>()
       .projectId(this.projectId)
@@ -185,7 +187,7 @@ export class CreateMonitorDto {
       .tags(this.tags)
       .createdBy(createdBy)
       .dateCreated(new Date())
-      .disabled(false)
+      .disabled(this.disabled || false)
       .addressCount(0)
       .webhookCount(0)
       .build();

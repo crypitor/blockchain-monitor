@@ -10,7 +10,8 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { User } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
-import { LoginEmailDto, LoginWithTokenDto } from './dto/login.dto';
+import { ActivateDto } from './dto/activate.dto';
+import { LoginDto, LoginEmailDto, LoginWithTokenDto } from './dto/login.dto';
 import {
   LoginEmailResponseDto,
   LoginResponseDto,
@@ -27,7 +28,10 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   @ApiOkResponse({ type: LoginResponseDto })
-  async login(@Req() req: Request): Promise<LoginResponseDto> {
+  async login(
+    @Req() req: Request,
+    @Body() body: LoginDto,
+  ): Promise<LoginResponseDto> {
     return this.authService.login(req.user as User);
   }
 
@@ -51,5 +55,16 @@ export class AuthController {
     @Body() body: LoginWithTokenDto,
   ): Promise<LoginResponseDto> {
     return this.authService.loginWithToken(body);
+  }
+
+  @ApiOperation({ summary: 'Activate account' })
+  @Post('activate')
+  @HttpCode(200)
+  @ApiOkResponse({ type: LoginResponseDto })
+  async activateAccount(
+    @Req() req: Request,
+    @Body() body: ActivateDto,
+  ): Promise<LoginResponseDto> {
+    return this.authService.activateAccount(body);
   }
 }

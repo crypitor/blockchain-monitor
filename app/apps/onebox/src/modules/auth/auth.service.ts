@@ -7,8 +7,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Builder } from 'builder-pattern';
 import { Model } from 'mongoose';
-import { User } from '../users/schemas/user.schema';
+import { User, UserStatus } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
+import { ActivateDto } from './dto/activate.dto';
 import { LoginEmailDto, LoginWithTokenDto } from './dto/login.dto';
 import {
   LoginEmailResponseDto,
@@ -25,10 +26,16 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<User> {
     const user = await this.usersService.findOne(email);
-    if (user && (await comparePassword(pass, user.password))) {
-      return user;
+    if (!user || !user.password) {
+      throw ErrorCode.WRONG_EMAIL_OR_PASSWORD.asException();
     }
-    throw ErrorCode.WRONG_EMAIL_OR_PASSWORD.asException();
+    if (!(await comparePassword(pass, user.password))) {
+      throw ErrorCode.WRONG_EMAIL_OR_PASSWORD.asException();
+    }
+    if (user.status && user.status !== UserStatus.Active) {
+      throw ErrorCode.ACCOUNT_NOT_ACTIVE.asException();
+    }
+    return user;
   }
 
   async login(user: User): Promise<LoginResponseDto> {
@@ -91,6 +98,11 @@ export class AuthService {
         $unset: { emailLogin: '' },
       },
     );
+    return this.login(user);
+  }
+
+  async activateAccount(request: ActivateDto): Promise<LoginResponseDto> {
+    const user = await this.usersService.activateAccount(request.token);
     return this.login(user);
   }
 }
