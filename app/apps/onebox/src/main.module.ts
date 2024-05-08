@@ -7,12 +7,13 @@ import { SwaggerModule } from '@nestjs/swagger';
 import { MonitorAddressModule } from './modules/address/address.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BlockSyncModule } from './modules/blocksync/blocksync.module';
-import { MonitorModule } from './modules/monitor/monitor.module';
-import { ProjectModule } from './modules/project/project.module';
-import { UsersModule } from './modules/users/users.module';
-import { PollingBlockService } from './polling.block/polling.block.service';
 import { DeliveryModule } from './modules/delivery/delivery.module';
 import { EventHistoryModule } from './modules/event_history/event_history.module';
+import { MonitorModule } from './modules/monitor/monitor.module';
+import { ProjectModule } from './modules/project/project.module';
+import { QuickStartModule } from './modules/quickstart/quickstart.module';
+import { UsersModule } from './modules/users/users.module';
+import { PollingBlockService } from './polling.block/polling.block.service';
 import { PolygonPollingBlockService } from './polling.block/polygon.polling.block.service';
 
 @Module({
@@ -65,6 +66,7 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
     MonitorAddressModule,
     DeliveryModule,
     EventHistoryModule,
+    QuickStartModule,
   ],
   providers: [GlobalService, PollingBlockService, PolygonPollingBlockService],
 })
