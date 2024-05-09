@@ -17,8 +17,8 @@ export class BlockHistoryRepository {
     BlockHistoryRepository.repositories[network] = this;
   }
 
-  async findByBlockNum(blockNum: string): Promise<BlockHistory[]> {
-    return this.model.find({ blockNum: blockNum });
+  async findByBlockNumber(blockNumber: string): Promise<BlockHistory[]> {
+    return this.model.find({ blockNumber: blockNumber });
   }
 
   async saveBlockHistory(blockHistory: BlockHistory): Promise<BlockHistory> {
@@ -44,7 +44,7 @@ export class BlockHistoryRepository {
       .find({ isError: true })
       .limit(limit)
       .skip(offset)
-      .sort({ dateCreated: -1 });
+      .sort({ dateCreated: 1 });
   }
 }
 
