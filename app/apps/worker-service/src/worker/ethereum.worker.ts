@@ -31,7 +31,7 @@ export class EthereumWorker {
     }
   }
 
-  async ethHandleDetectedBlock(data: { blockNumber: number }) {
+  async ethHandleDetectedBlock(data: { blockNumber: number; retry: number }) {
     const blockNumber = data.blockNumber;
     if (!blockNumber) {
       this.logger.error(
@@ -65,13 +65,19 @@ export class EthereumWorker {
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
-      await this.saveBlockHistory(blockNumber, false, true, error);
+      await this.saveBlockHistory(
+        blockNumber,
+        false,
+        true,
+        error,
+        data.retry + 1 || 1,
+      );
     }
 
     return;
   }
 
-  async ethHandleConfirmedBlock(data: { blockNumber: number }) {
+  async ethHandleConfirmedBlock(data: { blockNumber: number; retry: number }) {
     const blockNumber = data.blockNumber;
     if (!blockNumber) {
       this.logger.error(
@@ -103,7 +109,13 @@ export class EthereumWorker {
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
-      await this.saveBlockHistory(blockNumber, true, true, error);
+      await this.saveBlockHistory(
+        blockNumber,
+        true,
+        true,
+        error,
+        data.retry + 1 || 1,
+      );
     }
     return;
   }
@@ -150,14 +162,18 @@ export class EthereumWorker {
     confirm: boolean,
     isError?: boolean,
     error?: any,
+    retry?: number,
   ): Promise<void> {
-    if (isError) {
-      this.logger.warn(`emit error block ${blockNumber} to kafka`);
+    if (isError && retry < 3) {
+      this.logger.warn(
+        `emit error block ${blockNumber} to kafka with retry ${retry}`,
+      );
       if (confirm) {
         this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
           key: 'error',
           value: {
             blockNumber: blockNumber,
+            retry: retry,
             error: error,
           },
         });
@@ -166,6 +182,7 @@ export class EthereumWorker {
           key: 'error',
           value: {
             blockNumber: blockNumber,
+            retry: retry,
             error: error,
           },
         });
@@ -178,6 +195,7 @@ export class EthereumWorker {
       confirmed: confirm,
       isError: isError || false,
       errorDetail: error !== undefined ? JSON.stringify(error) : '',
+      retry: retry || 0,
       dateCreated: new Date(),
     });
   }

@@ -18,6 +18,9 @@ export class BlockHistory {
   @Prop()
   errorDetail: string;
 
+  @Prop()
+  retry: number;
+
   @Prop({ default: Date.now() })
   dateCreated: Date;
 }
