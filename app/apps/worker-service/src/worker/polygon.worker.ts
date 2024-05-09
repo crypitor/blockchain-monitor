@@ -13,6 +13,9 @@ export class PolygonWorker {
   @Inject('MONITOR_CLIENT_SERVICE')
   private readonly monitorClient: ClientKafka;
 
+  @Inject('WORKER_CLIENT_SERVICE')
+  private readonly workerClient: ClientKafka;
+
   @Inject()
   private readonly blockHistoryRepository: PolygonBlockHistoryRepository;
 
@@ -29,7 +32,12 @@ export class PolygonWorker {
 
   async ethHandleDetectedBlock(data: { blockNumber: number }) {
     const blockNumber = data.blockNumber;
-
+    if (!blockNumber) {
+      this.logger.error(
+        'receive invalid message with block number is undefined',
+      );
+      return;
+    }
     try {
       this.logger.log(`DETECT handle block ${blockNumber}`);
       // Retrieve all transaction in block
@@ -56,7 +64,7 @@ export class PolygonWorker {
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
-      this.saveBlockHistory(blockNumber, false, true, error);
+      await this.saveBlockHistory(blockNumber, false, true, error);
     }
 
     return;
@@ -64,6 +72,12 @@ export class PolygonWorker {
 
   async ethHandleConfirmedBlock(data: { blockNumber: number }) {
     const blockNumber = data.blockNumber;
+    if (!blockNumber) {
+      this.logger.error(
+        'receive invalid message with block number is undefined',
+      );
+      return;
+    }
     try {
       this.logger.log(`CONFIRM Scanning block ${blockNumber}`);
       // Retrieve all transaction in block
@@ -131,19 +145,34 @@ export class PolygonWorker {
   }
 
   private async saveBlockHistory(
-    blockNum: number,
+    blockNumber: number,
     confirm: boolean,
     isError?: boolean,
     error?: any,
   ): Promise<void> {
     if (isError) {
-      this.logger.error(
-        `error handle block ${blockNum} with detail ${JSON.stringify(error)}`,
-      );
+      this.logger.warn(`emit error block ${blockNumber} to kafka`);
+      if (confirm) {
+        this.workerClient.emit(TopicName.POLYGON_CONFIRMED_BLOCK, {
+          key: 'error',
+          value: {
+            blockNumber: blockNumber,
+            error: error,
+          },
+        });
+      } else {
+        this.workerClient.emit(TopicName.POLYGON_DETECTED_BLOCK, {
+          key: 'error',
+          value: {
+            blockNumber: blockNumber,
+            error: error,
+          },
+        });
+      }
     }
-    this.logger.debug(`save block history ${blockNum}`);
+    this.logger.debug(`save block history ${blockNumber}`);
     await this.blockHistoryRepository.saveBlockHistory({
-      blockNum: blockNum,
+      blockNumber: blockNumber,
       chain: MonitorNetwork.Ethereum,
       confirmed: confirm,
       isError: isError || false,
