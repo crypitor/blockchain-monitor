@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 @Schema()
 export class BlockHistory {
   @Prop({ index: true })
-  blockNum: number;
+  blockNumber: number;
 
   @Prop()
   chain: string;
