@@ -47,6 +47,38 @@ import { PolygonWorker } from './worker/polygon.worker';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'WORKER_CLIENT_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'worker',
+            brokers: process.env.KAFKA_BROKERS.split(','),
+            ssl: process.env.KAFKA_SSL === 'true',
+            sasl:
+              process.env.KAFKA_AUTH_ENABLE === 'true'
+                ? {
+                    mechanism: 'plain',
+                    username: process.env.KAFKA_USERNAME || '',
+                    password: process.env.KAFKA_PASSWORD || '',
+                  }
+                : null,
+            retry: {
+              restartOnFailure: async (e) => {
+                console.log('RESTART ON FAILURE onebox module');
+                console.log(e);
+                return true;
+              },
+            },
+          },
+          producer: {},
+          consumer: {
+            groupId: 'worker-consumer',
+          },
+        },
+      },
+    ]),
     ScheduleModule.forRoot(),
     BlockHistoryModelModule,
   ],
