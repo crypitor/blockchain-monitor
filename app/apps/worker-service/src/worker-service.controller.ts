@@ -29,7 +29,7 @@ export class WorkerServiceController {
   async ethDetectBlock(data: any) {
     await Promise.race([
       this.ethereumWorker.ethHandleDetectedBlock(data),
-      this.delay(100).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -39,7 +39,7 @@ export class WorkerServiceController {
   async ethConfirmBlock(data: any) {
     await Promise.race([
       this.ethereumWorker.ethHandleConfirmedBlock(data),
-      this.delay(100).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -49,7 +49,7 @@ export class WorkerServiceController {
   async polygonDetectBlock(data: any) {
     await Promise.race([
       this.polygonWorker.ethHandleDetectedBlock(data),
-      this.delay(100).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -59,7 +59,7 @@ export class WorkerServiceController {
   async polygonConfirmBlock(data: any) {
     await Promise.race([
       this.polygonWorker.ethHandleConfirmedBlock(data),
-      this.delay(100).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
