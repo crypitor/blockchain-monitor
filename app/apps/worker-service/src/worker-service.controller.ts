@@ -27,41 +27,45 @@ export class WorkerServiceController {
 
   @EventPattern(TopicName.ETH_DETECTED_BLOCK)
   async ethDetectBlock(data: any) {
-    await Promise.race([
-      this.ethereumWorker.ethHandleDetectedBlock(data),
-      this.delay(1000).then(() => {
-        return;
-      }),
-    ]);
+    this.ethereumWorker.ethHandleDetectedBlock(data);
+    // await Promise.race([
+    //   this.ethereumWorker.ethHandleDetectedBlock(data),
+    //   this.delay(1000).then(() => {
+    //     return;
+    //   }),
+    // ]);
   }
 
   @EventPattern(TopicName.ETH_CONFIRMED_BLOCK)
   async ethConfirmBlock(data: any) {
-    await Promise.race([
-      this.ethereumWorker.ethHandleConfirmedBlock(data),
-      this.delay(1000).then(() => {
-        return;
-      }),
-    ]);
+    this.ethereumWorker.ethHandleConfirmedBlock(data);
+    // await Promise.race([
+    //   this.ethereumWorker.ethHandleConfirmedBlock(data),
+    //   this.delay(1000).then(() => {
+    //     return;
+    //   }),
+    // ]);
   }
 
   @EventPattern(TopicName.POLYGON_DETECTED_BLOCK)
   async polygonDetectBlock(data: any) {
-    await Promise.race([
-      this.polygonWorker.ethHandleDetectedBlock(data),
-      this.delay(1000).then(() => {
-        return;
-      }),
-    ]);
+    this.polygonWorker.ethHandleDetectedBlock(data);
+    // await Promise.race([
+    //   this.polygonWorker.ethHandleDetectedBlock(data),
+    //   this.delay(1000).then(() => {
+    //     return;
+    //   }),
+    // ]);
   }
 
   @EventPattern(TopicName.POLYGON_CONFIRMED_BLOCK)
   async polygonConfirmBlock(data: any) {
-    await Promise.race([
-      this.polygonWorker.ethHandleConfirmedBlock(data),
-      this.delay(1000).then(() => {
-        return;
-      }),
-    ]);
+    this.polygonWorker.ethHandleConfirmedBlock(data);
+    // await Promise.race([
+    //   this.polygonWorker.ethHandleConfirmedBlock(data),
+    //   this.delay(1000).then(() => {
+    //     return;
+    //   }),
+    // ]);
   }
 }
