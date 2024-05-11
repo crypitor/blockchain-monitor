@@ -31,6 +31,7 @@ export class PolygonWorker {
   }
 
   async ethHandleDetectedBlock(data: { blockNumber: number; retry: number }) {
+    const start = Date.now();
     const blockNumber = data.blockNumber;
     if (!blockNumber) {
       this.logger.error(
@@ -58,6 +59,9 @@ export class PolygonWorker {
       await this.emitLog(logs, false);
       //only update last sync for confirm
       await this.saveBlockHistory(blockNumber, false);
+      this.logger.log(
+        `DETECT  Scanning block ${blockNumber} in ${Date.now() - start}ms`,
+      );
     } catch (error) {
       this.logger.error([
         'DETECT',
@@ -77,6 +81,7 @@ export class PolygonWorker {
   }
 
   async ethHandleConfirmedBlock(data: { blockNumber: number; retry: number }) {
+    const start = Date.now();
     const blockNumber = data.blockNumber;
     if (!blockNumber) {
       this.logger.error(
@@ -102,6 +107,9 @@ export class PolygonWorker {
       await this.emitLog(logs, true);
 
       await this.saveBlockHistory(blockNumber, true);
+      this.logger.log(
+        `CONFIRM Scanning block ${blockNumber} in ${Date.now() - start}ms`,
+      );
     } catch (error) {
       this.logger.error([
         'CONFIRM',
