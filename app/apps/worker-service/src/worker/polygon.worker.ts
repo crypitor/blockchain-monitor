@@ -40,7 +40,6 @@ export class PolygonWorker {
       return;
     }
     try {
-      this.logger.log(`DETECT handle block ${blockNumber}`);
       // Retrieve all transaction in block
       const block = await this.provider.getBlock(blockNumber, true);
 
@@ -90,7 +89,6 @@ export class PolygonWorker {
       return;
     }
     try {
-      this.logger.log(`CONFIRM Scanning block ${blockNumber}`);
       // Retrieve all transaction in block
       const block = await this.provider.getBlock(blockNumber, true);
       // Retrieve transfer event the block's logs
