@@ -41,7 +41,9 @@ export class PolygonWorker {
     }
     try {
       // Retrieve all transaction in block
+      const startGetBlock = Date.now();
       const block = await this.provider.getBlock(blockNumber, true);
+      const endGetBlock = Date.now();
 
       // Retrieve transfer event the block's logs
       const logs = await this.provider.getLogs({
@@ -63,7 +65,9 @@ export class PolygonWorker {
       this.logger.log(
         `DETECT  Scanning block ${blockNumber} in ${
           Date.now() - start
-        }ms with emit ${emitEnd - emitStart}ms`,
+        }ms with emit ${emitEnd - emitStart}ms and getBlock ${
+          endGetBlock - startGetBlock
+        }ms`,
       );
     } catch (error) {
       this.logger.error([
@@ -94,7 +98,9 @@ export class PolygonWorker {
     }
     try {
       // Retrieve all transaction in block
+      const startGetBlock = Date.now();
       const block = await this.provider.getBlock(blockNumber, true);
+      const endGetBlock = Date.now();
       // Retrieve transfer event the block's logs
       const logs = await this.provider.getLogs({
         fromBlock: blockNumber,
@@ -113,7 +119,9 @@ export class PolygonWorker {
       this.logger.log(
         `CONFIRM Scanning block ${blockNumber} in ${
           Date.now() - start
-        }ms with emit ${emitEnd - emitStart}ms`,
+        }ms with emit ${emitEnd - emitStart}ms and getBlock ${
+          endGetBlock - startGetBlock
+        }ms`,
       );
     } catch (error) {
       this.logger.error([
