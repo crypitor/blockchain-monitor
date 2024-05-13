@@ -40,36 +40,36 @@ export class PolygonWorker {
       return;
     }
     try {
-      // Retrieve all transaction in block
       const startGetBlock = Date.now();
-      const block = await this.provider.getBlock(blockNumber, true);
+      const result = await Promise.all([
+        this.provider.getBlock(blockNumber, true),
+        this.provider.getLogs({
+          fromBlock: blockNumber,
+          toBlock: blockNumber,
+          topics: [
+            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+          ],
+        }),
+      ]);
+      // Retrieve all transaction in block
+      const block = result[0];
+      const logs = result[1];
       const endGetBlock = Date.now();
 
-      // Retrieve transfer event the block's logs
-      const startGetLogs = Date.now();
-      const logs = await this.provider.getLogs({
-        fromBlock: blockNumber,
-        toBlock: blockNumber,
-        topics: [
-          '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-        ],
-      });
-      const endGetLogs = Date.now();
-
       const emitStart = Date.now();
-      // handle native transfer
-      await this.emitNativeTransaction(block, false);
-      // handle extracted event for erc20 and nft
-      await this.emitLog(logs, false);
+      await Promise.all([
+        this.emitNativeTransaction(block, true),
+        this.emitLog(logs, true),
+      ]);
       const emitEnd = Date.now();
       //only update last sync for confirm
       await this.saveBlockHistory(blockNumber, false);
       this.logger.log(
         `DETECT  Scanning block ${blockNumber} in ${
           Date.now() - start
-        }ms with emit ${emitEnd - emitStart}ms and getBlock ${
+        }ms and emit ${emitEnd - emitStart}ms and GetEvent ${
           endGetBlock - startGetBlock
-        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
+        }ms`,
       );
     } catch (error) {
       this.logger.error([
@@ -101,33 +101,35 @@ export class PolygonWorker {
     try {
       // Retrieve all transaction in block
       const startGetBlock = Date.now();
-      const block = await this.provider.getBlock(blockNumber, true);
+      const result = await Promise.all([
+        this.provider.getBlock(blockNumber, true),
+        this.provider.getLogs({
+          fromBlock: blockNumber,
+          toBlock: blockNumber,
+          topics: [
+            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+          ],
+        }),
+      ]);
+      // Retrieve all transaction in block
+      const block = result[0];
+      const logs = result[1];
       const endGetBlock = Date.now();
 
-      // Retrieve transfer event the block's logs
-      const startGetLogs = Date.now();
-      const logs = await this.provider.getLogs({
-        fromBlock: blockNumber,
-        toBlock: blockNumber,
-        topics: [
-          '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-        ],
-      });
-      const endGetLogs = Date.now();
-
       const emitStart = Date.now();
-      // handle native transfer
-      await this.emitNativeTransaction(block, true);
-      // handle extracted event for erc20 and nft
-      await this.emitLog(logs, true);
+      await Promise.all([
+        this.emitNativeTransaction(block, true),
+        this.emitLog(logs, true),
+      ]);
       const emitEnd = Date.now();
+
       await this.saveBlockHistory(blockNumber, true);
       this.logger.log(
         `CONFIRM Scanning block ${blockNumber} in ${
           Date.now() - start
-        }ms with emit ${emitEnd - emitStart}ms and getBlock ${
+        }ms and emit ${emitEnd - emitStart}ms and GetEvent ${
           endGetBlock - startGetBlock
-        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
+        }ms`,
       );
     } catch (error) {
       this.logger.error([
