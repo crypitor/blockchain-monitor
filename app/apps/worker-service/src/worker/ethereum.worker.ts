@@ -47,6 +47,7 @@ export class EthereumWorker {
       const endGetBlock = Date.now();
 
       // Retrieve transfer event the block's logs
+      const startGetLogs = Date.now();
       const logs = await this.provider.getLogs({
         fromBlock: blockNumber,
         toBlock: blockNumber,
@@ -54,6 +55,8 @@ export class EthereumWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
+      const endGetLogs = Date.now();
+
       const emitStart = Date.now();
       // handle native transfer
       await this.emitNativeTransaction(block, false);
@@ -67,7 +70,7 @@ export class EthereumWorker {
           Date.now() - start
         }ms and emit ${emitEnd - emitStart}ms and getBlock ${
           endGetBlock - startGetBlock
-        }ms`,
+        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
       );
     } catch (error) {
       this.logger.error([
@@ -101,7 +104,9 @@ export class EthereumWorker {
       const startGetBlock = Date.now();
       const block = await this.provider.getBlock(blockNumber, true);
       const endGetBlock = Date.now();
+
       // Retrieve transfer event the block's logs
+      const startGetLogs = Date.now();
       const logs = await this.provider.getLogs({
         fromBlock: blockNumber,
         toBlock: blockNumber,
@@ -109,6 +114,8 @@ export class EthereumWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
+      const endGetLogs = Date.now();
+
       const emitStart = Date.now();
       // handle native transfer
       await this.emitNativeTransaction(block, true);
@@ -121,7 +128,7 @@ export class EthereumWorker {
           Date.now() - start
         }ms and emit ${emitEnd - emitStart}ms and getblock ${
           endGetBlock - startGetBlock
-        }ms`,
+        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
       );
     } catch (error) {
       this.logger.error([

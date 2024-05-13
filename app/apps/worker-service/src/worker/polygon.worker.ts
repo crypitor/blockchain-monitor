@@ -46,6 +46,7 @@ export class PolygonWorker {
       const endGetBlock = Date.now();
 
       // Retrieve transfer event the block's logs
+      const startGetLogs = Date.now();
       const logs = await this.provider.getLogs({
         fromBlock: blockNumber,
         toBlock: blockNumber,
@@ -53,6 +54,7 @@ export class PolygonWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
+      const endGetLogs = Date.now();
 
       const emitStart = Date.now();
       // handle native transfer
@@ -67,7 +69,7 @@ export class PolygonWorker {
           Date.now() - start
         }ms with emit ${emitEnd - emitStart}ms and getBlock ${
           endGetBlock - startGetBlock
-        }ms`,
+        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
       );
     } catch (error) {
       this.logger.error([
@@ -101,7 +103,9 @@ export class PolygonWorker {
       const startGetBlock = Date.now();
       const block = await this.provider.getBlock(blockNumber, true);
       const endGetBlock = Date.now();
+
       // Retrieve transfer event the block's logs
+      const startGetLogs = Date.now();
       const logs = await this.provider.getLogs({
         fromBlock: blockNumber,
         toBlock: blockNumber,
@@ -109,6 +113,8 @@ export class PolygonWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
+      const endGetLogs = Date.now();
+
       const emitStart = Date.now();
       // handle native transfer
       await this.emitNativeTransaction(block, true);
@@ -121,7 +127,7 @@ export class PolygonWorker {
           Date.now() - start
         }ms with emit ${emitEnd - emitStart}ms and getBlock ${
           endGetBlock - startGetBlock
-        }ms`,
+        }ms and getLogs ${endGetLogs - startGetLogs}ms`,
       );
     } catch (error) {
       this.logger.error([
