@@ -52,15 +52,18 @@ export class EthereumWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
-
+      const emitStart = Date.now();
       // handle native transfer
       await this.emitNativeTransaction(block, false);
       // handle extracted event for erc20 and nft
       await this.emitLog(logs, false);
+      const emitEnd = Date.now();
       //only update last sync for confirm
       await this.saveBlockHistory(blockNumber, false);
       this.logger.log(
-        `DETECT  Scanning block ${blockNumber} in ${Date.now() - start}ms`,
+        `DETECT  Scanning block ${blockNumber} in ${
+          Date.now() - start
+        }ms and emit ${emitEnd - emitStart}ms`,
       );
     } catch (error) {
       this.logger.error([
@@ -100,14 +103,17 @@ export class EthereumWorker {
           '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
         ],
       });
+      const emitStart = Date.now();
       // handle native transfer
       await this.emitNativeTransaction(block, true);
       // handle extracted event for erc20 and nft
       await this.emitLog(logs, true);
-
+      const emitEnd = Date.now();
       await this.saveBlockHistory(blockNumber, true);
       this.logger.log(
-        `CONFIRM Scanning block ${blockNumber} in ${Date.now() - start}ms`,
+        `CONFIRM Scanning block ${blockNumber} in ${
+          Date.now() - start
+        }ms and emit ${emitEnd - emitStart}ms`,
       );
     } catch (error) {
       this.logger.error([
