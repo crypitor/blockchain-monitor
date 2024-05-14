@@ -6,12 +6,13 @@ import { CronJob } from 'cron';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
+import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 
 @Injectable()
-export class PollingBlockService {
+export class EthereumPollingBlockService {
   private detectInfo = { flag: false, blockNumber: 0 };
 
-  private readonly logger = new Logger(PollingBlockService.name);
+  private readonly logger = new Logger(EthereumPollingBlockService.name);
 
   constructor(
     private schedulerRegistry: SchedulerRegistry,
@@ -73,11 +74,11 @@ export class PollingBlockService {
         blockSync.lastSync + SupportedChain.ETH.confirmationBlock;
     }
     this.detectInfo.flag = false;
-    this.addCronJob('ethPollingBlock', CronExpression.EVERY_10_SECONDS);
+    this.addCronJob('EthereumPollingBlock', CronExpression.EVERY_10_SECONDS);
   }
 
   addCronJob(name: string, seconds: string) {
-    const job = new CronJob(seconds, () => this.ethPollingBlock());
+    const job = new CronJob(seconds, () => this.pollingBlock());
 
     this.schedulerRegistry.addCronJob(name, job);
     job.start();
@@ -90,7 +91,7 @@ export class PollingBlockService {
     await this.blockSyncService.updateLastSync(this.rpcUrl, blockNumber);
   }
 
-  async ethPollingBlock() {
+  async pollingBlock() {
     this.logger.debug('Start polling block number');
     if (this.detectInfo.flag) {
       this.logger.error('conflict with last job. quit current job');
@@ -112,19 +113,18 @@ export class PollingBlockService {
         this.logger.log(`last emitted block ${blockNumber}`);
 
         // emit event detect block with blocknumber
-        this.logger.debug(['DETECT', `send block ${blockNumber}`]);
-        this.workerClient.emit(TopicName.ETH_DETECTED_BLOCK, {
-          blockNumber: blockNumber,
-        });
-
-        this.logger.debug([
-          'CONFIRM',
-          `send block ${blockNumber - SupportedChain.ETH.confirmationBlock}`,
-        ]);
+        this.workerClient.emit(
+          TopicName.ETH_DETECTED_BLOCK,
+          new BlockTransportDto(blockNumber, false),
+        );
         // emit event confirm block with block number - confirm block
-        this.workerClient.emit(TopicName.ETH_CONFIRMED_BLOCK, {
-          blockNumber: blockNumber - SupportedChain.ETH.confirmationBlock,
-        });
+        this.workerClient.emit(
+          TopicName.ETH_DETECTED_BLOCK,
+          new BlockTransportDto(
+            blockNumber - SupportedChain.ETH.confirmationBlock,
+            true,
+          ),
+        );
 
         this.detectInfo.blockNumber = blockNumber;
 
@@ -133,11 +133,7 @@ export class PollingBlockService {
           blockNumber - SupportedChain.ETH.confirmationBlock,
         );
       } catch (error) {
-        this.logger.error([
-          'DETECT',
-          `Error scanning block ${blockNumber}:`,
-          error,
-        ]);
+        this.logger.error([`Error polling block ${blockNumber}:`, error]);
         break;
       }
     }

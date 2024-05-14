@@ -6,6 +6,7 @@ import { CronJob } from 'cron';
 import { ethers } from 'ethers';
 import { BlockSyncService } from '../modules/blocksync/blocksync.service';
 import { SupportedChain } from '@app/utils/supportedChain.util';
+import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 
 @Injectable()
 export class PolygonPollingBlockService {
@@ -75,11 +76,11 @@ export class PolygonPollingBlockService {
         blockSync.lastSync + SupportedChain.POLYGON.confirmationBlock;
     }
     this.detectInfo.flag = false;
-    this.addCronJob('polygonPollingBlock', CronExpression.EVERY_5_SECONDS);
+    this.addCronJob('PolygonPollingBlock', CronExpression.EVERY_5_SECONDS);
   }
 
   addCronJob(name: string, seconds: string) {
-    const job = new CronJob(seconds, () => this.polygonPollingBlock());
+    const job = new CronJob(seconds, () => this.pollingBlock());
 
     this.schedulerRegistry.addCronJob(name, job);
     job.start();
@@ -92,8 +93,8 @@ export class PolygonPollingBlockService {
     await this.blockSyncService.updateLastSync(this.rpcUrl, blockNumber);
   }
 
-  async polygonPollingBlock() {
-    this.logger.debug('Polygon Start polling block number');
+  async pollingBlock() {
+    this.logger.debug('Start polling block number');
     if (this.detectInfo.flag) {
       this.logger.error('conflict with last job. quit current job');
       return;
@@ -114,21 +115,18 @@ export class PolygonPollingBlockService {
         this.logger.log(`last emitted block ${blockNumber}`);
 
         // emit event detect block with blocknumber
-        this.logger.debug(['DETECT', `send block ${blockNumber}`]);
-        this.workerClient.emit(TopicName.POLYGON_DETECTED_BLOCK, {
-          blockNumber: blockNumber,
-        });
-
-        this.logger.debug([
-          'CONFIRM',
-          `send block ${
-            blockNumber - SupportedChain.POLYGON.confirmationBlock
-          }`,
-        ]);
+        this.workerClient.emit(
+          TopicName.POLYGON_DETECTED_BLOCK,
+          new BlockTransportDto(blockNumber, false),
+        );
         // emit event confirm block with block number - confirm block
-        this.workerClient.emit(TopicName.POLYGON_CONFIRMED_BLOCK, {
-          blockNumber: blockNumber - SupportedChain.POLYGON.confirmationBlock,
-        });
+        this.workerClient.emit(
+          TopicName.POLYGON_DETECTED_BLOCK,
+          new BlockTransportDto(
+            blockNumber - SupportedChain.POLYGON.confirmationBlock,
+            true,
+          ),
+        );
 
         this.detectInfo.blockNumber = blockNumber;
 
@@ -137,11 +135,7 @@ export class PolygonPollingBlockService {
           blockNumber - SupportedChain.POLYGON.confirmationBlock,
         );
       } catch (error) {
-        this.logger.error([
-          'DETECT',
-          `Error scanning block ${blockNumber}:`,
-          error,
-        ]);
+        this.logger.error([`Error polling block ${blockNumber}:`, error]);
         break;
       }
     }

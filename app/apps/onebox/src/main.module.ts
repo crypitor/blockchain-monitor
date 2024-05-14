@@ -13,7 +13,7 @@ import { MonitorModule } from './modules/monitor/monitor.module';
 import { ProjectModule } from './modules/project/project.module';
 import { QuickStartModule } from './modules/quickstart/quickstart.module';
 import { UsersModule } from './modules/users/users.module';
-import { PollingBlockService } from './polling.block/polling.block.service';
+import { EthereumPollingBlockService } from './polling.block/ethereum.polling.block.service';
 import { PolygonPollingBlockService } from './polling.block/polygon.polling.block.service';
 
 @Module({
@@ -68,6 +68,10 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
     EventHistoryModule,
     QuickStartModule,
   ],
-  providers: [GlobalService, PollingBlockService, PolygonPollingBlockService],
+  providers: [
+    GlobalService,
+    EthereumPollingBlockService,
+    PolygonPollingBlockService,
+  ],
 })
 export class MainModule {}

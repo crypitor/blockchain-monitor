@@ -1,5 +1,6 @@
 import { PolygonBlockHistoryRepository } from '@app/shared_modules/block_history/repositories/block_history.repository';
 import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 import { TopicName } from '@app/utils/topicUtils';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
@@ -30,7 +31,7 @@ export class PolygonWorker {
     }
   }
 
-  async ethHandleDetectedBlock(data: { blockNumber: number; retry: number }) {
+  async handleBlock(data: BlockTransportDto) {
     const start = Date.now();
     const blockNumber = data.blockNumber;
     if (!blockNumber) {
@@ -58,93 +59,36 @@ export class PolygonWorker {
 
       const emitStart = Date.now();
       await Promise.all([
-        this.emitNativeTransaction(block, true),
-        this.emitLog(logs, true),
+        this.emitNativeTransaction(block, data.confirmed),
+        this.emitLog(logs, data.confirmed),
       ]);
       const emitEnd = Date.now();
       //only update last sync for confirm
-      await this.saveBlockHistory(blockNumber, false);
+      await this.saveBlockHistory(blockNumber, data.confirmed);
       this.logger.log(
-        `DETECT  Scanning block ${blockNumber} in ${
-          Date.now() - start
-        }ms and emit ${emitEnd - emitStart}ms and GetEvent ${
-          endGetBlock - startGetBlock
-        }ms`,
+        `${
+          data.confirmed ? 'CONFIRM' : 'DETECT'
+        } Scanning block ${blockNumber} with ${
+          block.length + logs.length
+        } events in ${Date.now() - start}ms and emit ${
+          emitEnd - emitStart
+        }ms and GetEvent ${endGetBlock - startGetBlock}ms`,
       );
     } catch (error) {
       this.logger.error([
-        'DETECT',
+        `${data.confirmed ? 'CONFIRM' : 'DETECT'}`,
         `Error scanning block ${blockNumber}:`,
         error,
       ]);
       await this.saveBlockHistory(
         blockNumber,
-        false,
+        data.confirmed,
         true,
         error,
         data.retry + 1 || 1,
       );
     }
 
-    return;
-  }
-
-  async ethHandleConfirmedBlock(data: { blockNumber: number; retry: number }) {
-    const start = Date.now();
-    const blockNumber = data.blockNumber;
-    if (!blockNumber) {
-      this.logger.error(
-        'receive invalid message with block number is undefined',
-      );
-      return;
-    }
-    try {
-      // Retrieve all transaction in block
-      const startGetBlock = Date.now();
-      const result = await Promise.all([
-        this.provider.getBlock(blockNumber, true),
-        this.provider.getLogs({
-          fromBlock: blockNumber,
-          toBlock: blockNumber,
-          topics: [
-            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-          ],
-        }),
-      ]);
-      // Retrieve all transaction in block
-      const block = result[0];
-      const logs = result[1];
-      const endGetBlock = Date.now();
-
-      const emitStart = Date.now();
-      await Promise.all([
-        this.emitNativeTransaction(block, true),
-        this.emitLog(logs, true),
-      ]);
-      const emitEnd = Date.now();
-
-      await this.saveBlockHistory(blockNumber, true);
-      this.logger.log(
-        `CONFIRM Scanning block ${blockNumber} in ${
-          Date.now() - start
-        }ms and emit ${emitEnd - emitStart}ms and GetEvent ${
-          endGetBlock - startGetBlock
-        }ms`,
-      );
-    } catch (error) {
-      this.logger.error([
-        'CONFIRM',
-        `Error scanning block ${blockNumber}:`,
-        error,
-      ]);
-      await this.saveBlockHistory(
-        blockNumber,
-        true,
-        true,
-        error,
-        data.retry + 1 || 1,
-      );
-    }
     return;
   }
 
@@ -187,7 +131,7 @@ export class PolygonWorker {
 
   private async saveBlockHistory(
     blockNumber: number,
-    confirm: boolean,
+    confirmed: boolean,
     isError?: boolean,
     error?: any,
     retry?: number,
@@ -196,31 +140,22 @@ export class PolygonWorker {
       this.logger.warn(
         `emit error block ${blockNumber} to kafka with retry ${retry}`,
       );
-      if (confirm) {
-        this.workerClient.emit(TopicName.POLYGON_CONFIRMED_BLOCK, {
-          key: 'error',
-          value: {
-            blockNumber: blockNumber,
-            retry: retry,
-            error: error,
-          },
-        });
-      } else {
-        this.workerClient.emit(TopicName.POLYGON_DETECTED_BLOCK, {
-          key: 'error',
-          value: {
-            blockNumber: blockNumber,
-            retry: retry,
-            error: error,
-          },
-        });
-      }
+      this.workerClient.emit(TopicName.POLYGON_DETECTED_BLOCK, {
+        key: 'error',
+        value: new BlockTransportDto(
+          blockNumber,
+          confirmed,
+          retry,
+          isError,
+          error !== undefined ? JSON.stringify(error) : '',
+        ),
+      });
     }
     this.logger.debug(`save block history ${blockNumber}`);
     await this.blockHistoryRepository.saveBlockHistory({
       blockNumber: blockNumber,
       chain: MonitorNetwork.Ethereum,
-      confirmed: confirm,
+      confirmed: confirmed,
       isError: isError || false,
       errorDetail: error !== undefined ? JSON.stringify(error) : '',
       retry: retry || 0,

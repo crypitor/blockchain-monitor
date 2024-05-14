@@ -4,6 +4,7 @@ import { EventPattern } from '@nestjs/microservices';
 import { WorkerServiceService } from './worker-service.service';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
+import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 
 @Controller()
 export class WorkerServiceController {
@@ -26,20 +27,10 @@ export class WorkerServiceController {
   }
 
   @EventPattern(TopicName.ETH_DETECTED_BLOCK)
-  async ethDetectBlock(data: any) {
+  async ethDetectBlock(data: BlockTransportDto) {
     await Promise.race([
-      this.ethereumWorker.ethHandleDetectedBlock(data),
-      this.delay(500).then(() => {
-        return;
-      }),
-    ]);
-  }
-
-  @EventPattern(TopicName.ETH_CONFIRMED_BLOCK)
-  async ethConfirmBlock(data: any) {
-    await Promise.race([
-      this.ethereumWorker.ethHandleConfirmedBlock(data),
-      this.delay(500).then(() => {
+      this.ethereumWorker.handleBlock(data),
+      this.delay(200).then(() => {
         return;
       }),
     ]);
@@ -48,18 +39,8 @@ export class WorkerServiceController {
   @EventPattern(TopicName.POLYGON_DETECTED_BLOCK)
   async polygonDetectBlock(data: any) {
     await Promise.race([
-      this.polygonWorker.ethHandleDetectedBlock(data),
-      this.delay(500).then(() => {
-        return;
-      }),
-    ]);
-  }
-
-  @EventPattern(TopicName.POLYGON_CONFIRMED_BLOCK)
-  async polygonConfirmBlock(data: any) {
-    await Promise.race([
-      this.polygonWorker.ethHandleConfirmedBlock(data),
-      this.delay(500).then(() => {
+      this.polygonWorker.handleBlock(data),
+      this.delay(200).then(() => {
         return;
       }),
     ]);
