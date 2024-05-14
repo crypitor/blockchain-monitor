@@ -8,24 +8,24 @@ export class PolygonController {
   private readonly logger = new Logger(PolygonController.name);
   constructor(private readonly polygon: PolygonService) {}
 
-  @EventPattern(TopicName.ETH_NATIVE_TRANSFER)
-  async handleNativeTransfer(data: any): Promise<void> {
+  @EventPattern(TopicName.POLYGON_NATIVE_TRANSFER)
+  async handleNativeTransfer(data: any) {
     const start = Date.now();
     await this.polygon.handleNativeTransfer(data);
     if (Date.now() - start > 20)
       this.logger.warn(`Handle native transfer in : ${Date.now() - start}`);
   }
 
-  @EventPattern(TopicName.ETH_ERC20_TRANSFER)
-  async handleErc20Transfer(data: any): Promise<void> {
+  @EventPattern(TopicName.POLYGON_ERC20_TRANSFER)
+  async handleErc20Transfer(data: any) {
     const start = Date.now();
     await this.polygon.handleErc20Transfer(data);
     if (Date.now() - start > 20)
       this.logger.warn(`Handle erc20 transfer in : ${Date.now() - start}`);
   }
 
-  @EventPattern(TopicName.ETH_ERC721_TRANSFER)
-  async handleErc721Transfer(data: any): Promise<void> {
+  @EventPattern(TopicName.POLYGON_ERC721_TRANSFER)
+  async handleErc721Transfer(data: any) {
     const start = Date.now();
     await this.polygon.handleErc721Transfer(data);
     if (Date.now() - start > 20)

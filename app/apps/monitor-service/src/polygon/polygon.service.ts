@@ -11,6 +11,7 @@ import {
   MonitoringType,
   WebhookNotification,
 } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { MonitorWebhookService } from '@app/shared_modules/monitor/services/monitor.webhook.service';
 import { ProjectQuotaService } from '@app/shared_modules/project/services/project.quota.service';
 import {
   DispatchWebhookResponse,
@@ -39,6 +40,9 @@ export class PolygonService {
 
   @Inject()
   private readonly projectQuotaService: ProjectQuotaService;
+
+  @Inject()
+  private readonly monitorWebhookService: MonitorWebhookService;
 
   @Inject()
   private readonly eventHistoryRepository: PolygonEventHistoryRepository;
@@ -369,7 +373,10 @@ export class PolygonService {
       this.logger.debug(
         `Dispatch webhook successfully response: ${JSON.stringify(respone)}`,
       );
-      await this.projectQuotaService.increaseUsed(monitor.projectId);
+      await Promise.all([
+        this.projectQuotaService.increaseUsed(monitor.projectId),
+        this.monitorWebhookService.increaseWebhookCount(monitor.monitorId),
+      ]);
       return respone;
     } catch (error) {
       this.logger.error(
