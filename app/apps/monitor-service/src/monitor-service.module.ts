@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EthereumModule } from './ethereum/ethereum.module';
-import { MonitorServiceController } from './monitor-service.controller';
 import { PolygonModule } from './polygon/polygon.module';
 
 @Module({
@@ -14,7 +13,7 @@ import { PolygonModule } from './polygon/polygon.module';
     EthereumModule,
     PolygonModule,
   ],
-  controllers: [MonitorServiceController],
+  controllers: [],
   providers: [],
 })
 export class MonitorServiceModule {}
