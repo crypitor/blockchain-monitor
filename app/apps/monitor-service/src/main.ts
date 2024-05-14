@@ -32,6 +32,7 @@ async function bootstrap() {
         },
         consumer: {
           groupId: 'monitor-consumer',
+          maxBytes: 1048576, // 1MB
         },
       },
       logger:

@@ -31,6 +31,8 @@ async function bootstrap() {
         },
         consumer: {
           groupId: 'worker-consumer',
+          maxInFlightRequests: 2,
+          maxBytes: 1024, // 1KB
         },
       },
       logger:
