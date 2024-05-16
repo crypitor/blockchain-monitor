@@ -32,4 +32,14 @@ export const EventHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'AVAX_EVENT_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'AvaxEventHistory',
+        EventHistorySchema,
+        'avax_event_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];

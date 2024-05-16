@@ -2,6 +2,7 @@ import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
 import { MonitorProviders } from './monitor.provider';
 import {
+  AvaxMonitorAddressRepository,
   BscMonitorAddressRepository,
   EthMonitorAddressRepository,
   PolygonMonitorAddressRepository,
@@ -18,6 +19,7 @@ import { MonitorWebhookService } from './services/monitor.webhook.service';
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
     PolygonMonitorAddressRepository,
+    AvaxMonitorAddressRepository,
   ],
   exports: [
     ...MonitorProviders,
@@ -26,6 +28,7 @@ import { MonitorWebhookService } from './services/monitor.webhook.service';
     EthMonitorAddressRepository,
     BscMonitorAddressRepository,
     PolygonMonitorAddressRepository,
+    AvaxMonitorAddressRepository,
   ],
 })
 export class MonitorModule {}

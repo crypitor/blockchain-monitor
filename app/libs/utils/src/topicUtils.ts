@@ -8,4 +8,9 @@ export enum TopicName {
   POLYGON_NATIVE_TRANSFER = 'polygon-native-transfer',
   POLYGON_ERC20_TRANSFER = 'polygon-erc20-transfer',
   POLYGON_ERC721_TRANSFER = 'polygon-erc721-transfer',
+
+  AVAX_DETECTED_BLOCK = 'avax-detect-block',
+  AVAX_NATIVE_TRANSFER = 'avax-native-transfer',
+  AVAX_ERC20_TRANSFER = 'avax-erc20-transfer',
+  AVAX_ERC721_TRANSFER = 'avax-erc721-transfer',
 }

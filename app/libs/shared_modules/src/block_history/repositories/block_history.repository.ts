@@ -70,3 +70,10 @@ export class PolygonBlockHistoryRepository extends BlockHistoryRepository {
     super(MonitorNetwork.Polygon, model);
   }
 }
+
+@Injectable()
+export class AvaxBlockHistoryRepository extends BlockHistoryRepository {
+  constructor(@Inject('AVAX_BLOCK_HISTORY_MODEL') model: Model<BlockHistory>) {
+    super(MonitorNetwork.Avalanche, model);
+  }
+}
