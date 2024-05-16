@@ -1,4 +1,4 @@
-import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { SupportedChain } from '@app/utils/supportedChain.util';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ErrorCode } from './global.error';
@@ -9,8 +9,22 @@ export class GlobalController {
   @ApiOperation({ summary: 'List all networks' })
   @ApiOkResponse({ type: [String], isArray: true })
   @Get('/networks')
-  async getNetworks(): Promise<MonitorNetwork[]> {
-    return Object.values(MonitorNetwork);
+  async getNetworks(): Promise<any> {
+    return [
+      { ...SupportedChain.ETH, enable: process.env.EVM_DISABLE === 'false' },
+      {
+        ...SupportedChain.POLYGON,
+        enable: process.env.POLYGON_DISABLE === 'false',
+      },
+      {
+        ...SupportedChain.AVALANCHE,
+        enable: process.env.AVAX_DISABLE === 'false',
+      },
+      {
+        ...SupportedChain.BSC,
+        enable: process.env.BSC_DISABLE === 'false',
+      },
+    ];
   }
 
   @ApiOperation({ summary: 'List all error codes' })
