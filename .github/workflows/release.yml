@@ -25,19 +25,22 @@ jobs:
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/onebox/Dockerfile --target production -t registry.gitlab.com/cauta/onebox:${VERSION} .
+        docker build -f apps/onebox/Dockerfile --target production -t registry.gitlab.com/cauta/onebox:${VERSION} -t registry.gitlab.com/cauta/onebox:latest .
         docker push registry.gitlab.com/cauta/onebox:${VERSION}
+        docker push registry.gitlab.com/cauta/onebox:latest
 
     - name: Build and push Monitor Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/monitor-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-monitor:${VERSION} .
+        docker build -f apps/monitor-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-monitor:${VERSION} -t registry.gitlab.com/cauta/crypitor-monitor:latest .
         docker push registry.gitlab.com/cauta/crypitor-monitor:${VERSION}
+        docker push registry.gitlab.com/cauta/crypitor-monitor:latest
 
     - name: Build and push Worker Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/worker-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-worker:${VERSION} .
+        docker build -f apps/worker-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-worker:${VERSION} -t registry.gitlab.com/cauta/crypitor-worker:latest .
         docker push registry.gitlab.com/cauta/crypitor-worker:${VERSION}
+        docker push registry.gitlab.com/cauta/crypitor-worker:latest
