@@ -17,6 +17,7 @@ import { QuickStartModule } from './modules/quickstart/quickstart.module';
 import { UsersModule } from './modules/users/users.module';
 import { EthereumPollingBlockService } from './polling.block/ethereum.polling.block.service';
 import { PolygonPollingBlockService } from './polling.block/polygon.polling.block.service';
+import { AvaxPollingBlockService } from './polling.block/avax.polling.block.service';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
     GlobalService,
     EthereumPollingBlockService,
     PolygonPollingBlockService,
+    AvaxPollingBlockService,
   ],
 })
 export class MainModule {}

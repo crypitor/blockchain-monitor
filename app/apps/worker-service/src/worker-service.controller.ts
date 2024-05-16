@@ -5,6 +5,7 @@ import { WorkerServiceService } from './worker-service.service';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 import { BlockTransportDto } from '@app/utils/dto/transport.dto';
+import { AvaxWorker } from './worker/avax.worker';
 
 @Controller()
 export class WorkerServiceController {
@@ -13,6 +14,7 @@ export class WorkerServiceController {
     private readonly workerServiceService: WorkerServiceService,
     private readonly ethereumWorker: EthereumWorker,
     private readonly polygonWorker: PolygonWorker,
+    private readonly avaxWorker: AvaxWorker,
   ) {}
 
   @Get()
@@ -40,6 +42,16 @@ export class WorkerServiceController {
   async polygonDetectBlock(data: any) {
     await Promise.race([
       this.polygonWorker.handleBlock(data),
+      this.delay(200).then(() => {
+        return;
+      }),
+    ]);
+  }
+
+  @EventPattern(TopicName.AVAX_DETECTED_BLOCK)
+  async avaxDetectBlock(data: any) {
+    await Promise.race([
+      this.avaxWorker.handleBlock(data),
       this.delay(200).then(() => {
         return;
       }),

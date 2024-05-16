@@ -1,6 +1,7 @@
 import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
 import {
+  AvaxBlockHistoryRepository,
   BscBlockHistoryRepository,
   EthBlockHistoryRepository,
   PolygonBlockHistoryRepository,
@@ -14,12 +15,14 @@ import { BlockHistoryProviders } from './block_history.provider';
     EthBlockHistoryRepository,
     BscBlockHistoryRepository,
     PolygonBlockHistoryRepository,
+    AvaxBlockHistoryRepository,
   ],
   exports: [
     ...BlockHistoryProviders,
     EthBlockHistoryRepository,
     BscBlockHistoryRepository,
     PolygonBlockHistoryRepository,
+    AvaxBlockHistoryRepository,
   ],
 })
 export class BlockHistoryModelModule {}

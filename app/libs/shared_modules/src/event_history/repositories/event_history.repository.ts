@@ -91,3 +91,10 @@ export class PolygonEventHistoryRepository extends EventHistoryRepository {
     super(MonitorNetwork.Polygon, model);
   }
 }
+
+@Injectable()
+export class AvaxEventHistoryRepository extends EventHistoryRepository {
+  constructor(@Inject('AVAX_EVENT_HISTORY_MODEL') model: Model<EventHistory>) {
+    super(MonitorNetwork.Avalanche, model);
+  }
+}

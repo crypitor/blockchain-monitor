@@ -32,4 +32,14 @@ export const BlockHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'AVAX_BLOCK_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'AvaxBlockHistory',
+        BlockHistorySchema,
+        'avax_block_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];

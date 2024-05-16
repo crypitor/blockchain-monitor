@@ -119,3 +119,12 @@ export class PolygonMonitorAddressRepository extends MonitorAddressRepository {
     super(MonitorNetwork.Polygon, model);
   }
 }
+
+@Injectable()
+export class AvaxMonitorAddressRepository extends MonitorAddressRepository {
+  constructor(
+    @Inject('AVAX_MONITOR_ADDRESS_MODEL') model: Model<MonitorAddress>,
+  ) {
+    super(MonitorNetwork.Avalanche, model);
+  }
+}

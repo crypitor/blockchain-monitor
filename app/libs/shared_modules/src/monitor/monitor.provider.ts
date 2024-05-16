@@ -39,4 +39,14 @@ export const MonitorProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'AVAX_MONITOR_ADDRESS_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'AvaxMonitorAddress',
+        MonitorAddressSchema,
+        'avax_monitor_address',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];
