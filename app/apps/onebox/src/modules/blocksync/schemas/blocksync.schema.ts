@@ -8,7 +8,7 @@ export class BlockSync {
   @Prop({ required: true, unique: true, lowercase: true })
   rpcUrl: string;
 
-  @Prop({ default: 'ETH' })
+  @Prop({ default: 'Ethereum' })
   chain: string;
 
   @Prop()
