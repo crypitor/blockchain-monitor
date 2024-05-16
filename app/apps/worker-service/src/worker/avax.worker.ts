@@ -154,7 +154,7 @@ export class AvaxWorker {
     this.logger.debug(`save block history ${blockNumber}`);
     await this.blockHistoryRepository.saveBlockHistory({
       blockNumber: blockNumber,
-      chain: MonitorNetwork.Ethereum,
+      chain: MonitorNetwork.Avalanche,
       confirmed: confirmed,
       isError: isError || false,
       errorDetail: error !== undefined ? JSON.stringify(error) : '',
