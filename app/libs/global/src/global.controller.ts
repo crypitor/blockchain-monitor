@@ -24,6 +24,10 @@ export class GlobalController {
         ...SupportedChain.BSC,
         enable: process.env.BSC_DISABLE === 'false',
       },
+      {
+        ...SupportedChain.MANTLE,
+        enable: process.env.MANTLE_DISABLE === 'false',
+      },
     ];
   }
 

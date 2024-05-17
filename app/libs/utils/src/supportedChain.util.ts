@@ -49,7 +49,7 @@ export class SupportedChain {
     idHex: '0x2105',
     name: 'Base',
     confirmationBlock: 50,
-    explorer: 'https://basescan.org/',
+    explorer: 'https://basescan.org',
     nativeCurrency: 'BASE',
   };
 
