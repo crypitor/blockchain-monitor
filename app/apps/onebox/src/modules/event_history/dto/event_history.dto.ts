@@ -9,7 +9,7 @@ import { Transform } from 'class-transformer';
 import { IsNotEmpty, Max, Min } from 'class-validator';
 
 export class GetMonitorEventHistoryDto {
-  @ApiProperty()
+  @ApiProperty({ required: true })
   @IsNotEmpty()
   monitorId: string;
 
@@ -26,6 +26,28 @@ export class GetMonitorEventHistoryDto {
   @Min(0)
   @Transform(({ value }) => parseInt(value))
   offset: number;
+}
+
+export class GetMonitorEventHistoryByAssociatedAddressDto extends GetMonitorEventHistoryDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  associatedAddress: string;
+}
+
+export class GetMonitorEventHistoryByHashDto extends GetMonitorEventHistoryDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  hash: string;
+}
+
+export class GetMonitorEventHistoryByEventIdDto {
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  monitorId: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty()
+  eventId: string;
 }
 
 export class MonitorEventHistoryResponseDto {

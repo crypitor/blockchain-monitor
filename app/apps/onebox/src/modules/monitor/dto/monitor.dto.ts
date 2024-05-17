@@ -26,7 +26,7 @@ import {
 export class MonitorConditionDto {
   @ApiProperty({ default: true })
   native: boolean;
-  @ApiProperty({ default: true })
+  @ApiProperty({ default: false })
   internal: boolean;
   @ApiProperty({ default: true })
   erc721: boolean;
@@ -104,7 +104,7 @@ export class CreateMonitorDto {
   @ApiProperty({
     example: {
       native: true,
-      internal: true,
+      internal: false,
       erc721: true,
       erc20: true,
       specific: false,
