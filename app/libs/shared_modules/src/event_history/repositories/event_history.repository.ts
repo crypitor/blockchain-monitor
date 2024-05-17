@@ -26,13 +26,16 @@ export class EventHistoryRepository {
   }
 
   async findByMonitorAndAssociatedAddress(
-    monitor: string,
+    monitorId: string,
     associatedAddress: string,
+    limit: number,
+    offset: number,
   ): Promise<EventHistory[]> {
-    return this.model.find({
-      monitorId: monitor,
-      associatedAddress: associatedAddress,
-    });
+    return this.model
+      .find({ monitorId: monitorId, associatedAddress: associatedAddress })
+      .limit(limit)
+      .skip(offset)
+      .sort({ dateCreated: -1 });
   }
 
   async getEventHistory(
@@ -50,8 +53,14 @@ export class EventHistoryRepository {
   async findEventHistoryByMonitorAndHash(
     monitorId: string,
     hash: string,
+    limit: number,
+    offset: number,
   ): Promise<EventHistory[]> {
-    return this.model.find({ monitorId: monitorId, hash: hash });
+    return this.model
+      .find({ monitorId: monitorId, hash: hash })
+      .limit(limit)
+      .skip(offset)
+      .sort({ dateCreated: -1 });
   }
 
   async pushConfirmDeliveryId(eventId: string, deliveryId: string) {
