@@ -2,6 +2,7 @@ import { ErrorCode } from '@app/global/global.error';
 import {
   AvaxEventHistoryRepository,
   EthEventHistoryRepository,
+  MantleEventHistoryRepository,
   PolygonEventHistoryRepository,
 } from '@app/shared_modules/event_history/repositories/event_history.repository';
 import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
@@ -23,6 +24,7 @@ export class EventHistoryService {
     private readonly ethEventHistoryRepository: EthEventHistoryRepository,
     private readonly polygonEventHistoryRepository: PolygonEventHistoryRepository,
     private readonly avaxEventHistoryRepository: AvaxEventHistoryRepository,
+    private readonly mantleEventHistoryRepository: MantleEventHistoryRepository,
     private readonly monitorService: MonitorService,
   ) {}
 
@@ -70,7 +72,7 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Mantle) {
-      return this.avaxEventHistoryRepository
+      return this.mantleEventHistoryRepository
         .getEventHistory(monitor.monitorId, request.limit, request.offset)
         .then((response) => {
           return response.map((event) =>
@@ -140,7 +142,7 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Mantle) {
-      return this.avaxEventHistoryRepository
+      return this.mantleEventHistoryRepository
         .findEventHistoryByMonitorAndHash(
           monitor.monitorId,
           request.hash,
@@ -215,7 +217,7 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Mantle) {
-      return this.avaxEventHistoryRepository
+      return this.mantleEventHistoryRepository
         .findEventHistoryByMonitorAndHash(
           monitor.monitorId,
           request.associatedAddress,
@@ -269,7 +271,7 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Mantle) {
-      return this.avaxEventHistoryRepository
+      return this.mantleEventHistoryRepository
         .findByEventId(request.eventId)
         .then((response) => {
           return MonitorEventHistoryResponseDto.from(response);
