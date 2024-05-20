@@ -110,8 +110,6 @@ export class AvaxPollingBlockService {
       blockNumber++
     ) {
       try {
-        this.logger.log(`last emitted block ${blockNumber}`);
-
         // emit event detect block with blocknumber
         this.workerClient.emit(
           TopicName.AVAX_DETECTED_BLOCK,
@@ -127,7 +125,7 @@ export class AvaxPollingBlockService {
         );
 
         this.detectInfo.blockNumber = blockNumber;
-
+        this.logger.debug(`last emitted block ${blockNumber}`);
         //only update last sync for confirm
         await this.updateLastSyncBlock(
           blockNumber - SupportedChain.AVALANCHE.confirmationBlock,
