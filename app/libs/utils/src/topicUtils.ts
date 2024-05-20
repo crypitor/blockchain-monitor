@@ -13,4 +13,9 @@ export enum TopicName {
   AVAX_NATIVE_TRANSFER = 'avax-native-transfer',
   AVAX_ERC20_TRANSFER = 'avax-erc20-transfer',
   AVAX_ERC721_TRANSFER = 'avax-erc721-transfer',
+
+  MANTLE_DETECTED_BLOCK = 'mantle-detect-block',
+  MANTLE_NATIVE_TRANSFER = 'mantle-native-transfer',
+  MANTLE_ERC20_TRANSFER = 'mantle-erc20-transfer',
+  MANTLE_ERC721_TRANSFER = 'mantle-erc721-transfer',
 }

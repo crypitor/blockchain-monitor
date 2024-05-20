@@ -6,6 +6,7 @@ import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 import { AvaxWorker } from './worker/avax.worker';
+import { MantleWorker } from './worker/mantle.worker';
 
 @Controller()
 export class WorkerServiceController {
@@ -15,6 +16,7 @@ export class WorkerServiceController {
     private readonly ethereumWorker: EthereumWorker,
     private readonly polygonWorker: PolygonWorker,
     private readonly avaxWorker: AvaxWorker,
+    private readonly mantleWorker: MantleWorker,
   ) {}
 
   @Get()
@@ -52,6 +54,16 @@ export class WorkerServiceController {
   async avaxDetectBlock(data: any) {
     await Promise.race([
       this.avaxWorker.handleBlock(data),
+      this.delay(200).then(() => {
+        return;
+      }),
+    ]);
+  }
+
+  @EventPattern(TopicName.MANTLE_DETECTED_BLOCK)
+  async mantleDetectBlock(data: any) {
+    await Promise.race([
+      this.mantleWorker.handleBlock(data),
       this.delay(200).then(() => {
         return;
       }),

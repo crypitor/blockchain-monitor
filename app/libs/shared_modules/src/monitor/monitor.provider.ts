@@ -49,4 +49,14 @@ export const MonitorProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'MANTLE_MONITOR_ADDRESS_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'MantleMonitorAddress',
+        MonitorAddressSchema,
+        'mantle_monitor_address',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];
