@@ -4,6 +4,7 @@ import {
   AvaxBlockHistoryRepository,
   BscBlockHistoryRepository,
   EthBlockHistoryRepository,
+  MantleBlockHistoryRepository,
   PolygonBlockHistoryRepository,
 } from './repositories/block_history.repository';
 import { BlockHistoryProviders } from './block_history.provider';
@@ -16,6 +17,7 @@ import { BlockHistoryProviders } from './block_history.provider';
     BscBlockHistoryRepository,
     PolygonBlockHistoryRepository,
     AvaxBlockHistoryRepository,
+    MantleBlockHistoryRepository,
   ],
   exports: [
     ...BlockHistoryProviders,
@@ -23,6 +25,7 @@ import { BlockHistoryProviders } from './block_history.provider';
     BscBlockHistoryRepository,
     PolygonBlockHistoryRepository,
     AvaxBlockHistoryRepository,
+    MantleBlockHistoryRepository,
   ],
 })
 export class BlockHistoryModelModule {}

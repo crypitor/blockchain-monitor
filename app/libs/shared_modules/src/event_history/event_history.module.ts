@@ -4,6 +4,7 @@ import {
   AvaxEventHistoryRepository,
   BscEventHistoryRepository,
   EthEventHistoryRepository,
+  MantleEventHistoryRepository,
   PolygonEventHistoryRepository,
 } from './repositories/event_history.repository';
 import { EventHistoryProviders } from './event_history.provider';
@@ -16,6 +17,7 @@ import { EventHistoryProviders } from './event_history.provider';
     BscEventHistoryRepository,
     PolygonEventHistoryRepository,
     AvaxEventHistoryRepository,
+    MantleEventHistoryRepository,
   ],
   exports: [
     ...EventHistoryProviders,
@@ -23,6 +25,7 @@ import { EventHistoryProviders } from './event_history.provider';
     BscEventHistoryRepository,
     PolygonEventHistoryRepository,
     AvaxEventHistoryRepository,
+    MantleEventHistoryRepository,
   ],
 })
 export class EventHistoryModelModule {}
