@@ -7,6 +7,7 @@ export enum MonitorNetwork {
   BSC = 'BSC',
   Polygon = 'Polygon',
   Avalanche = 'Avalanche',
+  Mantle = 'Mantle',
   Arbitrum = 'Arbitrum',
   Optimism = 'Optimism',
   Celo = 'Celo',

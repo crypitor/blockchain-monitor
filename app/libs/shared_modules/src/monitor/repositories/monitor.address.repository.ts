@@ -128,3 +128,12 @@ export class AvaxMonitorAddressRepository extends MonitorAddressRepository {
     super(MonitorNetwork.Avalanche, model);
   }
 }
+
+@Injectable()
+export class MantleMonitorAddressRepository extends MonitorAddressRepository {
+  constructor(
+    @Inject('MANTLE_MONITOR_ADDRESS_MODEL') model: Model<MonitorAddress>,
+  ) {
+    super(MonitorNetwork.Mantle, model);
+  }
+}

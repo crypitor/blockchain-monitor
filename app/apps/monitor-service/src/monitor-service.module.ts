@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EthereumModule } from './ethereum/ethereum.module';
 import { PolygonModule } from './polygon/polygon.module';
 import { AvaxModule } from './avax/avax.module';
+import { MantleModule } from './mantle/mantle.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AvaxModule } from './avax/avax.module';
     EthereumModule,
     PolygonModule,
     AvaxModule,
+    MantleModule,
   ],
   controllers: [],
   providers: [],

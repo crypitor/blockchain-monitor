@@ -42,4 +42,14 @@ export const EventHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'MANTLE_EVENT_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'MantleEventHistory',
+        EventHistorySchema,
+        'mantle_event_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];

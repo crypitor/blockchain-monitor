@@ -77,3 +77,12 @@ export class AvaxBlockHistoryRepository extends BlockHistoryRepository {
     super(MonitorNetwork.Avalanche, model);
   }
 }
+
+@Injectable()
+export class MantleBlockHistoryRepository extends BlockHistoryRepository {
+  constructor(
+    @Inject('MANTLE_BLOCK_HISTORY_MODEL') model: Model<BlockHistory>,
+  ) {
+    super(MonitorNetwork.Mantle, model);
+  }
+}

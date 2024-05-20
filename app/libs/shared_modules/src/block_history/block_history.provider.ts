@@ -42,4 +42,14 @@ export const BlockHistoryProviders = [
       ),
     inject: ['DATABASE_CONNECTION'],
   },
+  {
+    provide: 'MANTLE_BLOCK_HISTORY_MODEL',
+    useFactory: (connection: Connection) =>
+      connection.model(
+        'MantleBlockHistory',
+        BlockHistorySchema,
+        'mantle_block_history',
+      ),
+    inject: ['DATABASE_CONNECTION'],
+  },
 ];

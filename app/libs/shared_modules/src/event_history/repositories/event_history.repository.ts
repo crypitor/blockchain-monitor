@@ -107,3 +107,12 @@ export class AvaxEventHistoryRepository extends EventHistoryRepository {
     super(MonitorNetwork.Avalanche, model);
   }
 }
+
+@Injectable()
+export class MantleEventHistoryRepository extends EventHistoryRepository {
+  constructor(
+    @Inject('MANTLE_EVENT_HISTORY_MODEL') model: Model<EventHistory>,
+  ) {
+    super(MonitorNetwork.Mantle, model);
+  }
+}

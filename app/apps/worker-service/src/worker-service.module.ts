@@ -8,6 +8,7 @@ import { WorkerServiceService } from './worker-service.service';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 import { AvaxWorker } from './worker/avax.worker';
+import { MantleWorker } from './worker/mantle.worker';
 
 @Module({
   imports: [
@@ -84,6 +85,12 @@ import { AvaxWorker } from './worker/avax.worker';
     BlockHistoryModelModule,
   ],
   controllers: [WorkerServiceController],
-  providers: [WorkerServiceService, EthereumWorker, PolygonWorker, AvaxWorker],
+  providers: [
+    WorkerServiceService,
+    EthereumWorker,
+    PolygonWorker,
+    AvaxWorker,
+    MantleWorker,
+  ],
 })
 export class WorkerServiceModule {}
