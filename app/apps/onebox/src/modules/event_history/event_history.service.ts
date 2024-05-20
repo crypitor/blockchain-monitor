@@ -69,6 +69,16 @@ export class EventHistoryService {
         });
     }
 
+    if (monitor.network === MonitorNetwork.Mantle) {
+      return this.avaxEventHistoryRepository
+        .getEventHistory(monitor.monitorId, request.limit, request.offset)
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
     this.logger.error(`network ${monitor.network} not supported`);
     throw ErrorCode.INTERNAL_SERVER_ERROR.asException();
   }
@@ -115,6 +125,21 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Avalanche) {
+      return this.avaxEventHistoryRepository
+        .findEventHistoryByMonitorAndHash(
+          monitor.monitorId,
+          request.hash,
+          request.limit,
+          request.offset,
+        )
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
+    if (monitor.network === MonitorNetwork.Mantle) {
       return this.avaxEventHistoryRepository
         .findEventHistoryByMonitorAndHash(
           monitor.monitorId,
@@ -189,6 +214,21 @@ export class EventHistoryService {
         });
     }
 
+    if (monitor.network === MonitorNetwork.Mantle) {
+      return this.avaxEventHistoryRepository
+        .findEventHistoryByMonitorAndHash(
+          monitor.monitorId,
+          request.associatedAddress,
+          request.limit,
+          request.offset,
+        )
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
     this.logger.error(`network ${monitor.network} not supported`);
     throw ErrorCode.INTERNAL_SERVER_ERROR.asException();
   }
@@ -221,6 +261,14 @@ export class EventHistoryService {
     }
 
     if (monitor.network === MonitorNetwork.Avalanche) {
+      return this.avaxEventHistoryRepository
+        .findByEventId(request.eventId)
+        .then((response) => {
+          return MonitorEventHistoryResponseDto.from(response);
+        });
+    }
+
+    if (monitor.network === MonitorNetwork.Mantle) {
       return this.avaxEventHistoryRepository
         .findByEventId(request.eventId)
         .then((response) => {
