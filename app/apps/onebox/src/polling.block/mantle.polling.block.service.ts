@@ -112,8 +112,6 @@ export class MantlePollingBlockService {
       blockNumber++
     ) {
       try {
-        this.logger.log(`last emitted block ${blockNumber}`);
-
         // emit event detect block with blocknumber
         this.workerClient.emit(
           TopicName.MANTLE_DETECTED_BLOCK,
@@ -129,6 +127,7 @@ export class MantlePollingBlockService {
         );
 
         this.detectInfo.blockNumber = blockNumber;
+        this.logger.debug(`last emitted block ${blockNumber}`);
 
         //only update last sync for confirm
         await this.updateLastSyncBlock(
