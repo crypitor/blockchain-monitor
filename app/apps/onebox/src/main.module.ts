@@ -19,6 +19,7 @@ import { EthereumPollingBlockService } from './polling.block/ethereum.polling.bl
 import { PolygonPollingBlockService } from './polling.block/polygon.polling.block.service';
 import { AvaxPollingBlockService } from './polling.block/avax.polling.block.service';
 import { MantlePollingBlockService } from './polling.block/mantle.polling.block.service';
+import { BscPollingBlockService } from './polling.block/bsc.polling.block.service';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { MantlePollingBlockService } from './polling.block/mantle.polling.block.
     PolygonPollingBlockService,
     AvaxPollingBlockService,
     MantlePollingBlockService,
+    BscPollingBlockService,
   ],
 })
 export class MainModule {}

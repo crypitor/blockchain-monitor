@@ -7,6 +7,7 @@ import { PolygonWorker } from './worker/polygon.worker';
 import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 import { AvaxWorker } from './worker/avax.worker';
 import { MantleWorker } from './worker/mantle.worker';
+import { BscWorker } from './worker/bsc.worker';
 
 @Controller()
 export class WorkerServiceController {
@@ -17,6 +18,7 @@ export class WorkerServiceController {
     private readonly polygonWorker: PolygonWorker,
     private readonly avaxWorker: AvaxWorker,
     private readonly mantleWorker: MantleWorker,
+    private readonly bscWorker: BscWorker,
   ) {}
 
   @Get()
@@ -65,6 +67,16 @@ export class WorkerServiceController {
     await Promise.race([
       this.mantleWorker.handleBlock(data),
       this.delay(500).then(() => {
+        return;
+      }),
+    ]);
+  }
+
+  @EventPattern(TopicName.BSC_DETECTED_BLOCK)
+  async bscDetectBlock(data: any) {
+    await Promise.race([
+      this.bscWorker.handleBlock(data),
+      this.delay(200).then(() => {
         return;
       }),
     ]);

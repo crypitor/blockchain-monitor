@@ -9,6 +9,7 @@ import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 import { AvaxWorker } from './worker/avax.worker';
 import { MantleWorker } from './worker/mantle.worker';
+import { BscWorker } from './worker/bsc.worker';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { MantleWorker } from './worker/mantle.worker';
     PolygonWorker,
     AvaxWorker,
     MantleWorker,
+    BscWorker,
   ],
 })
 export class WorkerServiceModule {}
