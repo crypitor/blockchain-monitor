@@ -18,4 +18,9 @@ export enum TopicName {
   MANTLE_NATIVE_TRANSFER = 'mantle-native-transfer',
   MANTLE_ERC20_TRANSFER = 'mantle-erc20-transfer',
   MANTLE_ERC721_TRANSFER = 'mantle-erc721-transfer',
+
+  BSC_DETECTED_BLOCK = 'bsc-detect-block',
+  BSC_NATIVE_TRANSFER = 'bsc-native-transfer',
+  BSC_ERC20_TRANSFER = 'bsc-erc20-transfer',
+  BSC_ERC721_TRANSFER = 'bsc-erc721-transfer',
 }

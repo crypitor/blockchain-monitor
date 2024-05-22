@@ -4,6 +4,7 @@ import { EthereumModule } from './ethereum/ethereum.module';
 import { PolygonModule } from './polygon/polygon.module';
 import { AvaxModule } from './avax/avax.module';
 import { MantleModule } from './mantle/mantle.module';
+import { BscModule } from './bsc/bsc.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MantleModule } from './mantle/mantle.module';
     PolygonModule,
     AvaxModule,
     MantleModule,
+    BscModule,
   ],
   controllers: [],
   providers: [],

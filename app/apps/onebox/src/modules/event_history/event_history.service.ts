@@ -1,6 +1,7 @@
 import { ErrorCode } from '@app/global/global.error';
 import {
   AvaxEventHistoryRepository,
+  BscEventHistoryRepository,
   EthEventHistoryRepository,
   MantleEventHistoryRepository,
   PolygonEventHistoryRepository,
@@ -25,6 +26,7 @@ export class EventHistoryService {
     private readonly polygonEventHistoryRepository: PolygonEventHistoryRepository,
     private readonly avaxEventHistoryRepository: AvaxEventHistoryRepository,
     private readonly mantleEventHistoryRepository: MantleEventHistoryRepository,
+    private readonly bscEventHistoryRepository: BscEventHistoryRepository,
     private readonly monitorService: MonitorService,
   ) {}
 
@@ -73,6 +75,16 @@ export class EventHistoryService {
 
     if (monitor.network === MonitorNetwork.Mantle) {
       return this.mantleEventHistoryRepository
+        .getEventHistory(monitor.monitorId, request.limit, request.offset)
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
+    if (monitor.network === MonitorNetwork.BSC) {
+      return this.bscEventHistoryRepository
         .getEventHistory(monitor.monitorId, request.limit, request.offset)
         .then((response) => {
           return response.map((event) =>
@@ -143,6 +155,21 @@ export class EventHistoryService {
 
     if (monitor.network === MonitorNetwork.Mantle) {
       return this.mantleEventHistoryRepository
+        .findEventHistoryByMonitorAndHash(
+          monitor.monitorId,
+          request.hash,
+          request.limit,
+          request.offset,
+        )
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
+    if (monitor.network === MonitorNetwork.BSC) {
+      return this.bscEventHistoryRepository
         .findEventHistoryByMonitorAndHash(
           monitor.monitorId,
           request.hash,
@@ -231,6 +258,21 @@ export class EventHistoryService {
         });
     }
 
+    if (monitor.network === MonitorNetwork.BSC) {
+      return this.bscEventHistoryRepository
+        .findEventHistoryByMonitorAndHash(
+          monitor.monitorId,
+          request.associatedAddress,
+          request.limit,
+          request.offset,
+        )
+        .then((response) => {
+          return response.map((event) =>
+            MonitorEventHistoryResponseDto.from(event),
+          );
+        });
+    }
+
     this.logger.error(`network ${monitor.network} not supported`);
     throw ErrorCode.INTERNAL_SERVER_ERROR.asException();
   }
@@ -272,6 +314,14 @@ export class EventHistoryService {
 
     if (monitor.network === MonitorNetwork.Mantle) {
       return this.mantleEventHistoryRepository
+        .findByEventId(request.eventId)
+        .then((response) => {
+          return MonitorEventHistoryResponseDto.from(response);
+        });
+    }
+
+    if (monitor.network === MonitorNetwork.BSC) {
+      return this.bscEventHistoryRepository
         .findByEventId(request.eventId)
         .then((response) => {
           return MonitorEventHistoryResponseDto.from(response);
