@@ -34,7 +34,7 @@ export class WorkerServiceController {
   async ethDetectBlock(data: BlockTransportDto) {
     await Promise.race([
       this.ethereumWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -44,7 +44,7 @@ export class WorkerServiceController {
   async polygonDetectBlock(data: any) {
     await Promise.race([
       this.polygonWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -54,7 +54,7 @@ export class WorkerServiceController {
   async avaxDetectBlock(data: any) {
     await Promise.race([
       this.avaxWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
@@ -64,7 +64,7 @@ export class WorkerServiceController {
   async mantleDetectBlock(data: any) {
     await Promise.race([
       this.mantleWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
