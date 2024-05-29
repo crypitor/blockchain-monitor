@@ -236,7 +236,11 @@ export class AvaxService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const transaction = EventHistory.fromLogToERC721(
         event,
         SupportedChain.AVALANCHE.name,
@@ -279,7 +283,11 @@ export class AvaxService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const txnHistory = EventHistory.fromLogToERC20(
         event,
         SupportedChain.AVALANCHE.name,

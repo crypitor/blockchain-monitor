@@ -278,7 +278,11 @@ export class MantleService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const txnHistory = EventHistory.fromLogToERC20(
         event,
         SupportedChain.MANTLE.name,
