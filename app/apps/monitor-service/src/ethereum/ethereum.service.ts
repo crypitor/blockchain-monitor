@@ -236,7 +236,12 @@ export class EthereumService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const transaction = EventHistory.fromLogToERC721(
         event,
         SupportedChain.ETH.name,
@@ -279,7 +284,11 @@ export class EthereumService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const txnHistory = EventHistory.fromLogToERC20(
         event,
         SupportedChain.ETH.name,
@@ -323,35 +332,6 @@ export class EthereumService {
       await this.eventHistoryRepository.pushConfirmDeliveryId(
         event.eventId,
         deliveryId,
-      );
-    }
-  }
-
-  private async sendMessage(monitor: Monitor, body: EventHistory) {
-    if (!monitor.notification) {
-      return;
-    }
-    const webhook = monitor.notification as WebhookNotification;
-    body.tags = monitor.tags;
-    try {
-      const response = await fetch(webhook.url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: webhook.authorization,
-        },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        this.logger.error(
-          `Error while sending webhook request to: ${webhook.url}`,
-          response,
-        );
-      }
-    } catch (error) {
-      this.logger.error(
-        `Error while sending webhook request to: ${webhook.url}`,
-        error,
       );
     }
   }

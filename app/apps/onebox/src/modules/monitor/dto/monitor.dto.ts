@@ -108,7 +108,9 @@ export class CreateMonitorDto {
       erc721: true,
       erc20: true,
       specific: false,
-      cryptos: [],
+      cryptos: {
+        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': true,
+      },
     },
   })
   @ValidateNested()

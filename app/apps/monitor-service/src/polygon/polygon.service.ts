@@ -236,7 +236,11 @@ export class PolygonService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const transaction = EventHistory.fromLogToERC721(
         event,
         SupportedChain.POLYGON.name,
@@ -279,7 +283,11 @@ export class PolygonService {
       ) {
         continue;
       }
-      // @todo check condition on specific cryptos
+      if (monitor.condition.specific) {
+        if (!monitor.condition.cryptos[event.address]) {
+          continue;
+        }
+      }
       const txnHistory = EventHistory.fromLogToERC20(
         event,
         SupportedChain.POLYGON.name,
