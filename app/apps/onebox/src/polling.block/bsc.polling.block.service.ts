@@ -26,7 +26,7 @@ export class BscPollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.BSC_DISABLE === 'true') {
+    if (process.env.BSC_DISABLE !== 'false') {
       this.detectInfo.flag = true;
       return;
     }

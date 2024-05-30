@@ -26,7 +26,7 @@ export class MantlePollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.MANTLE_DISABLE === 'true') {
+    if (process.env.MANTLE_DISABLE !== 'false') {
       this.detectInfo.flag = true;
       return;
     }

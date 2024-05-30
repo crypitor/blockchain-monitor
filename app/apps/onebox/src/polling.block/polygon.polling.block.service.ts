@@ -26,7 +26,7 @@ export class PolygonPollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.POLYGON_DISABLE === 'true') {
+    if (process.env.POLYGON_DISABLE !== 'false') {
       this.detectInfo.flag = true;
       return;
     }
