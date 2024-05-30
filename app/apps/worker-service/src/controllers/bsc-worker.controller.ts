@@ -18,7 +18,7 @@ export class BscWorkerController {
   async bscDetectBlock(data: any) {
     await Promise.race([
       this.bscWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);

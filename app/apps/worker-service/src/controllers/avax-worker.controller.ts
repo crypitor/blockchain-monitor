@@ -18,7 +18,7 @@ export class AvaxWorkerController {
   async avaxDetectBlock(data: any) {
     await Promise.race([
       this.avaxWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);

@@ -19,7 +19,7 @@ export class EthereumWorkerController {
   async ethDetectBlock(data: BlockTransportDto) {
     await Promise.race([
       this.ethereumWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);

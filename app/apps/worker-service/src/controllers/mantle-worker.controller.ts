@@ -18,7 +18,7 @@ export class MantleWorkerController {
   async mantleDetectBlock(data: any) {
     await Promise.race([
       this.mantleWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
