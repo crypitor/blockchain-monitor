@@ -36,6 +36,7 @@ export class WebhookService {
     webhookUrl: string,
     secret_token: string,
     authorization: string,
+    retry?: number,
   ): Promise<string> {
     const createWebhookDto = {
       name: name,
@@ -45,7 +46,7 @@ export class WebhookService {
       secret_token: secret_token,
       authorization_token: authorization,
       active: true,
-      max_delivery_attempts: MAX_ATTEMPT,
+      max_delivery_attempts: retry || MAX_ATTEMPT,
       delivery_attempt_timeout: MAX_TIMEOUT,
       retry_min_backoff: 10,
       retry_max_backoff: 60,
@@ -125,6 +126,7 @@ export class WebhookService {
       authorization: string;
       secret_token: string;
       active: boolean;
+      retry?: number;
     },
   ) {
     try {
@@ -134,6 +136,7 @@ export class WebhookService {
         options.authorization,
         options.secret_token,
         options.active,
+        options.retry,
       );
       const response = await sendPut(
         `${this.webhookUrl}/v1/webhooks/${webhookId}`,
@@ -282,6 +285,7 @@ export class WebhookService {
     authorization: string,
     secret_token: string,
     active: boolean,
+    retry: number,
   ): UpdateWebhookRequestDto {
     const updateWebhookDto = {
       name: name,
@@ -291,7 +295,7 @@ export class WebhookService {
       secret_token: secret_token,
       authorization_token: authorization,
       active: active,
-      max_delivery_attempts: MAX_ATTEMPT,
+      max_delivery_attempts: retry || MAX_ATTEMPT,
       delivery_attempt_timeout: MAX_TIMEOUT,
       retry_min_backoff: 10,
       retry_max_backoff: 60,
