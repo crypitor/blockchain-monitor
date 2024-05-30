@@ -26,7 +26,7 @@ export class AvaxPollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.AVAX_DISABLE === 'true') {
+    if (process.env.AVAX_DISABLE !== 'false') {
       this.detectInfo.flag = true;
       return;
     }

@@ -26,7 +26,7 @@ export class EthereumPollingBlockService {
 
   onModuleInit() {
     this.logger.log(`The module has been initialized.`);
-    if (process.env.EVM_DISABLE === 'true') {
+    if (process.env.EVM_DISABLE !== 'false') {
       this.detectInfo.flag = true;
       return;
     }
