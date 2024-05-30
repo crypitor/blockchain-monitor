@@ -3,13 +3,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
-import { WorkerServiceController } from './worker-service.controller';
-import { WorkerServiceService } from './worker-service.service';
 import { EthereumWorker } from './worker/ethereum.worker';
 import { PolygonWorker } from './worker/polygon.worker';
 import { AvaxWorker } from './worker/avax.worker';
 import { MantleWorker } from './worker/mantle.worker';
 import { BscWorker } from './worker/bsc.worker';
+import { DummyController } from './dummy.controller';
+import { EthereumWorkerController } from './controllers/ethereum-worker.controller';
+import { PolygonWorkerController } from './controllers/polygon-worker.controller';
+import { AvaxWorkerController } from './controllers/avax-worker.controller';
+import { MantleWorkerController } from './controllers/mantle-worker.controller';
+import { BscWorkerController } from './controllers/bsc-worker.controller';
 
 @Module({
   imports: [
@@ -69,7 +73,7 @@ import { BscWorker } from './worker/bsc.worker';
                 : null,
             retry: {
               restartOnFailure: async (e) => {
-                console.log('RESTART ON FAILURE onebox module');
+                console.log('RESTART ON FAILURE worker module');
                 console.log(e);
                 return true;
               },
@@ -85,9 +89,22 @@ import { BscWorker } from './worker/bsc.worker';
     ScheduleModule.forRoot(),
     BlockHistoryModelModule,
   ],
-  controllers: [WorkerServiceController],
+  controllers: [
+    process.env.EVM_DISABLE === 'false'
+      ? EthereumWorkerController
+      : DummyController,
+    process.env.POLYGON_DISABLE === 'false'
+      ? PolygonWorkerController
+      : DummyController,
+    process.env.AVAX_DISABLE === 'false'
+      ? AvaxWorkerController
+      : DummyController,
+    process.env.MANTLE_DISABLE === 'false'
+      ? MantleWorkerController
+      : DummyController,
+    process.env.BSC_DISABLE === 'false' ? BscWorkerController : DummyController,
+  ],
   providers: [
-    WorkerServiceService,
     EthereumWorker,
     PolygonWorker,
     AvaxWorker,
