@@ -18,7 +18,7 @@ export class PolygonWorkerController {
   async polygonDetectBlock(data: any) {
     await Promise.race([
       this.polygonWorker.handleBlock(data),
-      this.delay(200).then(() => {
+      this.delay(500).then(() => {
         return;
       }),
     ]);
