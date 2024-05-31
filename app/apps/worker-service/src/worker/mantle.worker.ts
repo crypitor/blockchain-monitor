@@ -64,7 +64,13 @@ export class MantleWorker {
       ]);
       const emitEnd = Date.now();
       //only update last sync for confirm
-      await this.saveBlockHistory(blockNumber, data.confirmed);
+      await this.saveBlockHistory(
+        blockNumber,
+        data.confirmed,
+        false,
+        null,
+        data.retry,
+      );
       this.logger.log(
         `${
           data.confirmed ? 'CONFIRM' : 'DETECT'
@@ -85,7 +91,7 @@ export class MantleWorker {
         data.confirmed,
         true,
         error,
-        data.retry + 1 || 1,
+        data.retry || 0,
       );
     }
 
@@ -145,7 +151,7 @@ export class MantleWorker {
         value: new BlockTransportDto(
           blockNumber,
           confirmed,
-          retry,
+          retry + 1 || 1,
           isError,
           error !== undefined ? JSON.stringify(error) : '',
         ),
