@@ -67,7 +67,7 @@ export class MonitorEventHistoryResponseDto {
   hash: string;
 
   @ApiResponseProperty()
-  blockNum: number; // decimal string
+  blockNumber: number; // decimal string
 
   @ApiResponseProperty()
   contract: {
@@ -128,7 +128,7 @@ export class MonitorEventHistoryResponseDto {
       .monitorId(dto.monitorId)
       .associatedAddress(dto.associatedAddress)
       .hash(dto.hash)
-      .blockNum(dto.blockNum)
+      .blockNumber(dto.blockNumber)
       .contract(dto.contract)
       .fromAddress(dto.fromAddress)
       .toAddress(dto.toAddress)

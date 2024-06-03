@@ -32,7 +32,7 @@ export class EventHistory {
   hash: string;
 
   @Prop()
-  blockNum: number; // decimal string
+  blockNumber: number; // decimal string
 
   @Prop({ type: Object })
   contract: {
@@ -96,7 +96,7 @@ export class EventHistory {
       monitorId: this.monitorId,
       associatedAddress: this.associatedAddress,
       hash: this.hash,
-      blockNum: this.blockNum,
+      blockNumber: this.blockNumber,
       contract: this.contract,
       fromAddress: this.fromAddress,
       toAddress: this.toAddress,
@@ -124,7 +124,7 @@ export class EventHistory {
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
-    instance.blockNum = log.blockNumber;
+    instance.blockNumber = log.blockNumber;
     instance.contract = {
       address: ethers.getAddress(log.address).toLowerCase(),
       name: null,
@@ -171,7 +171,7 @@ export class EventHistory {
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = log.transactionHash;
-    instance.blockNum = log.blockNumber;
+    instance.blockNumber = log.blockNumber;
     instance.contract = {
       address: ethers.getAddress(log.address).toLowerCase(),
       name: null,
@@ -217,7 +217,7 @@ export class EventHistory {
     instance.chain = chain;
     instance.monitorId = monitorId;
     instance.hash = transaction.hash;
-    instance.blockNum = transaction.blockNumber;
+    instance.blockNumber = transaction.blockNumber;
     instance.fromAddress = transaction.from.toLowerCase();
     instance.toAddress = transaction.to.toLowerCase();
 
