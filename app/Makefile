@@ -32,20 +32,15 @@ default: up
 help : Makefile
 	@sed -n 's/^##//p' $<
 
-.PHONY: up
-up:
+.PHONY: up dev
+up-dev:
 	@echo "Building application and starting container..."
 	docker compose -f docker-compose-dev.yml up
 
-.PHONY: build
-build:
+.PHONY: build dev
+build-dev:
 	@echo "Re-building container and installing dependancies..."
 	docker compose -f docker-compose-dev.yml down && TARGET=development docker compose -f docker-compose-dev.yml build --no-cache && docker compose -f docker-compose-dev.yml up
-
-.PHONY: up-silent
-up-silent:
-	@echo "Building application and starting container in background mode..."
-	docker compose -f docker-compose-dev.yml up -d
 
 .PHONY: log
 log:
@@ -58,7 +53,7 @@ down:
 	@docker compose -f docker-compose-dev.yml down
 
 .PHONY: stop
-stop:
+stop-dev:
 	@echo "Stopping containers for onebox..."
 	@docker compose -f docker-compose-dev.yml stop
 
@@ -83,7 +78,6 @@ db:
 .PHONY: up
 up:
 	# @echo "Init environment..."
-	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
 	docker compose --env-file docker/.env -f docker/docker-compose.yml up -d
 
