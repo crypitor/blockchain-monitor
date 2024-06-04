@@ -4,7 +4,7 @@
   "description": "Real-time crypto monitor and alert system",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "yarn build:app && yarn build:worker && yarn build:monitor",
