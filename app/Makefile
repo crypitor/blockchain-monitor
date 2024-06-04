@@ -80,33 +80,35 @@ db:
 	@echo 'mongodb://${DB_USERNAME}:${DB_PASSWORD}@mongo:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.5.0'
 	@echo "-------------------------------------------------------------------------"
 
-.PHONY: up-prod
-up-prod:
-	# @echo "Init prod environment..."
+.PHONY: up
+up:
+	# @echo "Init environment..."
 	# sudo certbot certonly --standalone -d $API_DOMAIN -m $EMAIL
 	@echo "Building application and starting container..."
-	docker compose -f docker-compose-prod.yml up -d
+	docker compose --env-file docker/.env -f docker/docker-compose.yml up -d
 
-.PHONY: down-prod
-down-prod:
+.PHONY: down
+down:
 	@echo "Building application and starting container..."
-	docker compose -f docker-compose-prod.yml down
+	docker compose --env-file docker/.env -f docker/docker-compose.yml down
 
 .PHONY: build
-build-prod:
+build:
 	@echo "Re-building container and installing dependancies..."
-	docker compose -f docker-compose-prod.yml down && docker compose -f docker-compose-prod.yml build --no-cache && docker compose -f docker-compose-prod.yml up
+	docker compose --env-file docker/.env -f docker/docker-compose.yml down && docker compose --env-file docker/.env -f docker/docker-compose.yml build --no-cache && docker compose --env-file docker/.env -f docker/docker-compose.yml up
 
 
 .PHONY: up-deps
 up-deps:
 	@echo "Start dependencies..."
 	docker compose -f docker/docker-compose-deps.yml --env-file .env up -d
+	docker compose -f docker/docker-compose-wh.yml --env-file .env up -d
 
 .PHONY: down-deps
 down-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker-compose-deps.yml --env-file .env down -v
+	docker compose -f docker/docker-compose-deps.yml --env-file .env down
+	docker compose -f docker/docker-compose-wh.yml --env-file .env down
 # https://stackoverflow.com/a/6273809/1826109
 %:
 	@:
