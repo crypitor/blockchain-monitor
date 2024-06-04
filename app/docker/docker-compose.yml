@@ -138,17 +138,17 @@ services:
         aliases:
           - postgres
 
-  # webhook-migrate:
-  #   extends:
-  #     file: docker-compose-wh.yml
-  #     service: webhook-migrate
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   networks:
-  #     crypitor-network:
-  #       aliases:
-  #         - webhook-migrate
+  webhook-migrate:
+    extends:
+      file: docker-compose-wh.yml
+      service: webhook-migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      crypitor-network:
+        aliases:
+          - webhook-migrate
 
   webhook-worker:
     extends:
@@ -157,8 +157,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      # webhook-migrate:
-      #   condition: service_completed_successfully
+      webhook-migrate:
+        condition: service_completed_successfully
     networks:
       crypitor-network:
         aliases:
@@ -171,8 +171,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      # webhook-migrate:
-      #   condition: service_completed_successfully
+      webhook-migrate:
+        condition: service_completed_successfully
     networks:
       crypitor-network:
         aliases:
