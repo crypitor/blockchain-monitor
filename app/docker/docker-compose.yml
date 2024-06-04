@@ -21,7 +21,7 @@ services:
       - onebox
   onebox:
     container_name: crypitor-onebox
-    image: registry.gitlab.com/cauta/onebox:${VERSION:-master}
+    image: crypitor/onebox:${VERSION:-master}
     env_file:
       - .env
     ports:
@@ -41,7 +41,7 @@ services:
       - 'host.docker.internal:host-gateway'
   monitor:
     container_name: crypitor-monitor
-    image: registry.gitlab.com/cauta/crypitor-monitor:${VERSION:-master}
+    image: crypitor/crypitor-monitor:${VERSION:-master}
     env_file:
       - .env
     networks:
@@ -59,7 +59,7 @@ services:
       - 'host.docker.internal:host-gateway'
   worker:
     container_name: crypitor-worker
-    image: registry.gitlab.com/cauta/crypitor-worker:${VERSION:-master}
+    image: crypitor/crypitor-worker:${VERSION:-master}
     env_file:
       - .env
     networks:
