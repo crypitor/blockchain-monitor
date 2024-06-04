@@ -23,13 +23,6 @@ services:
     environment:
       POSTMAND_DATABASE_URL: ${POSTMAND_DATABASE_URL}
     command: migrate
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   webhook-migrate:
-    #     condition: service_completed_successfully
-    # links:
-    #   - postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -43,11 +36,6 @@ services:
     ports:
       - "8100:8000"
       - "8101:8001"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    # links:
-    #   - postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -60,10 +48,5 @@ services:
     ports:
       - "8000:8000"
       - "8001:8001"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    # links:
-    #   - postgres
     extra_hosts:
       - "host.docker.internal:host-gateway"
