@@ -19,28 +19,28 @@ jobs:
         yarn && yarn build
 
     - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login registry.gitlab.com -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build and push Onebox Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/onebox/Dockerfile --target production -t registry.gitlab.com/cauta/onebox:${VERSION} -t registry.gitlab.com/cauta/onebox:latest .
-        docker push registry.gitlab.com/cauta/onebox:${VERSION}
-        docker push registry.gitlab.com/cauta/onebox:latest
+        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:${VERSION} -t crypitor/onebox:latest .
+        docker push crypitor/onebox:${VERSION}
+        docker push crypitor/onebox:latest
 
     - name: Build and push Monitor Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/monitor-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-monitor:${VERSION} -t registry.gitlab.com/cauta/crypitor-monitor:latest .
-        docker push registry.gitlab.com/cauta/crypitor-monitor:${VERSION}
-        docker push registry.gitlab.com/cauta/crypitor-monitor:latest
+        docker build -f apps/monitor-service/Dockerfile --target production -t crypitor/crypitor-monitor:${VERSION} -t crypitor/crypitor-monitor:latest .
+        docker push crypitor/crypitor-monitor:${VERSION}
+        docker push crypitor/crypitor-monitor:latest
 
     - name: Build and push Worker Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/worker-service/Dockerfile --target production -t registry.gitlab.com/cauta/crypitor-worker:${VERSION} -t registry.gitlab.com/cauta/crypitor-worker:latest .
-        docker push registry.gitlab.com/cauta/crypitor-worker:${VERSION}
-        docker push registry.gitlab.com/cauta/crypitor-worker:latest
+        docker build -f apps/worker-service/Dockerfile --target production -t crypitor/crypitor-worker:${VERSION} -t crypitor/crypitor-worker:latest .
+        docker push crypitor/crypitor-worker:${VERSION}
+        docker push crypitor/crypitor-worker:latest
