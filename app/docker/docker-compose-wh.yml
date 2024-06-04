@@ -19,7 +19,7 @@ services:
       retries: 5
 
   webhook-migrate:
-    image: registry.gitlab.com/cauta/postmand:latest
+    image: crypitor/postmand:latest
     environment:
       POSTMAND_DATABASE_URL: ${POSTMAND_DATABASE_URL}
     command: migrate
@@ -27,7 +27,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   webhook-worker:
-    image: registry.gitlab.com/cauta/postmand:latest
+    image: crypitor/postmand:latest
     environment:
       POSTMAND_DATABASE_URL: ${POSTMAND_DATABASE_URL}
       POSTMAND_POLLING_INTERVAL: ${POSTMAND_POLLING_INTERVAL}
@@ -40,7 +40,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   webhook-server:
-    image: registry.gitlab.com/cauta/postmand:latest
+    image: crypitor/postmand:latest
     environment:
       POSTMAND_DATABASE_URL: ${POSTMAND_DATABASE_URL}
       POSTMAND_DATABASE_MAX_OPEN_CONNS: ${POSTMAND_DATABASE_MAX_OPEN_CONNS}
