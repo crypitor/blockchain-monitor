@@ -1,5 +1,12 @@
-# Crypitor: High-Performance Real-Time Blockchain Activities Monitoring
+<div align="center">
+<a href="https://www.crypitor.com" target="_blank">
+    <img src="https://github.com/crypitor/blockchain-webhook/assets/15400058/28e80205-634e-4c49-b2fe-c8e85d996da0" width="200" alt="Crypitor Logo">
+</a>
+
+# CRYPITOR
+**High-Performance Real-Time Blockchain Activities Monitoring via Webhook**.  
 Welcome to Crypitor, a cutting-edge platform designed for high-performance, real-time monitoring of blockchain activities. Our mission is to provide developers, businesses, and enthusiasts with the tools they need to stay updated on blockchain transactions and events across various networks.
+</div>
 
 # Key Features
 
