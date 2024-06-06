@@ -36,12 +36,6 @@
       "@app/database/*": [
         "libs/database/src/*"
       ],
-      "@app/kafka": [
-        "libs/kafka/src"
-      ],
-      "@app/kafka/*": [
-        "libs/kafka/src/*"
-      ],
       "@app/shared_modules": [
         "libs/shared_modules/src"
       ],
