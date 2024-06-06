@@ -1,4 +1,4 @@
-import { SupportedChain } from '@app/utils/supportedChain.util';
+import { SupportedChain } from '../../utils/src';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ErrorCode } from './global.error';

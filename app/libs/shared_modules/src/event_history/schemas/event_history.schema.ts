@@ -1,4 +1,4 @@
-import { hashMd5 } from '@app/utils/md5';
+import { hashMd5 } from '../../../../utils/src';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Log, TransactionResponse, ethers } from 'ethers';
 import { HydratedDocument } from 'mongoose';
