@@ -1,5 +1,4 @@
 import { ErrorCode } from '@app/global/global.error';
-import { ApiKeyUser } from '@app/shared_modules/apikey/schemas/apikey.schema';
 import { ProjectMemberRepository } from '@app/shared_modules/project/repositories/project.member.repository';
 import { ProjectQuotaRepository } from '@app/shared_modules/project/repositories/project.quota.repository';
 import { ProjectRepository } from '@app/shared_modules/project/repositories/project.repository';
@@ -19,6 +18,7 @@ import {
   ProjectQuotaResponseDto,
   ProjectResponseDto,
 } from './dto/project.dto';
+import { ApiKeyUser } from '../apikey/schemas/apikey.schema';
 
 @Injectable()
 export class ProjectService {
