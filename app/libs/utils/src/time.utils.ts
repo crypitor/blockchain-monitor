@@ -10,3 +10,9 @@ export async function measureTime<T>(
   Logger.log(`Latency for [${label}]: ${(end - start).toFixed(3)}ms`);
   return result;
 }
+
+export function timing(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
