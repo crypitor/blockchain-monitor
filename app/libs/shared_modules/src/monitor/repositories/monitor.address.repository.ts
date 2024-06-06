@@ -1,4 +1,4 @@
-import { ErrorCode } from '@app/global/global.error';
+import { ErrorCode } from '../../../../global/src';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { MongoServerError } from 'mongodb';
 import { Model } from 'mongoose';

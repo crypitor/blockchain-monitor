@@ -1,4 +1,4 @@
-import { sendDelete, sendGet, sendPost, sendPut } from '@app/utils/http.util';
+import { sendDelete, sendGet, sendPost, sendPut } from '../../../utils/src';
 import { Injectable, Logger } from '@nestjs/common';
 const MAX_ATTEMPT = 3;
 const MAX_TIMEOUT = 5;

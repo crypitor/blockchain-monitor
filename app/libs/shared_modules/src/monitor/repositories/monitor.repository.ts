@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ListMonitorDto } from 'apps/onebox/src/modules/monitor/dto/monitor.dto';
 import { Model } from 'mongoose';
 import { Monitor } from '../schemas/monitor.schema';
+import { ListMonitorDto } from '../dto/monitor.dto';
 
 @Injectable()
 export class MonitorRepository {

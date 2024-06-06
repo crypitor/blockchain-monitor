@@ -1,4 +1,4 @@
-import { DatabaseModule } from '@app/database';
+import { DatabaseModule } from '../../../database/src';
 import { Module } from '@nestjs/common';
 import {
   AvaxEventHistoryRepository,

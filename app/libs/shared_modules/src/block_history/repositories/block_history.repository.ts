@@ -1,4 +1,4 @@
-import { MonitorNetwork } from '@app/shared_modules/monitor/schemas/monitor.schema';
+import { MonitorNetwork } from '../../../src';
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { BlockHistory } from '../schemas/block_history.schema';
