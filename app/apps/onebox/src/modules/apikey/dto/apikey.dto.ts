@@ -1,9 +1,6 @@
-import {
-  ApiKey,
-  ApiKeyStatus,
-} from '@app/shared_modules/apikey/schemas/apikey.schema';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
 import { Builder } from 'builder-pattern';
+import { ApiKey, ApiKeyStatus } from '../schemas/apikey.schema';
 
 export class CreateApiKeyDto {
   @ApiProperty()
