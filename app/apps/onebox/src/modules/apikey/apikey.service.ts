@@ -1,9 +1,4 @@
 import { ErrorCode } from '@app/global/global.error';
-import { ApiKeyRepository } from '@app/shared_modules/apikey/repositories/apikey.repository';
-import {
-  ApiKey,
-  ApiKeyStatus,
-} from '@app/shared_modules/apikey/schemas/apikey.schema';
 import { shortUUID } from '@app/utils/uuidUtils';
 import { Injectable } from '@nestjs/common';
 import { Builder } from 'builder-pattern';
@@ -15,6 +10,8 @@ import {
   DeleteApiKeyResponseDto,
   UpdateApiKeyDto,
 } from './dto/apikey.dto';
+import { ApiKeyRepository } from './repositories/apikey.repository';
+import { ApiKey, ApiKeyStatus } from './schemas/apikey.schema';
 
 @Injectable()
 export class ApikeyService {
