@@ -1,5 +1,5 @@
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { CreateMonitorDto } from '../../monitor/dto/monitor.dto';
+import { CreateMonitorDto } from 'libs/shared_modules/src/monitor/dto/monitor.dto';
 import { Type } from 'class-transformer';
 
 export class QuickStartDto {
