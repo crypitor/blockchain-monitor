@@ -1,12 +1,15 @@
-import { ApiKeyModule as ApiKeyModelModule } from '@app/shared_modules/apikey/apikey.module';
+import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
-import { ProjectModule } from '../project/project.module';
+import { ApiKeyProviders } from './apikey.provider';
+import { ApiKeyRepository } from './repositories/apikey.repository';
 import { ApiKeyController } from './apikey.controller';
 import { ApikeyService } from './apikey.service';
+import { ProjectModule } from '../project/project.module';
+
 @Module({
+  imports: [DatabaseModule, ProjectModule],
+  providers: [...ApiKeyProviders, ApiKeyRepository, ApikeyService],
+  exports: [...ApiKeyProviders, ApiKeyRepository, ApikeyService],
   controllers: [ApiKeyController],
-  providers: [ApikeyService],
-  exports: [ApikeyService],
-  imports: [ApiKeyModelModule, ProjectModule],
 })
-export class ApikeyModule {}
+export class ApiKeyModule {}

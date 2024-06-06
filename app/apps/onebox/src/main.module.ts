@@ -1,12 +1,10 @@
 import { GlobalModule, GlobalService } from '@app/global';
-import { ApiV1Module } from '@app/shared_modules/api/v1/apiv1.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SwaggerModule } from '@nestjs/swagger';
 import { MonitorAddressModule } from './modules/address/address.module';
-import { ApikeyModule } from './modules/apikey/apikey.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BlockSyncModule } from './modules/blocksync/blocksync.module';
 import { DeliveryModule } from './modules/delivery/delivery.module';
@@ -20,6 +18,8 @@ import { PolygonPollingBlockService } from './polling.block/polygon.polling.bloc
 import { AvaxPollingBlockService } from './polling.block/avax.polling.block.service';
 import { MantlePollingBlockService } from './polling.block/mantle.polling.block.service';
 import { BscPollingBlockService } from './polling.block/bsc.polling.block.service';
+import { ApiKeyModule } from './modules/apikey/apikey.module';
+import { ApiV1Module } from './modules/api/v1/apiv1.module';
 
 @Module({
   imports: [
@@ -72,7 +72,7 @@ import { BscPollingBlockService } from './polling.block/bsc.polling.block.servic
     DeliveryModule,
     EventHistoryModule,
     QuickStartModule,
-    ApikeyModule,
+    ApiKeyModule,
     ApiV1Module,
   ],
   providers: [
