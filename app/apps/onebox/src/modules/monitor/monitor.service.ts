@@ -21,7 +21,7 @@ import {
   ListMonitorDto,
   MonitorResponseDto,
   UpdateMonitorDto,
-} from './dto/monitor.dto';
+} from '@app/shared_modules/monitor/dto/monitor.dto';
 
 @Injectable()
 export class MonitorService {
