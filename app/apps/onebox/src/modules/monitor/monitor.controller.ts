@@ -28,7 +28,7 @@ import {
   ListMonitorDto,
   MonitorResponseDto,
   UpdateMonitorDto,
-} from './dto/monitor.dto';
+} from 'libs/shared_modules/src/monitor/dto/monitor.dto';
 import { MonitorService } from './monitor.service';
 
 @ApiTags('Monitor')
