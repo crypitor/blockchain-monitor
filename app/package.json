@@ -1,6 +1,6 @@
 {
   "name": "@crypitor/crypitor",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Real-time crypto monitor and alert system",
   "author": "cauta <trongcauhcmus@gmail.com>",
   "private": false,
