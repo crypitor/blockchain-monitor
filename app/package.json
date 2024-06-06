@@ -1,9 +1,9 @@
 {
-  "name": "crypitor",
-  "version": "1.0.0",
+  "name": "@crypitor/crypitor",
+  "version": "1.0.4",
   "description": "Real-time crypto monitor and alert system",
-  "author": "",
-  "private": true,
+  "author": "cauta <trongcauhcmus@gmail.com>",
+  "private": false,
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -113,8 +113,27 @@
       "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
       "^@app/global(|/.*)$": "<rootDir>/libs/global/src/$1",
       "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/kafka(|/.*)$": "<rootDir>/libs/kafka/src/$1",
       "^@app/shared_modules(|/.*)$": "<rootDir>/libs/shared_modules/src/$1"
     }
-  }
+  },
+  "main": "dist/libs/index.js",
+  "types": "dist/libs/index.d.ts",
+  "files": [
+    "dist/libs",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crypitor/blockchain-webhook.git"
+  },
+  "keywords": [
+    "blockchain",
+    "monitor",
+    "activities",
+    "webhook"
+  ],
+  "bugs": {
+    "url": "https://github.com/crypitor/blockchain-webhook/issues"
+  },
+  "homepage": "https://github.com/crypitor/blockchain-webhook#readme"
 }
