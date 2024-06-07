@@ -1,21 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { CreateBlockSyncDto } from './dto/create-blocksync.dto';
-import { BlockSync } from './schemas/blocksync.schema';
+import { CreateBlockSyncDto } from '../dto/blocksync.dto';
+import { BlockSync } from '../schemas/blocksync.schema';
 
 @Injectable()
-export class BlockSyncService {
+export class BlockSyncRepository {
   constructor(
     @Inject('BLOCKSYNC_MODEL') private readonly blockSync: Model<BlockSync>,
   ) {}
 
   async create(createBlockSyncDto: CreateBlockSyncDto): Promise<BlockSync> {
     const createdBlockSync = new this.blockSync(createBlockSyncDto);
-    try {
-      return await createdBlockSync.save();
-    } catch (error) {
-      throw error;
-    }
+    return await createdBlockSync.save();
   }
 
   /**
@@ -42,21 +38,10 @@ export class BlockSyncService {
   }
 
   async deleteOne(rpcUrl: string): Promise<void> {
-    try {
-      await this.blockSync.deleteOne({ rpcUrl: rpcUrl });
-    } catch (error) {
-      throw error;
-    }
+    await this.blockSync.deleteOne({ rpcUrl: rpcUrl });
   }
 
   async updateLastSync(rpcUrl: string, lastSync: number): Promise<void> {
-    try {
-      await this.blockSync.updateOne(
-        { rpcUrl: rpcUrl },
-        { lastSync: lastSync },
-      );
-    } catch (error) {
-      throw error;
-    }
+    await this.blockSync.updateOne({ rpcUrl: rpcUrl }, { lastSync: lastSync });
   }
 }

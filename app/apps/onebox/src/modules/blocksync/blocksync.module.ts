@@ -1,11 +1,15 @@
 import { DatabaseModule } from '@app/database';
 import { Module } from '@nestjs/common';
-import { BlockSyncProviders } from './blocksync.providers';
-import { BlockSyncService } from './blocksync.service';
+import {
+  BlockSyncModelModule,
+  BlockSyncProviders,
+  BlockSyncRepository,
+} from 'libs';
+import { BlockSyncController } from './blocksync.controller';
 @Module({
-  controllers: [],
-  providers: [BlockSyncService, ...BlockSyncProviders],
-  exports: [BlockSyncService],
-  imports: [DatabaseModule],
+  controllers: [BlockSyncController],
+  providers: [BlockSyncRepository, ...BlockSyncProviders],
+  exports: [],
+  imports: [DatabaseModule, BlockSyncModelModule],
 })
 export class BlockSyncModule {}
