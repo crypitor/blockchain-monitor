@@ -1,12 +1,12 @@
 version: '3.7'
 
 services:
-  onebox:
-    container_name: onebox
+  api:
+    container_name: api
     build:
       context: .
       target: ${TARGET:-development}
-      dockerfile: ./apps/onebox/Dockerfile
+      dockerfile: ./apps/api/Dockerfile
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
@@ -17,7 +17,7 @@ services:
     networks:
       crypitor-network:
         aliases:
-          - onebox
+          - api
     depends_on:
       redis:
         condition: service_healthy
