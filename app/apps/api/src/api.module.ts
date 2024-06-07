@@ -7,6 +7,7 @@ import { MonitorAddressApiModule } from './modules/address/address.module';
 import { PollingBlockModule } from './modules/polling.block/polling.block.module';
 import { EventHistoryApiModule } from './modules/event_history/event_history.module';
 import { DeliveryApiModule } from './modules/delivery/delivery.api.module';
+import { GlobalModule } from 'libs';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { DeliveryApiModule } from './modules/delivery/delivery.api.module';
       envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
       expandVariables: true,
     }),
+    GlobalModule,
     MonitorApiModule,
     MonitorAddressApiModule,
     EventHistoryApiModule,
