@@ -337,7 +337,7 @@ export class UpdateMonitorDto {
 }
 
 export class ListMonitorDto {
-  @ApiProperty()
+  @ApiProperty({ default: DEFAULT_PROJECT_ID })
   @IsNotEmpty()
   projectId: string;
 
