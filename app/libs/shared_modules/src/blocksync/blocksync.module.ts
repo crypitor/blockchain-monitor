@@ -1,4 +1,4 @@
-import { DatabaseModule } from '@app/database';
+import { DatabaseModule } from '../../../';
 import { Module } from '@nestjs/common';
 import { BlockSyncProviders } from './blocksync.providers';
 import { BlockSyncRepository } from './repositories/blocksync.repository';
