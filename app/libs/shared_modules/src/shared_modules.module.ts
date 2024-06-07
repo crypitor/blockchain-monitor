@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SharedModulesService } from './shared_modules.service';
+import { BlockHistoryModelModule } from './block_history/block_history.module';
+import { BlockSyncModelModule } from './blocksync';
+import { EventHistoryModelModule } from './event_history/event_history.module';
 import { MonitorModule } from './monitor/monitor.module';
 import { ProjectModule } from './project/project.module';
+import { SharedModulesService } from './shared_modules.service';
 import { WebhookModule } from './webhook/webhook.module';
-import { EventHistoryModelModule } from './event_history/event_history.module';
-import { BlockHistoryModelModule } from './block_history/block_history.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BlockHistoryModelModule } from './block_history/block_history.module';
     WebhookModule,
     EventHistoryModelModule,
     BlockHistoryModelModule,
+    BlockSyncModelModule,
   ],
   providers: [SharedModulesService],
   exports: [
@@ -22,6 +24,7 @@ import { BlockHistoryModelModule } from './block_history/block_history.module';
     WebhookModule,
     EventHistoryModelModule,
     BlockHistoryModelModule,
+    BlockSyncModelModule,
   ],
 })
 export class SharedModulesModule {}

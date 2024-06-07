@@ -5,3 +5,4 @@ export * from './event_history';
 export * from './monitor';
 export * from './project';
 export * from './webhook';
+export * from './blocksync';

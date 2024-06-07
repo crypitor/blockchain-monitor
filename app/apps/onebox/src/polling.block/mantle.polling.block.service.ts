@@ -4,7 +4,7 @@ import { ClientKafka } from '@nestjs/microservices';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { ethers } from 'ethers';
-import { BlockSyncService } from '../modules/blocksync/blocksync.service';
+import { BlockSyncRepository } from 'libs';
 import { SupportedChain } from '@app/utils/supportedChain.util';
 import { BlockTransportDto } from '@app/utils/dto/transport.dto';
 
@@ -16,7 +16,7 @@ export class MantlePollingBlockService {
 
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    private readonly blockSyncService: BlockSyncService,
+    private readonly blockSyncRepository: BlockSyncRepository,
     @Inject('WORKER_CLIENT_SERVICE')
     private readonly workerClient: ClientKafka,
   ) {}
@@ -41,9 +41,9 @@ export class MantlePollingBlockService {
 
   async init() {
     this.detectInfo.flag = true;
-    let blockSync = await this.blockSyncService.findOne(this.rpcUrl);
+    let blockSync = await this.blockSyncRepository.findOne(this.rpcUrl);
     if (!blockSync) {
-      blockSync = await this.blockSyncService.create({
+      blockSync = await this.blockSyncRepository.create({
         rpcUrl: this.rpcUrl,
         chain: SupportedChain.AVALANCHE.name,
         lastSync: await this.getBlockNumber(),
@@ -90,7 +90,7 @@ export class MantlePollingBlockService {
 
   private async updateLastSyncBlock(blockNumber: number): Promise<void> {
     // Update the last sync block in MongoDB
-    await this.blockSyncService.updateLastSync(this.rpcUrl, blockNumber);
+    await this.blockSyncRepository.updateLastSync(this.rpcUrl, blockNumber);
   }
 
   async pollingBlock() {
