@@ -40,3 +40,5 @@ production.env
 local.env
 docker/data
 docker/postgres_data
+data
+postgres_data
