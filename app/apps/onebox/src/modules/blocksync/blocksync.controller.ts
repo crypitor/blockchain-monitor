@@ -8,13 +8,13 @@ import {
 
 @Controller('blocksync')
 export class BlockSyncController {
-  constructor(private BlockSyncService: BlockSyncRepository) {}
+  constructor(private blockSyncRepository: BlockSyncRepository) {}
 
   @Post('/create')
   async create(@Body() blockSync: CreateBlockSyncDto) {
     try {
       const result: InstanceType<typeof BlockSync> =
-        await this.BlockSyncService.create(blockSync);
+        await this.blockSyncRepository.create(blockSync);
 
       return result;
     } catch (error) {
@@ -42,7 +42,7 @@ export class BlockSyncController {
   @Post('/remove')
   async remove(@Body() blockSync: DeleteBlockSyncDto) {
     try {
-      await this.BlockSyncService.deleteOne(blockSync.rpcUrl);
+      await this.blockSyncRepository.deleteOne(blockSync.rpcUrl);
     } catch (error) {
       if (error.hasOwnProperty('code')) {
         if (error.name === 'MongoServerError' && error.code === 11000) {
