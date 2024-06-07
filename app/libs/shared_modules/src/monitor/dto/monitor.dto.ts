@@ -23,6 +23,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+export const DEFAULT_PROJECT_ID = 'DefaultProject';
+export const DEFAULT_USER_ID = 'DefaultUser';
+
 export class MonitorConditionDto {
   @ApiProperty({ default: true })
   native: boolean;
@@ -94,7 +97,7 @@ export class EmailNotificationDto extends NotificationDto {
 }
 
 export class CreateMonitorDto {
-  @ApiProperty()
+  @ApiProperty({ default: DEFAULT_PROJECT_ID, example: DEFAULT_PROJECT_ID })
   @IsNotEmpty()
   projectId: string;
 
