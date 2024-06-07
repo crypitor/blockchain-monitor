@@ -23,6 +23,4 @@ RUN yarn install --production
 
 COPY ./dist/apps/monitor-service ./dist/apps/monitor-service
 
-# COPY --from=development /usr/src/app/dist ./dist
-
 CMD ["node", "dist/apps/monitor-service/main.js"]

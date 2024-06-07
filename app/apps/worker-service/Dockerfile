@@ -23,6 +23,4 @@ RUN yarn install --production
 
 COPY ./dist/apps/worker-service ./dist/apps/worker-service
 
-# COPY --from=development /usr/src/app/dist ./dist
-
 CMD ["node", "dist/apps/worker-service/main.js"]

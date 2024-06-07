@@ -23,6 +23,4 @@ RUN yarn install --production
 
 COPY ./dist/apps/api ./dist/apps/api
 
-COPY ./resources ./resources
-
 CMD ["node", "dist/apps/api/main.js"]
