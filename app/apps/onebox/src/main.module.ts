@@ -14,7 +14,7 @@ import { MonitorModule } from './modules/monitor/monitor.module';
 import { ProjectModule } from './modules/project/project.module';
 import { QuickStartModule } from './modules/quickstart/quickstart.module';
 import { UsersModule } from './modules/users/users.module';
-import { PollingBlockModule } from './polling.block/polling.block.module';
+import { PollingBlockModule } from './modules/polling.block/polling.block.module';
 
 @Module({
   imports: [
