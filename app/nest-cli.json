@@ -9,6 +9,15 @@
     "tsConfigPath": "apps/onebox/tsconfig.app.json"
   },
   "projects": {
+    "api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api/tsconfig.app.json"
+      }
+    },
     "onebox": {
       "type": "application",
       "root": "apps/onebox",
@@ -70,15 +79,6 @@
       "sourceRoot": "libs/shared_modules/src",
       "compilerOptions": {
         "tsConfigPath": "libs/shared_modules/tsconfig.lib.json"
-      }
-    },
-    "api": {
-      "type": "application",
-      "root": "apps/api",
-      "entryFile": "main",
-      "sourceRoot": "apps/api/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     }
   }
