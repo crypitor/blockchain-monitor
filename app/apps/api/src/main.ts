@@ -34,9 +34,10 @@ async function bootstrap() {
 
     // setting up swagger
     const options = new DocumentBuilder()
-      .setTitle(process.env.SWAGGER_TITLE || 'Blockchain Webhook API')
+      .setTitle(process.env.SWAGGER_TITLE || 'Crypitor Service')
       .setDescription(
-        process.env.SWAGGER_DESCRIPTION || 'The Blockchain Webhook API',
+        process.env.SWAGGER_DESCRIPTION ||
+          'Crypitor Blockchain Activities Monitoring API',
       )
       .setVersion('1.0')
       .build();
