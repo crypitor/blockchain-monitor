@@ -8,12 +8,12 @@ import {
   GetMonitorEventHistoryDto,
   MonitorEventHistoryResponseDto,
 } from './dto/event_history.api.dto';
-import { EventHistoryService } from './event_history.api.service';
+import { EventHistoryApiService } from './event_history.api.service';
 
 @ApiTags('Monitor Event History')
 @Controller('/event')
-export class EventHistoryController {
-  constructor(private readonly eventHistoryService: EventHistoryService) {}
+export class EventHistoryApiController {
+  constructor(private readonly eventHistoryService: EventHistoryApiService) {}
 
   @ApiOperation({ summary: 'Get Monitor Event' })
   @Get('')
