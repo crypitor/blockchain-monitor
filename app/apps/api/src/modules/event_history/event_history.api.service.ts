@@ -18,8 +18,8 @@ import {
 import { MonitorApiService } from '../monitor/monitor.api.service';
 
 @Injectable()
-export class EventHistoryService {
-  private readonly logger = new Logger(EventHistoryService.name);
+export class EventHistoryApiService {
+  private readonly logger = new Logger(EventHistoryApiService.name);
   constructor(
     private readonly ethEventHistoryRepository: EthEventHistoryRepository,
     private readonly polygonEventHistoryRepository: PolygonEventHistoryRepository,
