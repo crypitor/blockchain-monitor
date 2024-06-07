@@ -35,7 +35,6 @@ export class MonitorAddressController {
   ) {}
 
   @ApiOperation({ summary: 'Create Monitor Address' })
-  @ApiBearerAuth('JWT')
   @Post('')
   @ApiCreatedResponse({ type: [MonitorAddressResponseDto] })
   async createMonitorAddress(
@@ -46,7 +45,6 @@ export class MonitorAddressController {
   }
 
   @ApiOperation({ summary: 'Get Monitor Address' })
-  @ApiBearerAuth('JWT')
   @Get('')
   @ApiOkResponse({ type: GetMonitorAddressResponseDto })
   async getMonitorAddress(
@@ -58,7 +56,6 @@ export class MonitorAddressController {
   }
 
   @ApiOperation({ summary: 'Delete Monitor Address' })
-  @ApiBearerAuth('JWT')
   @Delete('')
   @ApiOkResponse({ type: DeleteMonitorAddressResponseDto })
   async deleteMonitorAddress(
@@ -69,7 +66,6 @@ export class MonitorAddressController {
   }
 
   @ApiOperation({ summary: 'Search Monitor Address' })
-  @ApiBearerAuth('JWT')
   @Get('/search')
   @ApiOkResponse({ type: GetMonitorAddressResponseDto })
   async searchMonitorAddress(

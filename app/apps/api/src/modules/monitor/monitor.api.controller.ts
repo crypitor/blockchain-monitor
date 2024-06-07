@@ -34,7 +34,6 @@ export class MonitorApiController {
   constructor(private readonly monitorService: MonitorApiService) {}
 
   @ApiOperation({ summary: 'Get monitor by id' })
-  @ApiBearerAuth('JWT')
   @Get('/:id')
   @ApiOkResponse({ type: MonitorResponseDto })
   async getMonitor(
@@ -45,7 +44,6 @@ export class MonitorApiController {
   }
 
   @ApiOperation({ summary: 'List monitors of project' })
-  @ApiBearerAuth('JWT')
   @Get('')
   @ApiOkResponse({ type: [MonitorResponseDto] })
   async listMonitor(
@@ -56,7 +54,6 @@ export class MonitorApiController {
   }
 
   @ApiOperation({ summary: 'Create monitor' })
-  @ApiBearerAuth('JWT')
   @Post('')
   @ApiCreatedResponse({ type: MonitorResponseDto })
   async createMonitor(
@@ -67,7 +64,6 @@ export class MonitorApiController {
   }
 
   @ApiOperation({ summary: 'Delete monitor' })
-  @ApiBearerAuth('JWT')
   @Delete('/:id')
   @ApiOkResponse({ type: DeleteMonitorResponseDto })
   async deleteMonitor(
@@ -80,7 +76,6 @@ export class MonitorApiController {
   }
 
   @ApiOperation({ summary: 'Update monitor' })
-  @ApiBearerAuth('JWT')
   @Patch('/:id')
   @ApiOkResponse({ type: MonitorResponseDto })
   async updateMonitor(
