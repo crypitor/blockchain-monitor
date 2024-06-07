@@ -21,13 +21,13 @@ jobs:
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Build and push Onebox Docker image
+    - name: Build and push Api Docker image
       run: |
         cd app
         VERSION=$(jq -r '.version' package.json)
-        docker build -f apps/onebox/Dockerfile --target production -t crypitor/onebox:${VERSION} -t crypitor/onebox:latest .
-        docker push crypitor/onebox:${VERSION}
-        docker push crypitor/onebox:latest
+        docker build -f apps/api/Dockerfile --target production -t crypitor/crypitor-api:${VERSION} -t crypitor/crypitor-api:latest .
+        docker push crypitor/crypitor-api:${VERSION}
+        docker push crypitor/crypitor-api:latest
 
     - name: Build and push Monitor Docker image
       run: |
