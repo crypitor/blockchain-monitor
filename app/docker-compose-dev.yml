@@ -10,6 +10,8 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    env_file:
+      - .env.docker
     ports:
       - ${SERVER_PORT:-3000}:${SERVER_PORT:-3000}
     networks:
@@ -32,6 +34,8 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    env_file:
+      - .env.docker
     networks:
       crypitor-network:
         aliases:
@@ -52,6 +56,8 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    env_file:
+      - .env.docker
     networks:
       crypitor-network:
         aliases:
