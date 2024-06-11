@@ -31,13 +31,25 @@ $ yarn test:cov
 ```
 
 # Using docker
-## Build development with start watch
+## Quick start local Development with docker
 update .env.docker files
 ```bash
 make up-dev
 ```
 
-## Build production
+## Quick start Production with docker
+update .env.docker files
+```bash
+cd docker
+
+# config env for production and Update config for for network
+cp .env.sample .env
+
+# start docker compose
+docker compose up -d
+```
+
+## Build production image
 Build docker container and push to docker registry
 ```bash
 yarn build
@@ -49,19 +61,10 @@ docker push <name>/api:<version>
 docker push <name>/monitor:<version>
 docker push <name>/worker:<version>
 ```
-## Run production
-```bash
-cd docker
 
-# config env for production
-cp .env.sample .env
+## Set up dev environment without docker
+Update .env with env.sample
 
-# start docker compose
-docker compose up -d
-```
-
-## Set up dev environment
-Start local dev env
 ```bash
 make up-deps
 
@@ -77,11 +80,7 @@ yarn start:dev worker-service
 # stop deps
 make down-deps
 ```
-Start docker compose dev
-```bash
-docker compose -f docker-compose-dev.yml up -d
-```
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+Crypitor is [MIT licensed](LICENSE).
