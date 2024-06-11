@@ -35,7 +35,7 @@ help : Makefile
 .PHONY: up dev
 up-dev:
 	@echo "Building application and starting container..."
-	docker compose -f docker-compose-dev.yml up
+	docker compose --env-file .env.docker -f docker-compose-dev.yml up
 
 .PHONY: build dev
 build-dev:

@@ -32,9 +32,9 @@ $ yarn test:cov
 
 # Using docker
 ## Build development with start watch
+update .env.docker files
 ```bash
-make build
-make up
+make up-dev
 ```
 
 ## Build production
