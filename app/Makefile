@@ -35,20 +35,20 @@ help : Makefile
 .PHONY: up dev
 up-dev:
 	@echo "Building application and starting container..."
-	docker compose --env-file .env.docker -f docker-compose-dev.yml up
+	@docker compose --env-file .env.docker -f docker-compose-dev.yml up
 
 .PHONY: build dev
 build-dev:
 	@echo "Re-building container and installing dependancies..."
-	docker compose -f docker-compose-dev.yml down && TARGET=development docker compose -f docker-compose-dev.yml build --no-cache && docker compose -f docker-compose-dev.yml up
+	@docker compose -f docker-compose-dev.yml down && TARGET=development docker compose -f docker-compose-dev.yml build --no-cache && docker compose -f docker-compose-dev.yml up
 
 .PHONY: log
-log:
+log-dev:
 	@echo "Building application and starting container in background mode..."
-	docker compose -f docker-compose-dev.yml logs api monitor worker -f -n 10
+	@docker compose -f docker-compose-dev.yml logs api monitor worker -f -n 10
 
 .PHONY: down
-down:
+down-dev:
 	@echo "Shutting down and removing containers for api..."
 	@docker compose -f docker-compose-dev.yml down
 
@@ -79,30 +79,30 @@ db:
 up:
 	# @echo "Init environment..."
 	@echo "Building application and starting container..."
-	docker compose --env-file docker/.env -f docker/docker-compose.yml up -d
+	@docker compose --env-file docker/.env -f docker/docker-compose.yml up -d
 
 .PHONY: down
 down:
 	@echo "Building application and starting container..."
-	docker compose --env-file docker/.env -f docker/docker-compose.yml down
+	@docker compose --env-file docker/.env -f docker/docker-compose.yml down
 
 .PHONY: build
 build:
 	@echo "Re-building container and installing dependancies..."
-	docker compose --env-file docker/.env -f docker/docker-compose.yml down && docker compose --env-file docker/.env -f docker/docker-compose.yml build --no-cache && docker compose --env-file docker/.env -f docker/docker-compose.yml up
+	@docker compose --env-file docker/.env -f docker/docker-compose.yml down && docker compose --env-file docker/.env -f docker/docker-compose.yml build --no-cache && docker compose --env-file docker/.env -f docker/docker-compose.yml up
 
 
 .PHONY: up-deps
 up-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker-compose-deps.yml --env-file .env up -d
-	docker compose -f docker/docker-compose-wh.yml --env-file .env up -d
+	@docker compose -f docker/docker-compose-deps.yml --env-file .env up -d
+	@docker compose -f docker/docker-compose-wh.yml --env-file .env up -d
 
 .PHONY: down-deps
 down-deps:
 	@echo "Start dependencies..."
-	docker compose -f docker/docker-compose-deps.yml --env-file .env down
-	docker compose -f docker/docker-compose-wh.yml --env-file .env down
+	@docker compose -f docker/docker-compose-deps.yml --env-file .env down
+	@docker compose -f docker/docker-compose-wh.yml --env-file .env down
 # https://stackoverflow.com/a/6273809/1826109
 %:
 	@:
