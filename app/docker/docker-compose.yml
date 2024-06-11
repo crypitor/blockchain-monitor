@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   api:
-    image: crypitor/crypitor-api:${VERSION:-master}
+    image: crypitor/crypitor-api:${VERSION:-latest}
     env_file:
       - .env
     ports:
@@ -12,8 +12,6 @@ services:
         aliases:
           - api
     depends_on:
-      redis:
-        condition: service_healthy
       mongo:
         condition: service_healthy
       kafka:
@@ -21,7 +19,7 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   monitor:
-    image: crypitor/crypitor-monitor:${VERSION:-master}
+    image: crypitor/crypitor-monitor:${VERSION:-latest}
     env_file:
       - .env
     networks:
@@ -29,8 +27,6 @@ services:
         aliases:
           - monitor
     depends_on:
-      redis:
-        condition: service_healthy
       mongo:
         condition: service_healthy
       kafka:
@@ -38,7 +34,7 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
   worker:
-    image: crypitor/crypitor-worker:${VERSION:-master}
+    image: crypitor/crypitor-worker:${VERSION:-latest}
     env_file:
       - .env
     networks:
@@ -46,8 +42,6 @@ services:
         aliases:
           - worker
     depends_on:
-      redis:
-        condition: service_healthy
       mongo:
         condition: service_healthy
       kafka:
