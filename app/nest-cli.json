@@ -18,15 +18,6 @@
         "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     },
-    "onebox": {
-      "type": "application",
-      "root": "apps/onebox",
-      "entryFile": "main",
-      "sourceRoot": "apps/onebox/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/onebox/tsconfig.app.json"
-      }
-    },
     "monitor-service": {
       "type": "application",
       "root": "apps/monitor-service",
