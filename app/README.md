@@ -41,11 +41,11 @@ make up
 Build docker container and push to docker registry
 ```bash
 yarn build
-docker build -f apps/onebox/Dockerfile --target production -t <name>/onebox:<version> .
+docker build -f apps/api/Dockerfile --target production -t <name>/api:<version> .
 docker build -f apps/monitor-service/Dockerfile --target production -t <name>/monitor:<version> .
 docker build -f apps/worker-service/Dockerfile --target production -t <name>/worker:<version> .
 
-docker push <name>/onebox:<version>
+docker push <name>/api:<version>
 docker push <name>/monitor:<version>
 docker push <name>/worker:<version>
 ```
@@ -65,8 +65,8 @@ Start local dev env
 ```bash
 make up-deps
 
-# start onebox module
-yarn start:dev onebox
+# start api module
+yarn start:dev api
 
 # start monitor service
 yarn start:dev monitor-service
@@ -80,25 +80,6 @@ make down-deps
 Start docker compose dev
 ```bash
 docker compose -f docker-compose-dev.yml up -d
-```
-
-## Set up SSL from certbot
-```bash
-source .env
-echo "Install certbot:"
-sudo apt install snapd
-sudo snap install core; sudo snap refresh core
-sudo snap install --classic certbot
-sudo ufw allow 80
-sudo certbot certonly --standalone -d $DOMAIN -m $EMAIL
-sudo ufw delete allow 80
-```
-
-OR
-```bash
-sudo docker run -it --rm --name certbot -v "/etc/letsencrypt:/etc/letsencrypt" -v "/var/lib/letsencrypt:/var/lib letsencrypt" -p 80:80 certbot/certbot certonly
-
-sudo ufw-docker allow certbot
 ```
 
 ## License
