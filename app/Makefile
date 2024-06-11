@@ -45,21 +45,21 @@ build-dev:
 .PHONY: log
 log:
 	@echo "Building application and starting container in background mode..."
-	docker compose -f docker-compose-dev.yml logs onebox monitor worker -f -n 10
+	docker compose -f docker-compose-dev.yml logs api monitor worker -f -n 10
 
 .PHONY: down
 down:
-	@echo "Shutting down and removing containers for onebox..."
+	@echo "Shutting down and removing containers for api..."
 	@docker compose -f docker-compose-dev.yml down
 
 .PHONY: stop
 stop-dev:
-	@echo "Stopping containers for onebox..."
+	@echo "Stopping containers for api..."
 	@docker compose -f docker-compose-dev.yml stop
 
 .PHONY: shell
 shell:
-	@docker exec -ti onebox /bin/sh
+	@docker exec -ti api /bin/sh
 
 .PHONY: shell-db
 shell-db:

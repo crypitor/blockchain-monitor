@@ -58,7 +58,7 @@ make up-deps
 
 Start the application.
 ```bash
-yarn start:dev onebox
+yarn start:dev api
 yarn start:dev monitor-service
 yarn start:dev worker-service
 ```
