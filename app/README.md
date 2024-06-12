@@ -4,7 +4,7 @@
 $ yarn
 ```
 
-## Running the app
+## Running the only API app
 
 ```bash
 # development
@@ -70,6 +70,9 @@ make up-deps
 
 # start api module
 yarn start:dev api
+
+# start polling block module
+yarn start:dev polling-block
 
 # start monitor service
 yarn start:dev monitor-service
