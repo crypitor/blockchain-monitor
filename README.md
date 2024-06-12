@@ -59,6 +59,7 @@ make up-deps
 Start the application.
 ```bash
 yarn start:dev api
+yarn start:dev polling-block
 yarn start:dev monitor-service
 yarn start:dev worker-service
 ```
