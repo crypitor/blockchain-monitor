@@ -71,6 +71,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/shared_modules/tsconfig.lib.json"
       }
+    },
+    "polling-block": {
+      "type": "application",
+      "root": "apps/polling-block",
+      "entryFile": "main",
+      "sourceRoot": "apps/polling-block/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/polling-block/tsconfig.app.json"
+      }
     }
   }
 }

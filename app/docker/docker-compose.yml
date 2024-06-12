@@ -18,6 +18,21 @@ services:
         condition: service_healthy
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+  polling-block:
+    image: crypitor/crypitor-polling-block:${VERSION:-latest}
+    env_file:
+      - .env
+    networks:
+      crypitor-network:
+        aliases:
+          - polling-block
+    depends_on:
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
   monitor:
     image: crypitor/crypitor-monitor:${VERSION:-latest}
     env_file:

@@ -25,6 +25,19 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
+  polling-block:
+    container_name: polling-block
+    build:
+      context: .
+      target: ${TARGET:-development}
+      dockerfile: ./apps/polling-block/Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env.docker
+    networks:
+      crypitor-network:
   monitor:
     container_name: monitor
     build:

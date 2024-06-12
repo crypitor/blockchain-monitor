@@ -59,7 +59,7 @@ stop-dev:
 
 .PHONY: shell
 shell:
-	@docker exec -ti api /bin/sh
+	@docker compose exec -ti api /bin/sh
 
 .PHONY: shell-db
 shell-db:
