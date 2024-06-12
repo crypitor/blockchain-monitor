@@ -2,14 +2,20 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BlockSyncModelModule } from 'libs';
-import { AvaxPollingBlockService } from './avax.polling.block.service';
-import { BscPollingBlockService } from './bsc.polling.block.service';
-import { EthereumPollingBlockService } from './ethereum.polling.block.service';
-import { MantlePollingBlockService } from './mantle.polling.block.service';
-import { PolygonPollingBlockService } from './polygon.polling.block.service';
+import { EthereumPollingBlockService } from './evm/ethereum.polling.block.service';
+import { PolygonPollingBlockService } from './evm/polygon.polling.block.service';
+import { AvaxPollingBlockService } from './evm/avax.polling.block.service';
+import { MantlePollingBlockService } from './evm/mantle.polling.block.service';
+import { BscPollingBlockService } from './evm/bsc.polling.block.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`${process.env.NODE_ENV}.env`, '.env'],
+      expandVariables: true,
+    }),
     ClientsModule.registerAsync([
       {
         name: 'WORKER_CLIENT_SERVICE',

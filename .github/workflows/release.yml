@@ -29,6 +29,14 @@ jobs:
         docker push crypitor/crypitor-api:${VERSION}
         docker push crypitor/crypitor-api:latest
 
+    - name: Build and push Api Docker image
+      run: |
+        cd app
+        VERSION=$(jq -r '.version' package.json)
+        docker build -f apps/polling-block/Dockerfile --target production -t crypitor/crypitor-polling-block:${VERSION} -t crypitor/crypitor-polling-block:latest .
+        docker push crypitor/crypitor-polling-block:${VERSION}
+        docker push crypitor/crypitor-polling-block:latest
+  
     - name: Build and push Monitor Docker image
       run: |
         cd app

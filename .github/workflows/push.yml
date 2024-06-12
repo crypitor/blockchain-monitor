@@ -27,6 +27,12 @@ jobs:
         docker build -f apps/api/Dockerfile --target production -t crypitor/crypitor-api:master .
         docker push crypitor/crypitor-api:master
 
+    - name: Build and push Polling block Docker image
+      run: |
+        cd app
+        docker build -f apps/polling-block/Dockerfile --target production -t crypitor/crypitor-polling-block:master .
+        docker push crypitor/crypitor-polling-block:master
+
     - name: Build and push Monitor Docker image
       run: |
         cd app
